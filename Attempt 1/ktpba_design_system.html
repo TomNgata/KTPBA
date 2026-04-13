@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KTPBA UI Design System · 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --color-primary:#1A5C2A; --color-primary-hover:#2E7D3A; --color-primary-dark:#0D3A18;
+  --color-secondary:#C8373A; --color-secondary-hover:#9B2226;
+  --color-accent:#E91E8C; --color-purple:#4A1080; --color-violet:#7B2FBE;
+  --color-gold:#C8A000; --color-silver:#B0B0B0; --color-bronze:#B06000;
+  --color-success:#4CAF50; --color-warning:#C8A000; --color-danger:#C8373A;
+  --bg:#0B0E0C; --bg-surface:#111612; --bg-card:rgba(255,255,255,0.038);
+  --border:rgba(255,255,255,0.08); --border-strong:rgba(255,255,255,0.14);
+  --text-primary:#F2F0EB; --text-secondary:#8A9490; --text-muted:#4A5550;
+  --font-display:'Bebas Neue',Impact,sans-serif;
+  --font-heading:'Barlow Condensed','Arial Narrow',sans-serif;
+  --font-body:'Barlow',Helvetica,sans-serif;
+  --r-sm:4px; --r-md:8px; --r-lg:16px; --r-xl:24px; --r-pill:100px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-body);font-size:15px;line-height:1.6;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 32px;}
+.nav{height:52px;display:flex;align-items:center;gap:32px;border-bottom:1px solid var(--border);padding:0 32px;position:sticky;top:0;z-index:50;background:rgba(11,14,12,0.92);backdrop-filter:blur(12px);}
+.brand{font-family:var(--font-display);font-size:18px;letter-spacing:3px;color:var(--color-secondary);}
+.brand span{color:var(--color-primary-hover);}
+.nav a{font-family:var(--font-heading);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);text-decoration:none;}
+.nav a:hover{color:var(--text-primary);}
+.hero{padding:80px 0 56px;border-bottom:1px solid var(--border);}
+.eyebrow{font-family:var(--font-heading);font-size:11px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--color-secondary);margin-bottom:12px;}
+h1.display{font-family:var(--font-display);font-size:clamp(44px,8vw,80px);letter-spacing:3px;line-height:0.95;color:white;margin-bottom:16px;}
+h1.display span{color:var(--color-accent);}
+.hero-sub{font-family:var(--font-heading);font-size:16px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:32px;}
+.tag{display:inline-flex;align-items:center;padding:4px 12px;border-radius:var(--r-pill);font-family:var(--font-heading);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;}
+.tag-red{background:rgba(200,55,58,0.15);color:var(--color-secondary);border:1px solid rgba(200,55,58,0.3);}
+.tag-green{background:rgba(26,92,42,0.2);color:var(--color-primary-hover);border:1px solid rgba(26,92,42,0.4);}
+.tag-pink{background:rgba(233,30,140,0.12);color:var(--color-accent);border:1px solid rgba(233,30,140,0.3);}
+/* Sections */
+.section{padding:64px 0;}
+.section+.section{padding-top:0;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 32px;}
+.s-label{font-family:var(--font-heading);font-size:10px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--color-secondary);margin-bottom:8px;}
+.s-title{font-family:var(--font-display);font-size:clamp(28px,4vw,44px);letter-spacing:2px;color:white;margin-bottom:8px;line-height:1;}
+.s-desc{font-size:14px;color:var(--text-secondary);max-width:560px;margin-bottom:40px;line-height:1.75;}
+/* Grid helpers */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:680px){.grid2,.grid3,.grid4{grid-template-columns:1fr;}}
+/* Card */
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--r-lg);padding:24px;}
+.card-title{font-family:var(--font-heading);font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+/* Color swatches */
+.swatch-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.swatch{width:100%;border-radius:var(--r-md);overflow:hidden;border:1px solid rgba(255,255,255,0.06);}
+.swatch-color{height:56px;display:flex;align-items:flex-end;padding:8px;}
+.swatch-hex{background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);color:white;font-family:'Courier New',mono;font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:1px;}
+.swatch-info{background:rgba(255,255,255,0.04);padding:8px 12px;}
+.swatch-name{font-family:var(--font-heading);font-size:12px;font-weight:700;color:white;letter-spacing:0.5px;margin-bottom:2px;}
+.swatch-token{font-family:'Courier New',mono;font-size:10px;color:var(--text-muted);}
+.swatch-usage{font-size:10px;color:var(--color-primary-hover);font-style:italic;margin-top:2px;}
+/* Type scale */
+.type-row{display:grid;grid-template-columns:1fr 200px;gap:16px;align-items:center;padding:16px 0;border-bottom:1px solid var(--border);}
+.type-row:last-child{border-bottom:none;}
+.type-meta{font-family:'Courier New',mono;font-size:11px;color:var(--text-muted);line-height:1.9;}
+.type-meta b{color:var(--color-primary-hover);}
+/* Code block */
+.code-block{background:#0A0D0B;border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:24px;}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,255,255,0.03);border-bottom:1px solid var(--border);}
+.code-filename{font-family:'Courier New',mono;font-size:12px;color:var(--text-secondary);letter-spacing:0.5px;}
+.copy-btn{font-family:var(--font-heading);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;background:var(--bg-card);border:1px solid var(--border);color:var(--text-muted);padding:4px 12px;border-radius:var(--r-sm);cursor:pointer;}
+.copy-btn:hover{border-color:var(--border-strong);color:var(--text-primary);}
+pre{padding:20px;overflow-x:auto;font-family:'Courier New',mono;font-size:12px;line-height:1.7;color:var(--text-secondary);}
+pre .k{color:#C8A000;} /* key */
+pre .v{color:#4CAF50;} /* value */
+pre .c{color:#3A5040;} /* comment */
+pre .s{color:#E91E8C;} /* string/accent */
+/* Component demos */
+.comp-demo{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--r-md);padding:20px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-heading);font-weight:800;letter-spacing:1.5px;text-transform:uppercase;border:none;cursor:pointer;border-radius:var(--r-sm);transition:all 0.15s;}
+.btn-primary{background:var(--color-secondary);color:white;padding:10px 22px;font-size:13px;}
+.btn-primary:hover{background:var(--color-secondary-hover);transform:translateY(-1px);}
+.btn-secondary{background:transparent;color:var(--color-primary-hover);border:2px solid var(--color-primary-hover);padding:8px 18px;font-size:12px;}
+.btn-secondary:hover{background:var(--color-primary-hover);color:white;}
+.btn-ghost{background:rgba(255,255,255,0.05);color:var(--text-secondary);border:1px solid var(--border);padding:8px 16px;font-size:11px;}
+.btn-tournament{background:linear-gradient(135deg,var(--color-purple),var(--color-accent));color:white;padding:10px 22px;font-size:13px;}
+.btn-sm{padding:5px 12px;font-size:10px;}
+/* Radius demo */
+.radius-demo{background:rgba(255,255,255,0.06);border:1px solid var(--border);width:80px;height:56px;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading);font-size:10px;font-weight:700;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;}
+/* Badge demos */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:var(--r-pill);font-family:var(--font-heading);font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;}
+.badge-gold{background:rgba(200,160,0,0.15);border:1px solid rgba(200,160,0,0.4);color:var(--color-gold);}
+.badge-silver{background:rgba(176,176,176,0.12);border:1px solid rgba(176,176,176,0.3);color:var(--color-silver);}
+.badge-bronze{background:rgba(176,96,0,0.12);border:1px solid rgba(176,96,0,0.3);color:var(--color-bronze);}
+.badge-live{background:rgba(233,30,140,0.15);border:1px solid rgba(233,30,140,0.35);color:var(--color-accent);}
+.badge-win{background:rgba(76,175,80,0.12);border:1px solid rgba(76,175,80,0.3);color:var(--color-success);}
+.badge-elim{background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-muted);}
+/* Token table */
+.token-table{width:100%;border-collapse:collapse;}
+.token-table th{font-family:var(--font-heading);font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+.token-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-family:'Courier New',mono;font-size:12px;}
+.token-table tr:last-child td{border-bottom:none;}
+.token-name{color:var(--color-accent);}
+.token-val{color:var(--color-primary-hover);}
+.token-desc{font-family:var(--font-body);font-size:12px;color:var(--text-muted);}
+.swatch-dot{width:14px;height:14px;border-radius:3px;display:inline-block;vertical-align:middle;margin-right:6px;}
+/* Leaderboard mini */
+.mini-lb-row{display:grid;grid-template-columns:36px 1fr auto auto;align-items:center;gap:12px;padding:8px 12px;border-radius:var(--r-sm);}
+.mini-lb-row.g{background:linear-gradient(90deg,rgba(200,160,0,0.14),rgba(200,160,0,0.02));border-left:3px solid var(--color-gold);}
+.mini-lb-row.s{background:linear-gradient(90deg,rgba(176,176,176,0.1),rgba(176,176,176,0.02));border-left:3px solid var(--color-silver);}
+.mini-lb-row.b{background:linear-gradient(90deg,rgba(176,96,0,0.1),rgba(176,96,0,0.02));border-left:3px solid var(--color-bronze);}
+.mini-lb-row.n{background:rgba(255,255,255,0.025);border-left:3px solid transparent;}
+.rk{font-family:var(--font-display);font-size:16px;color:var(--text-muted);text-align:center;}
+.g .rk{color:var(--color-gold);}
+.s .rk{color:var(--color-silver);}
+.b .rk{color:var(--color-bronze);}
+.nm{font-family:var(--font-heading);font-size:13px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-primary);}
+.sc{font-family:var(--font-display);font-size:20px;letter-spacing:1px;color:var(--color-primary-hover);}
+.dl{font-family:var(--font-heading);font-size:10px;font-weight:700;}
+.dl.up{color:var(--color-success);}
+.dl.dn{color:var(--color-danger);}
+.dl.eq{color:var(--text-muted);}
+/* Bracket mini */
+.mini-match{border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;width:148px;}
+.mini-bp{padding:6px 10px;font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-secondary);background:rgba(255,255,255,0.025);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;}
+.mini-bp:last-child{border-bottom:none;}
+.mini-bp.w{background:rgba(26,92,42,0.2);color:white;}
+.mini-bp .ms{font-family:var(--font-display);font-size:13px;color:var(--text-muted);}
+.mini-bp.w .ms{color:var(--color-primary-hover);}
+/* spacing demo */
+.sp-demo{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap;}
+.sp-item{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.sp-block{background:var(--color-primary);border-radius:2px;width:32px;}
+.sp-label{font-family:'Courier New',mono;font-size:10px;color:var(--text-muted);}
+/* shadow demo */
+.shadow-demo{display:flex;gap:24px;flex-wrap:wrap;}
+.shadow-card{background:var(--bg-surface);border-radius:var(--r-lg);padding:20px 24px;font-family:var(--font-heading);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);}
+/* motion */
+.motion-demo{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
+.motion-pill{padding:8px 16px;border-radius:var(--r-pill);background:rgba(255,255,255,0.06);border:1px solid var(--border);font-family:var(--font-heading);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);}
+/* print */
+footer{padding:48px 32px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.footer-brand{font-family:var(--font-display);font-size:18px;letter-spacing:3px;color:var(--color-secondary);}
+.footer-brand span{color:var(--color-primary-hover);}
+.footer-meta{font-family:var(--font-heading);font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="brand">KTP<span>BA</span></span>
+  <a href="#tokens">Tokens</a>
+  <a href="#typography">Type</a>
+  <a href="#components">Components</a>
+  <a href="#leaderboard">Leaderboard</a>
+  <a href="#bracket">Bracket</a>
+  <a href="#motion">Motion</a>
+  <a href="#json">JSON</a>
+</nav>
+
+<!-- HERO -->
+<div style="background:linear-gradient(135deg,#0D3A18 0%,#0B0E0C 40%,#1a0030 100%);border-bottom:1px solid var(--border);position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 80% 30%,rgba(233,30,140,0.1),transparent 55%),radial-gradient(ellipse at 10%,rgba(26,92,42,0.15),transparent 50%);pointer-events:none"></div>
+  <div class="wrap" style="padding-top:80px;padding-bottom:64px;position:relative">
+    <p class="eyebrow">KTPBA · Strike Zone Games · 2026</p>
+    <h1 class="display">UI DESIGN<br/><span>SYSTEM</span></h1>
+    <p class="hero-sub">Bowling Tournament Dashboard · Component Library</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="tag tag-red">v1.0</span>
+      <span class="tag tag-green">Production Ready</span>
+      <span class="tag tag-pink">Women's Day Edition</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 1: DESIGN PRINCIPLES ═══ -->
+<section class="section" id="principles">
+<div class="wrap">
+  <p class="s-label">Step 01</p>
+  <h2 class="s-title">DESIGN PRINCIPLES</h2>
+  <p class="s-desc">A competitive bowling tournament platform demands high-impact data readability, energetic brand expression, and world-class ranking hierarchy.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Visual Personality</div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:12px">Deep-dark base with controlled neon energy. Inspired by modern esports tournament platforms — KTPBA Green + Red + Pink as the brand triad. Kenyan national colors drive the primary palette. Think: <em>premium athletics meets competitive gaming</em>.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag tag-red">High Contrast</span>
+        <span class="tag tag-green">Brand-Led</span>
+        <span class="tag tag-pink">Competitive Energy</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">UI Density</div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.8;margin-bottom:12px">Medium-compact. Leaderboard rows are tight for scanability (44px row height). Cards breathe more generously. The data must win — scores dominate visually. No decorative clutter; every pixel earns its keep.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag tag-green">44px rows</span>
+        <span class="tag tag-red">Scores first</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Competitive Data Readability</div>
+      <ul style="font-size:13px;color:var(--text-secondary);line-height:2;list-style:none">
+        <li>① <strong style="color:var(--text-primary)">Scores in Bebas Neue</strong> — largest type element, instantly readable</li>
+        <li>② <strong style="color:var(--text-primary)">Rank before name</strong> — left column, color-coded gold/silver/bronze</li>
+        <li>③ <strong style="color:var(--text-primary)">Delta indicators</strong> — color arrows show movement at a glance</li>
+        <li>④ <strong style="color:var(--text-primary)">Progressive disclosure</strong> — summary row → detail drawer</li>
+        <li>⑤ <strong style="color:var(--text-primary)">Winner highlighting</strong> — background gradient on medal rows</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Card System</div>
+      <ul style="font-size:13px;color:var(--text-secondary);line-height:2;list-style:none">
+        <li><strong style="color:var(--text-primary)">Base card</strong> — rgba(255,255,255,0.04) + 1px border</li>
+        <li><strong style="color:var(--text-primary)">Elevated card</strong> — rgba + backdrop-filter blur</li>
+        <li><strong style="color:var(--text-primary)">Podium card</strong> — full gradient with medal glow</li>
+        <li><strong style="color:var(--text-primary)">Match card</strong> — live pulsing border accent</li>
+        <li><strong style="color:var(--text-primary)">Player card</strong> — gradient with avatar prominence</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 2: DESIGN TOKENS ═══ -->
+<section class="section" id="tokens">
+<div class="wrap">
+  <p class="s-label">Step 02</p>
+  <h2 class="s-title">DESIGN TOKENS</h2>
+  <p class="s-desc">All visual decisions encoded as CSS custom properties and JSON tokens. Drop into any web project.</p>
+
+  <!-- Core Brand Colors -->
+  <p style="font-family:var(--font-heading);font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px">Core Brand</p>
+  <div class="grid4" style="margin-bottom:32px">
+    <div class="swatch"><div class="swatch-color" style="background:#1A5C2A"><span class="swatch-hex">#1A5C2A</span></div><div class="swatch-info"><div class="swatch-name">KTPBA Green</div><div class="swatch-token">--color-primary</div><div class="swatch-usage">Buttons, logo, winner</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#2E7D3A"><span class="swatch-hex">#2E7D3A</span></div><div class="swatch-info"><div class="swatch-name">Green Light</div><div class="swatch-token">--color-primary-hover</div><div class="swatch-usage">Score highlights</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#C8373A"><span class="swatch-hex">#C8373A</span></div><div class="swatch-info"><div class="swatch-name">KTPBA Red</div><div class="swatch-token">--color-secondary</div><div class="swatch-usage">CTAs, section labels</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#9B2226"><span class="swatch-hex">#9B2226</span></div><div class="swatch-info"><div class="swatch-name">Red Dark</div><div class="swatch-token">--color-secondary-hover</div><div class="swatch-usage">Hover / pressed</div></div></div>
+  </div>
+  <div class="grid4" style="margin-bottom:32px">
+    <div class="swatch"><div class="swatch-color" style="background:#E91E8C"><span class="swatch-hex">#E91E8C</span></div><div class="swatch-info"><div class="swatch-name">Tournament Pink</div><div class="swatch-token">--color-accent</div><div class="swatch-usage">Women's Day, live status</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#4A1080"><span class="swatch-hex">#4A1080</span></div><div class="swatch-info"><div class="swatch-name">Prestige Purple</div><div class="swatch-token">--color-purple</div><div class="swatch-usage">Prize banners</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#7B2FBE"><span class="swatch-hex">#7B2FBE</span></div><div class="swatch-info"><div class="swatch-name">Violet Mid</div><div class="swatch-token">--color-violet</div><div class="swatch-usage">Gradient midpoint</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#1565C0"><span class="swatch-hex">#1565C0</span></div><div class="swatch-info"><div class="swatch-name">Strike Zone Blue</div><div class="swatch-token">--color-partner</div><div class="swatch-usage">Venue partner</div></div></div>
+  </div>
+  <p style="font-family:var(--font-heading);font-size:12px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px">Podium / Semantic</p>
+  <div class="grid4" style="margin-bottom:32px">
+    <div class="swatch"><div class="swatch-color" style="background:#C8A000"><span class="swatch-hex">#C8A000</span></div><div class="swatch-info"><div class="swatch-name">Trophy Gold</div><div class="swatch-token">--color-gold</div><div class="swatch-usage">1st place</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#B0B0B0"><span class="swatch-hex">#B0B0B0</span></div><div class="swatch-info"><div class="swatch-name">Silver Medal</div><div class="swatch-token">--color-silver</div><div class="swatch-usage">2nd place</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#B06000"><span class="swatch-hex">#B06000</span></div><div class="swatch-info"><div class="swatch-name">Bronze Medal</div><div class="swatch-token">--color-bronze</div><div class="swatch-usage">3rd place</div></div></div>
+    <div class="swatch"><div class="swatch-color" style="background:#4CAF50"><span class="swatch-hex">#4CAF50</span></div><div class="swatch-info"><div class="swatch-name">Success Green</div><div class="swatch-token">--color-success</div><div class="swatch-usage">Rank up, win</div></div></div>
+  </div>
+
+  <!-- CSS Variables -->
+  <div class="code-block" id="cssBlock">
+    <div class="code-header">
+      <span class="code-filename">ktpba-variables.css</span>
+      <button class="copy-btn" onclick="copyCode('cssBlock',this)">Copy CSS</button>
+    </div>
+    <pre><span class="c">/* ── KTPBA Design Tokens v1.0 ── */</span>
+<span class="k">:root</span> {
+  <span class="c">/* Core Brand */</span>
+  <span class="k">--color-primary</span>:        <span class="v">#1A5C2A</span>;
+  <span class="k">--color-primary-hover</span>:  <span class="v">#2E7D3A</span>;
+  <span class="k">--color-primary-dark</span>:   <span class="v">#0D3A18</span>;
+  <span class="k">--color-secondary</span>:      <span class="v">#C8373A</span>;
+  <span class="k">--color-secondary-hover</span>:<span class="v">#9B2226</span>;
+  <span class="k">--color-accent</span>:         <span class="v">#E91E8C</span>;
+  <span class="k">--color-purple</span>:         <span class="v">#4A1080</span>;
+  <span class="k">--color-violet</span>:         <span class="v">#7B2FBE</span>;
+
+  <span class="c">/* Podium */</span>
+  <span class="k">--color-gold</span>:           <span class="v">#C8A000</span>;
+  <span class="k">--color-silver</span>:         <span class="v">#B0B0B0</span>;
+  <span class="k">--color-bronze</span>:         <span class="v">#B06000</span>;
+
+  <span class="c">/* Semantic */</span>
+  <span class="k">--color-success</span>:        <span class="v">#4CAF50</span>;
+  <span class="k">--color-warning</span>:        <span class="v">#C8A000</span>;
+  <span class="k">--color-danger</span>:         <span class="v">#C8373A</span>;
+
+  <span class="c">/* Surfaces */</span>
+  <span class="k">--bg</span>:                   <span class="v">#0B0E0C</span>;
+  <span class="k">--bg-surface</span>:           <span class="v">#111612</span>;
+  <span class="k">--bg-card</span>:              <span class="v">rgba(255,255,255,0.038)</span>;
+  <span class="k">--bg-card-hover</span>:        <span class="v">rgba(255,255,255,0.065)</span>;
+  <span class="k">--bg-elevated</span>:          <span class="v">rgba(255,255,255,0.055)</span>;
+
+  <span class="c">/* Borders */</span>
+  <span class="k">--border</span>:               <span class="v">rgba(255,255,255,0.08)</span>;
+  <span class="k">--border-strong</span>:        <span class="v">rgba(255,255,255,0.14)</span>;
+  <span class="k">--border-accent</span>:        <span class="v">rgba(200,55,58,0.35)</span>;
+
+  <span class="c">/* Text */</span>
+  <span class="k">--text-primary</span>:         <span class="v">#F2F0EB</span>;
+  <span class="k">--text-secondary</span>:       <span class="v">#8A9490</span>;
+  <span class="k">--text-muted</span>:           <span class="v">#4A5550</span>;
+
+  <span class="c">/* Typography */</span>
+  <span class="k">--font-display</span>:         <span class="v">'Bebas Neue', Impact, sans-serif</span>;
+  <span class="k">--font-heading</span>:         <span class="v">'Barlow Condensed', 'Arial Narrow', sans-serif</span>;
+  <span class="k">--font-body</span>:            <span class="v">'Barlow', Helvetica, sans-serif</span>;
+
+  <span class="c">/* Radius */</span>
+  <span class="k">--r-sm</span>:   <span class="v">4px</span>;  <span class="k">--r-md</span>:   <span class="v">8px</span>;
+  <span class="k">--r-lg</span>:   <span class="v">16px</span>; <span class="k">--r-xl</span>:   <span class="v">24px</span>; <span class="k">--r-pill</span>: <span class="v">100px</span>;
+
+  <span class="c">/* Spacing — 4px base grid */</span>
+  <span class="k">--sp-1</span>: <span class="v">4px</span>;  <span class="k">--sp-2</span>: <span class="v">8px</span>;   <span class="k">--sp-3</span>: <span class="v">12px</span>;
+  <span class="k">--sp-4</span>: <span class="v">16px</span>; <span class="k">--sp-5</span>: <span class="v">20px</span>;  <span class="k">--sp-6</span>: <span class="v">24px</span>;
+  <span class="k">--sp-8</span>: <span class="v">32px</span>; <span class="k">--sp-10</span>:<span class="v">40px</span>;  <span class="k">--sp-12</span>:<span class="v">48px</span>;
+  <span class="k">--sp-16</span>:<span class="v">64px</span>;
+
+  <span class="c">/* Shadows */</span>
+  <span class="k">--shadow-sm</span>:       <span class="v">0 1px 3px rgba(0,0,0,0.4)</span>;
+  <span class="k">--shadow-md</span>:       <span class="v">0 4px 16px rgba(0,0,0,0.5)</span>;
+  <span class="k">--shadow-lg</span>:       <span class="v">0 8px 32px rgba(0,0,0,0.6)</span>;
+  <span class="k">--shadow-glow-red</span>: <span class="v">0 0 24px rgba(200,55,58,0.25)</span>;
+  <span class="k">--shadow-glow-green</span>:<span class="v">0 0 24px rgba(26,92,42,0.3)</span>;
+  <span class="k">--shadow-glow-gold</span>:<span class="v">0 0 20px rgba(200,160,0,0.3)</span>;
+}</pre>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 2: TYPOGRAPHY ═══ -->
+<section class="section" id="typography">
+<div class="wrap">
+  <p class="s-label">Step 02b</p>
+  <h2 class="s-title">TYPOGRAPHY SCALE</h2>
+  <p class="s-desc">Three-font system: Bebas Neue for impact display, Barlow Condensed for headings/labels, Barlow for body. Score readability is a first-class concern.</p>
+
+  <div class="card">
+    <div class="type-row">
+      <div style="font-family:var(--font-display);font-size:72px;letter-spacing:2px;line-height:1;color:white">278</div>
+      <div class="type-meta"><b>Score/Leaderboard</b><br/>font: Bebas Neue<br/>size: 72px<br/>ls: +2px<br/>use: match scores</div>
+    </div>
+    <div class="type-row">
+      <div style="font-family:var(--font-display);font-size:52px;letter-spacing:2px;line-height:1;color:white">LEADERBOARD</div>
+      <div class="type-meta"><b>Display / H1</b><br/>font: Bebas Neue<br/>size: 52px<br/>ls: +2px<br/>use: page titles</div>
+    </div>
+    <div class="type-row">
+      <div style="font-family:var(--font-display);font-size:36px;letter-spacing:1.5px;line-height:1;color:white">WANJIRU KAMAU</div>
+      <div class="type-meta"><b>H2</b><br/>font: Bebas Neue<br/>size: 36px<br/>ls: +1.5px<br/>use: player names (hero)</div>
+    </div>
+    <div class="type-row">
+      <div style="font-family:var(--font-heading);font-size:22px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:white">SEMI-FINAL RESULTS</div>
+      <div class="type-meta"><b>H3 / Section</b><br/>font: Barlow Condensed<br/>size: 22px · wt: 800<br/>ls: +1.5px · UC</div>
+    </div>
+    <div class="type-row">
+      <div style="font-family:var(--font-heading);font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-primary)">STRIKE ZONE · NAIROBI</div>
+      <div class="type-meta"><b>Label / Caption</b><br/>font: Barlow Condensed<br/>size: 14px · wt: 700<br/>ls: +1px · UC</div>
+    </div>
+    <div class="type-row">
+      <div style="font-family:var(--font-heading);font-size:10px;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:var(--color-secondary)">SECTION 04 · STATS</div>
+      <div class="type-meta"><b>Eyebrow</b><br/>font: Barlow Condensed<br/>size: 10–11px · wt: 800<br/>ls: +3–4px · UC</div>
+    </div>
+    <div class="type-row">
+      <div style="font-family:var(--font-body);font-size:15px;color:var(--text-secondary);line-height:1.7;max-width:480px">Kenya Ten Pin Bowling Association hosts the 2026 Women's Day Edition Singles Tournament, celebrating excellence in competitive bowling.</div>
+      <div class="type-meta"><b>Body</b><br/>font: Barlow<br/>size: 15px · wt: 400<br/>lh: 1.7</div>
+    </div>
+  </div>
+
+  <div style="margin-top:24px;background:rgba(233,30,140,0.06);border:1px solid rgba(233,30,140,0.15);border-radius:var(--r-lg);padding:24px">
+    <p style="font-family:var(--font-heading);font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--color-accent);margin-bottom:12px">Google Fonts Import</p>
+    <div class="code-block" style="margin-bottom:0">
+      <pre style="font-size:11px">@import url('<span class="v">https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Barlow+Condensed:wght@400;600;700;800;900&amp;family=Barlow:wght@400;500;600&amp;display=swap</span>');</pre>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 3: TAILWIND CONFIG ═══ -->
+<section class="section">
+<div class="wrap">
+  <p class="s-label">Step 03</p>
+  <h2 class="s-title">TAILWIND CONFIG</h2>
+  <p class="s-desc">Drop this into tailwind.config.js to extend the default theme with KTPBA brand tokens.</p>
+
+  <div class="code-block" id="tailwindBlock">
+    <div class="code-header">
+      <span class="code-filename">tailwind.config.js</span>
+      <button class="copy-btn" onclick="copyCode('tailwindBlock',this)">Copy</button>
+    </div>
+    <pre><span class="k">module.exports</span> = {
+  <span class="k">theme</span>: {
+    <span class="k">extend</span>: {
+      <span class="k">colors</span>: {
+        <span class="k">ktpba</span>: {
+          <span class="k">green</span>:       <span class="v">'#1A5C2A'</span>,
+          <span class="k">'green-light'</span>:<span class="v">'#2E7D3A'</span>,
+          <span class="k">'green-dark'</span>: <span class="v">'#0D3A18'</span>,
+          <span class="k">red</span>:         <span class="v">'#C8373A'</span>,
+          <span class="k">'red-dark'</span>:  <span class="v">'#9B2226'</span>,
+          <span class="k">pink</span>:        <span class="v">'#E91E8C'</span>,
+          <span class="k">purple</span>:      <span class="v">'#4A1080'</span>,
+          <span class="k">violet</span>:      <span class="v">'#7B2FBE'</span>,
+          <span class="k">gold</span>:        <span class="v">'#C8A000'</span>,
+          <span class="k">silver</span>:      <span class="v">'#B0B0B0'</span>,
+          <span class="k">bronze</span>:      <span class="v">'#B06000'</span>,
+          <span class="k">bg</span>:          <span class="v">'#0B0E0C'</span>,
+          <span class="k">surface</span>:     <span class="v">'#111612'</span>,
+        }
+      },
+      <span class="k">fontFamily</span>: {
+        <span class="k">display</span>:  <span class="v">['Bebas Neue', 'Impact', 'sans-serif']</span>,
+        <span class="k">heading</span>:  <span class="v">['Barlow Condensed', 'Arial Narrow', 'sans-serif']</span>,
+        <span class="k">body</span>:     <span class="v">['Barlow', 'Helvetica', 'sans-serif']</span>,
+      },
+      <span class="k">borderRadius</span>: {
+        <span class="k">sm</span>: <span class="v">'4px'</span>, <span class="k">md</span>: <span class="v">'8px'</span>, <span class="k">lg</span>: <span class="v">'16px'</span>,
+        <span class="k">xl</span>: <span class="v">'24px'</span>, <span class="k">pill</span>: <span class="v">'100px'</span>,
+      },
+      <span class="k">boxShadow</span>: {
+        <span class="k">sm</span>:         <span class="v">'0 1px 3px rgba(0,0,0,0.4)'</span>,
+        <span class="k">md</span>:         <span class="v">'0 4px 16px rgba(0,0,0,0.5)'</span>,
+        <span class="k">lg</span>:         <span class="v">'0 8px 32px rgba(0,0,0,0.6)'</span>,
+        <span class="k">'glow-red'</span>: <span class="v">'0 0 24px rgba(200,55,58,0.25)'</span>,
+        <span class="k">'glow-green'</span>:<span class="v">'0 0 24px rgba(26,92,42,0.3)'</span>,
+        <span class="k">'glow-gold'</span>:<span class="v">'0 0 20px rgba(200,160,0,0.3)'</span>,
+      },
+      <span class="k">spacing</span>: {
+        <span class="k">1</span>:<span class="v">'4px'</span>, <span class="k">2</span>:<span class="v">'8px'</span>, <span class="k">3</span>:<span class="v">'12px'</span>, <span class="k">4</span>:<span class="v">'16px'</span>,
+        <span class="k">5</span>:<span class="v">'20px'</span>, <span class="k">6</span>:<span class="v">'24px'</span>, <span class="k">8</span>:<span class="v">'32px'</span>,
+        <span class="k">10</span>:<span class="v">'40px'</span>, <span class="k">12</span>:<span class="v">'48px'</span>, <span class="k">16</span>:<span class="v">'64px'</span>,
+      },
+    }
+  },
+  <span class="k">plugins</span>: []
+}</pre>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 4: COMPONENTS ═══ -->
+<section class="section" id="components">
+<div class="wrap">
+  <p class="s-label">Step 04</p>
+  <h2 class="s-title">CORE UI COMPONENTS</h2>
+  <p class="s-desc">Production-ready components designed for tournament use cases. All sizing, color, and spacing follows the token system above.</p>
+
+  <div class="grid2">
+    <!-- Buttons -->
+    <div class="card">
+      <div class="card-title">Buttons</div>
+      <div class="comp-demo" style="flex-direction:column;align-items:flex-start">
+        <button class="btn btn-primary">Register Now</button>
+        <button class="btn btn-secondary">View Bracket</button>
+        <button class="btn btn-tournament">Women's Day Edition</button>
+        <button class="btn btn-ghost">Export CSV</button>
+        <button class="btn btn-primary btn-sm">Quick Action</button>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="card">
+      <div class="card-title">Badges &amp; Status</div>
+      <div class="comp-demo" style="flex-wrap:wrap">
+        <span class="badge badge-gold">🥇 1st Place</span>
+        <span class="badge badge-silver">🥈 2nd Place</span>
+        <span class="badge badge-bronze">🥉 3rd Place</span>
+        <span class="badge badge-live">● Live</span>
+        <span class="badge badge-win">✓ Winner</span>
+        <span class="badge badge-elim">Eliminated</span>
+      </div>
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag tag-red">Semi-Finals</span>
+        <span class="tag tag-green">Qualified</span>
+        <span class="tag tag-pink">Women's Ed.</span>
+      </div>
+    </div>
+
+    <!-- Leaderboard rows -->
+    <div class="card" id="leaderboard">
+      <div class="card-title">Leaderboard Rows</div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div class="mini-lb-row g"><span class="rk">1</span><span class="nm">Wanjiru Kamau</span><span class="sc">278</span><span class="dl up">↑2</span></div>
+        <div class="mini-lb-row s"><span class="rk">2</span><span class="nm">Amina Njeri</span><span class="sc">246</span><span class="dl eq">—</span></div>
+        <div class="mini-lb-row b"><span class="rk">3</span><span class="nm">F. Odhiambo</span><span class="sc">231</span><span class="dl up">↑1</span></div>
+        <div class="mini-lb-row n"><span class="rk" style="color:var(--text-muted)">4</span><span class="nm" style="color:var(--text-secondary)">Rose Waweru</span><span class="sc" style="font-size:16px;color:var(--text-secondary)">224</span><span class="dl dn">↓1</span></div>
+        <div class="mini-lb-row n"><span class="rk" style="color:var(--text-muted)">5</span><span class="nm" style="color:var(--text-secondary)">C. Mwangi</span><span class="sc" style="font-size:16px;color:var(--text-secondary)">219</span><span class="dl eq">—</span></div>
+      </div>
+    </div>
+
+    <!-- Bracket match -->
+    <div class="card" id="bracket">
+      <div class="card-title">Bracket Match Card</div>
+      <div style="display:flex;align-items:center;gap:0">
+        <div class="mini-match">
+          <div class="mini-bp w"><span>W. Kamau</span><span class="ms">221</span></div>
+          <div class="mini-bp" style="opacity:0.4"><span>E. Otieno</span><span class="ms">187</span></div>
+        </div>
+        <svg width="28" height="58" style="flex-shrink:0">
+          <path d="M0,14 H14 V44 H0" fill="none" stroke="rgba(200,55,58,0.4)" stroke-width="1"/>
+          <line x1="14" y1="29" x2="28" y2="29" stroke="rgba(200,55,58,0.6)" stroke-width="1.5"/>
+        </svg>
+        <div class="mini-match" style="border-color:rgba(200,160,0,0.35)">
+          <div class="mini-bp"><span>TBD</span><span class="ms" style="color:var(--text-muted)">—</span></div>
+          <div class="mini-bp"><span>TBD</span><span class="ms" style="color:var(--text-muted)">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Radius + Shadow -->
+  <div class="grid2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-title">Border Radius Scale</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center">
+        <div class="radius-demo" style="border-radius:4px">sm · 4px</div>
+        <div class="radius-demo" style="border-radius:8px">md · 8px</div>
+        <div class="radius-demo" style="border-radius:16px">lg · 16px</div>
+        <div class="radius-demo" style="border-radius:24px">xl · 24px</div>
+        <div class="radius-demo" style="border-radius:100px;width:96px">pill</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Spacing Scale (4px Base Grid)</div>
+      <div class="sp-demo">
+        <div class="sp-item"><div class="sp-block" style="height:4px"></div><span class="sp-label">4</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:8px"></div><span class="sp-label">8</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:12px"></div><span class="sp-label">12</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:16px"></div><span class="sp-label">16</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:24px"></div><span class="sp-label">24</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:32px"></div><span class="sp-label">32</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:40px"></div><span class="sp-label">40</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:48px"></div><span class="sp-label">48</span></div>
+        <div class="sp-item"><div class="sp-block" style="height:64px"></div><span class="sp-label">64</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 8: MOTION ═══ -->
+<section class="section" id="motion">
+<div class="wrap">
+  <p class="s-label">Step 08</p>
+  <h2 class="s-title">MOTION &amp; MICROINTERACTIONS</h2>
+  <p class="s-desc">Purposeful motion reinforces competitive energy. All animations respect reduced-motion preferences.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Animation Tokens</div>
+      <table class="token-table" style="margin:0">
+        <thead><tr><th>Name</th><th>Value</th><th>Use</th></tr></thead>
+        <tbody>
+          <tr><td class="token-name">--dur-fast</td><td class="token-val">150ms</td><td class="token-desc">Hover, focus states</td></tr>
+          <tr><td class="token-name">--dur-base</td><td class="token-val">250ms</td><td class="token-desc">Page transitions, fades</td></tr>
+          <tr><td class="token-name">--dur-slow</td><td class="token-val">600ms</td><td class="token-desc">Score bar animations</td></tr>
+          <tr><td class="token-name">--dur-spring</td><td class="token-val">800ms</td><td class="token-desc">Rank change, enter</td></tr>
+          <tr><td class="token-name">--ease-out</td><td class="token-val">cubic-bezier(0,0,0.2,1)</td><td class="token-desc">Elements leaving</td></tr>
+          <tr><td class="token-name">--ease-spring</td><td class="token-val">cubic-bezier(0.34,1.56,0.64,1)</td><td class="token-desc">Score updates, bars</td></tr>
+          <tr><td class="token-name">--ease-in-out</td><td class="token-val">cubic-bezier(0.4,0,0.2,1)</td><td class="token-desc">Tab switches</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Interaction Guidelines</div>
+      <ul style="font-size:13px;color:var(--text-secondary);line-height:2.1;list-style:none">
+        <li>🏆 <strong style="color:var(--text-primary)">Score update</strong> — number flip animation, 600ms spring</li>
+        <li>📊 <strong style="color:var(--text-primary)">Bar charts</strong> — bars grow from 0 on mount, 600ms stagger</li>
+        <li>🔄 <strong style="color:var(--text-primary)">Rank change</strong> — row slides with translateY, green/red flash</li>
+        <li>🎯 <strong style="color:var(--text-primary)">Bracket winner</strong> — border glow pulse, 300ms</li>
+        <li>🃏 <strong style="color:var(--text-primary)">Card hover</strong> — translateY(-2px) + border brighten, 150ms</li>
+        <li>📑 <strong style="color:var(--text-primary)">Page switch</strong> — fadeIn + translateY(6px→0), 250ms</li>
+        <li>🔴 <strong style="color:var(--text-primary)">Live dot</strong> — opacity pulse 1.2s infinite ease-in-out</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══ STEP 11: JSON TOKENS ═══ -->
+<section class="section" id="json">
+<div class="wrap">
+  <p class="s-label">Step 11</p>
+  <h2 class="s-title">JSON DESIGN TOKENS</h2>
+  <p class="s-desc">Complete JSON token file — import into Figma Tokens, Style Dictionary, or any design tooling.</p>
+
+  <div class="code-block" id="jsonBlock">
+    <div class="code-header">
+      <span class="code-filename">ktpba-brand-tokens.json</span>
+      <button class="copy-btn" onclick="copyCode('jsonBlock',this)">Copy JSON</button>
+    </div>
+    <pre>{
+  <span class="k">"meta"</span>: {
+    <span class="k">"name"</span>:    <span class="v">"KTPBA Tournament Dashboard"</span>,
+    <span class="k">"version"</span>: <span class="v">"1.0.0"</span>,
+    <span class="k">"edition"</span>: <span class="v">"Women's Day 2026"</span>
+  },
+  <span class="k">"colors"</span>: {
+    <span class="k">"brand"</span>: {
+      <span class="k">"green"</span>:       { <span class="k">"value"</span>: <span class="v">"#1A5C2A"</span>, <span class="k">"description"</span>: <span class="v">"Primary - buttons, logo, winner"</span> },
+      <span class="k">"greenLight"</span>:  { <span class="k">"value"</span>: <span class="v">"#2E7D3A"</span>, <span class="k">"description"</span>: <span class="v">"Score highlights, hover"</span> },
+      <span class="k">"greenDark"</span>:   { <span class="k">"value"</span>: <span class="v">"#0D3A18"</span>, <span class="k">"description"</span>: <span class="v">"Background gradient anchor"</span> },
+      <span class="k">"red"</span>:         { <span class="k">"value"</span>: <span class="v">"#C8373A"</span>, <span class="k">"description"</span>: <span class="v">"CTAs, section eyebrows, pin stripes"</span> },
+      <span class="k">"redDark"</span>:     { <span class="k">"value"</span>: <span class="v">"#9B2226"</span>, <span class="k">"description"</span>: <span class="v">"Red hover/pressed state"</span> },
+      <span class="k">"pink"</span>:        { <span class="k">"value"</span>: <span class="v">"#E91E8C"</span>, <span class="k">"description"</span>: <span class="v">"Women's Day accent, live badge"</span> },
+      <span class="k">"purple"</span>:      { <span class="k">"value"</span>: <span class="v">"#4A1080"</span>, <span class="k">"description"</span>: <span class="v">"Prize banners, featured rows"</span> },
+      <span class="k">"violet"</span>:      { <span class="k">"value"</span>: <span class="v">"#7B2FBE"</span>, <span class="k">"description"</span>: <span class="v">"Gradient midpoint"</span> }
+    },
+    <span class="k">"podium"</span>: {
+      <span class="k">"gold"</span>:         { <span class="k">"value"</span>: <span class="v">"#C8A000"</span>, <span class="k">"row"</span>: <span class="v">"rgba(200,160,0,0.18)"</span> },
+      <span class="k">"silver"</span>:       { <span class="k">"value"</span>: <span class="v">"#B0B0B0"</span>, <span class="k">"row"</span>: <span class="v">"rgba(180,180,180,0.14)"</span> },
+      <span class="k">"bronze"</span>:       { <span class="k">"value"</span>: <span class="v">"#B06000"</span>, <span class="k">"row"</span>: <span class="v">"rgba(176,96,0,0.14)"</span> }
+    },
+    <span class="k">"semantic"</span>: {
+      <span class="k">"success"</span>:      { <span class="k">"value"</span>: <span class="v">"#4CAF50"</span>, <span class="k">"description"</span>: <span class="v">"Rank up, win indicator"</span> },
+      <span class="k">"warning"</span>:      { <span class="k">"value"</span>: <span class="v">"#C8A000"</span>, <span class="k">"description"</span>: <span class="v">"Near-elimination alert"</span> },
+      <span class="k">"danger"</span>:       { <span class="k">"value"</span>: <span class="v">"#C8373A"</span>, <span class="k">"description"</span>: <span class="v">"Rank drop, elimination"</span> }
+    },
+    <span class="k">"surface"</span>: {
+      <span class="k">"background"</span>:   { <span class="k">"value"</span>: <span class="v">"#0B0E0C"</span> },
+      <span class="k">"surface"</span>:      { <span class="k">"value"</span>: <span class="v">"#111612"</span> },
+      <span class="k">"card"</span>:         { <span class="k">"value"</span>: <span class="v">"rgba(255,255,255,0.038)"</span> },
+      <span class="k">"cardHover"</span>:    { <span class="k">"value"</span>: <span class="v">"rgba(255,255,255,0.065)"</span> },
+      <span class="k">"border"</span>:       { <span class="k">"value"</span>: <span class="v">"rgba(255,255,255,0.08)"</span> },
+      <span class="k">"borderStrong"</span>: { <span class="k">"value"</span>: <span class="v">"rgba(255,255,255,0.14)"</span> }
+    },
+    <span class="k">"text"</span>: {
+      <span class="k">"primary"</span>:      { <span class="k">"value"</span>: <span class="v">"#F2F0EB"</span> },
+      <span class="k">"secondary"</span>:    { <span class="k">"value"</span>: <span class="v">"#8A9490"</span> },
+      <span class="k">"muted"</span>:        { <span class="k">"value"</span>: <span class="v">"#4A5550"</span> }
+    }
+  },
+  <span class="k">"typography"</span>: {
+    <span class="k">"fonts"</span>: {
+      <span class="k">"display"</span>: <span class="v">"'Bebas Neue', Impact, sans-serif"</span>,
+      <span class="k">"heading"</span>: <span class="v">"'Barlow Condensed', 'Arial Narrow', sans-serif"</span>,
+      <span class="k">"body"</span>:    <span class="v">"'Barlow', Helvetica, sans-serif"</span>
+    },
+    <span class="k">"scale"</span>: {
+      <span class="k">"hero"</span>:         { <span class="k">"size"</span>: <span class="v">"clamp(48px,10vw,88px)"</span>, <span class="k">"font"</span>: <span class="v">"display"</span> },
+      <span class="k">"h1"</span>:           { <span class="k">"size"</span>: <span class="v">"52px"</span>, <span class="k">"font"</span>: <span class="v">"display"</span>, <span class="k">"ls"</span>: <span class="v">"2px"</span> },
+      <span class="k">"h2"</span>:           { <span class="k">"size"</span>: <span class="v">"36px"</span>, <span class="k">"font"</span>: <span class="v">"display"</span>, <span class="k">"ls"</span>: <span class="v">"1.5px"</span> },
+      <span class="k">"h3"</span>:           { <span class="k">"size"</span>: <span class="v">"22px"</span>, <span class="k">"font"</span>: <span class="v">"heading"</span>, <span class="k">"wt"</span>: <span class="v">800</span>, <span class="k">"ls"</span>: <span class="v">"1.5px"</span> },
+      <span class="k">"label"</span>:        { <span class="k">"size"</span>: <span class="v">"14px"</span>, <span class="k">"font"</span>: <span class="v">"heading"</span>, <span class="k">"wt"</span>: <span class="v">700</span>, <span class="k">"ls"</span>: <span class="v">"1px"</span> },
+      <span class="k">"eyebrow"</span>:      { <span class="k">"size"</span>: <span class="v">"10px"</span>, <span class="k">"font"</span>: <span class="v">"heading"</span>, <span class="k">"wt"</span>: <span class="v">800</span>, <span class="k">"ls"</span>: <span class="v">"4px"</span> },
+      <span class="k">"body"</span>:         { <span class="k">"size"</span>: <span class="v">"15px"</span>, <span class="k">"font"</span>: <span class="v">"body"</span>, <span class="k">"lh"</span>: <span class="v">"1.6"</span> },
+      <span class="k">"scoreHuge"</span>:    { <span class="k">"size"</span>: <span class="v">"72px"</span>, <span class="k">"font"</span>: <span class="v">"display"</span>, <span class="k">"ls"</span>: <span class="v">"2px"</span> },
+      <span class="k">"scoreRow"</span>:     { <span class="k">"size"</span>: <span class="v">"22px"</span>, <span class="k">"font"</span>: <span class="v">"display"</span> },
+      <span class="k">"bracketLabel"</span>: { <span class="k">"size"</span>: <span class="v">"12px"</span>, <span class="k">"font"</span>: <span class="v">"heading"</span>, <span class="k">"wt"</span>: <span class="v">700</span> }
+    }
+  },
+  <span class="k">"spacing"</span>: {
+    <span class="k">"xs"</span>: <span class="v">"4px"</span>,  <span class="k">"sm"</span>: <span class="v">"8px"</span>,   <span class="k">"md"</span>:  <span class="v">"16px"</span>,
+    <span class="k">"lg"</span>: <span class="v">"24px"</span>, <span class="k">"xl"</span>: <span class="v">"40px"</span>,  <span class="k">"2xl"</span>: <span class="v">"64px"</span>
+  },
+  <span class="k">"radius"</span>: {
+    <span class="k">"sm"</span>: <span class="v">"4px"</span>, <span class="k">"md"</span>: <span class="v">"8px"</span>, <span class="k">"lg"</span>: <span class="v">"16px"</span>,
+    <span class="k">"xl"</span>: <span class="v">"24px"</span>, <span class="k">"pill"</span>: <span class="v">"100px"</span>
+  },
+  <span class="k">"shadow"</span>: {
+    <span class="k">"sm"</span>:        <span class="v">"0 1px 3px rgba(0,0,0,0.4)"</span>,
+    <span class="k">"md"</span>:        <span class="v">"0 4px 16px rgba(0,0,0,0.5)"</span>,
+    <span class="k">"lg"</span>:        <span class="v">"0 8px 32px rgba(0,0,0,0.6)"</span>,
+    <span class="k">"glowRed"</span>:   <span class="v">"0 0 24px rgba(200,55,58,0.25)"</span>,
+    <span class="k">"glowGreen"</span>: <span class="v">"0 0 24px rgba(26,92,42,0.3)"</span>,
+    <span class="k">"glowGold"</span>:  <span class="v">"0 0 20px rgba(200,160,0,0.3)"</span>
+  },
+  <span class="k">"gradients"</span>: {
+    <span class="k">"hero"</span>:     <span class="v">"linear-gradient(135deg,#0D3A18 0%,#0B0E0C 40%,#1a0030 100%)"</span>,
+    <span class="k">"prize"</span>:    <span class="v">"linear-gradient(135deg,#4A1080,#E91E8C)"</span>,
+    <span class="k">"rowGold"</span>:  <span class="v">"linear-gradient(90deg,rgba(200,160,0,0.18),rgba(200,160,0,0.02))"</span>,
+    <span class="k">"rowSilver"</span>:<span class="v">"linear-gradient(90deg,rgba(176,176,176,0.14),rgba(176,176,176,0.02))"</span>,
+    <span class="k">"rowBronze"</span>:<span class="v">"linear-gradient(90deg,rgba(176,96,0,0.14),rgba(176,96,0,0.02))"</span>,
+    <span class="k">"bracket"</span>:  <span class="v">"rgba(200,55,58,0.4)"</span>
+  },
+  <span class="k">"motion"</span>: {
+    <span class="k">"durFast"</span>:    <span class="v">"150ms"</span>,
+    <span class="k">"durBase"</span>:    <span class="v">"250ms"</span>,
+    <span class="k">"durSlow"</span>:    <span class="v">"600ms"</span>,
+    <span class="k">"durSpring"</span>:  <span class="v">"800ms"</span>,
+    <span class="k">"easeOut"</span>:    <span class="v">"cubic-bezier(0,0,0.2,1)"</span>,
+    <span class="k">"easeSpring"</span>: <span class="v">"cubic-bezier(0.34,1.56,0.64,1)"</span>,
+    <span class="k">"easeInOut"</span>:  <span class="v">"cubic-bezier(0.4,0,0.2,1)"</span>
+  },
+  <span class="k">"iconography"</span>: {
+    <span class="k">"style"</span>:     <span class="v">"Lucide React · 20px · 1.5px stroke · round caps"</span>,
+    <span class="k">"icons"</span>: {
+      <span class="k">"trophy"</span>:   <span class="v">"Trophy"</span>,
+      <span class="k">"player"</span>:   <span class="v">"User"</span>,
+      <span class="k">"match"</span>:    <span class="v">"Swords"</span>,
+      <span class="k">"lane"</span>:     <span class="v">"AlignJustify"</span>,
+      <span class="k">"score"</span>:    <span class="v">"Target"</span>,
+      <span class="k">"live"</span>:     <span class="v">"Radio"</span>,
+      <span class="k">"bracket"</span>:  <span class="v">"GitBranch"</span>,
+      <span class="k">"stats"</span>:    <span class="v">"BarChart2"</span>
+    }
+  }
+}</pre>
+  </div>
+
+</div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-brand">KTP<span>BA</span></div>
+    <div class="footer-meta">Kenya Ten Pin Bowling Association · Singles Tournament 2026</div>
+  </div>
+  <div class="footer-meta">UI Design System v1.0 · Generated from Brand Kit<br/>Strike Zone Games × KTPBA · Women's Day Edition</div>
+</footer>
+
+<script>
+function copyCode(blockId, btn) {
+  const pre = document.querySelector('#'+blockId+' pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+</script>
+</body>
+</html>

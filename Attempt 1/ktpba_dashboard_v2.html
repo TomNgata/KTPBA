@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTPBA Singles Tournament 2026 | Women's Day Edition</title>
+    <link rel="stylesheet" href="ktpba-variables.css">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        body {
+            background: var(--surface-app);
+            color: var(--color-pin-white);
+            font-family: var(--font-body);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background-image: var(--gradient-hero);
+            background-attachment: fixed;
+        }
+
+        /* Premium Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--color-champion-black); }
+        ::-webkit-scrollbar-thumb { background: var(--color-ktpba-green); border-radius: 10px; }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--sp-10) var(--sp-6);
+        }
+
+        /* Header Story */
+        .hero {
+            text-align: center;
+            padding: var(--sp-16) 0;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: var(--text-hero);
+            text-transform: uppercase;
+            margin: 0;
+            background: linear-gradient(to bottom, #fff 0%, #aaa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: var(--tracking-widest);
+        }
+
+        .hero .edition {
+            font-family: var(--font-heading);
+            font-size: var(--text-h2);
+            color: var(--color-tournament-pink);
+            letter-spacing: var(--tracking-wider);
+            text-transform: uppercase;
+            margin-bottom: var(--sp-4);
+        }
+
+        /* Stage Progress */
+        .stage-tracker {
+            display: flex;
+            justify-content: space-between;
+            margin: var(--sp-10) 0;
+            padding: var(--sp-6);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-pill);
+            box-shadow: var(--glass-shadow);
+        }
+
+        .stage-step {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-3);
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        .stage-step.active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .stage-step.active .dot {
+            background: var(--color-tournament-pink);
+            box-shadow: 0 0 15px var(--color-tournament-pink);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: var(--color-grey-500);
+            border-radius: 50%;
+        }
+
+        /* The Story Sections */
+        .story-section {
+            margin-bottom: var(--sp-16);
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--sp-4);
+            margin-bottom: var(--sp-8);
+        }
+
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-size: var(--text-display);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .section-line {
+            flex-grow: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--bracket-line), transparent);
+        }
+
+        /* Bracket Grid */
+        .bracket-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--sp-10);
+        }
+
+        .match-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--sp-6);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .match-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--color-ktpba-green);
+        }
+
+        .match-card.completed::after {
+            content: 'FINAL';
+            position: absolute;
+            top: 10px;
+            right: -25px;
+            background: var(--color-ktpba-green);
+            color: #fff;
+            padding: 2px 30px;
+            transform: rotate(45deg);
+            font-family: var(--font-heading);
+            font-size: var(--text-caption);
+            font-weight: var(--fw-bold);
+        }
+
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--sp-3) 0;
+        }
+
+        .player-row.winner .player-name {
+            color: var(--color-ktpba-green-light);
+            font-weight: var(--fw-bold);
+        }
+
+        .player-name {
+            font-family: var(--font-heading);
+            font-size: var(--text-h3);
+            text-transform: uppercase;
+            color: var(--color-pin-white) !important; /* Fix: Force white for visibility */
+        }
+
+        .score {
+            font-family: var(--font-display);
+            font-size: var(--text-h2);
+            color: var(--color-tournament-pink);
+            text-shadow: 0 0 10px rgba(233, 30, 140, 0.4);
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--glass-bg);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            color: var(--color-pin-white) !important; /* Fix: Force white for table content */
+        }
+
+        .leaderboard-table th {
+            text-align: left;
+            padding: var(--sp-4);
+            background: rgba(255, 255, 255, 0.05);
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            color: var(--color-grey-500);
+        }
+
+        .leaderboard-table td {
+            padding: var(--sp-4);
+            border-bottom: 1px solid var(--border-default);
+            font-family: var(--font-body);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            border-radius: 50%;
+            background: var(--surface-card);
+            font-weight: var(--fw-bold);
+        }
+
+        .rank-1 { background: var(--color-trophy-gold); color: #fff; }
+        .rank-2 { background: var(--color-silver-medal); color: #fff; }
+        .rank-3 { background: var(--color-bronze-medal); color: #fff; }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header class="hero">
+        <img src="642453361_18025158044632791_6273328296060487728_n.jpg" alt="KTPBA Logo" style="width: 140px; border-radius: 50%; margin-bottom: var(--sp-6); box-shadow: 0 0 20px rgba(255,255,255,0.1);">
+        <div class="edition">Women's Day Edition 2026</div>
+        <h1>KTPBA Singles Tournament</h1>
+        <div class="venue" style="margin-bottom: var(--sp-6);">Live from Strike Zone &middot; TRM</div>
+        <a href="ktpba_bracket.html" class="badge-green" style="text-decoration: none; font-family: var(--font-heading); font-size: 1.2rem; padding: 12px 28px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: 8px; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; color: var(--color-pin-white) !important;">
+            View Symmetric Bracket <span>&nearr;</span>
+        </a>
+    </header>
+
+    <div class="stage-tracker">
+        <a href="#grand-final" class="stage-step" id="step-final" style="text-decoration: none; color: inherit;">
+            <div class="dot"></div>
+            <span>Grand Final</span>
+        </a>
+        <a href="#semi-finals" class="stage-step" id="step-sf" style="text-decoration: none; color: inherit;">
+            <div class="dot"></div>
+            <span>Semi Finals</span>
+        </a>
+        <a href="#quarter-finals" class="stage-step" id="step-qf" style="text-decoration: none; color: inherit;">
+            <div class="dot"></div>
+            <span>Quarter Finals</span>
+        </a>
+        <a href="#knockout-results" class="stage-step active" id="step-r16" style="text-decoration: none; color: inherit;">
+            <div class="dot"></div>
+            <span>Round of 16</span>
+        </a>
+        <a href="#seeding-story" class="stage-step" id="step-seeding" style="text-decoration: none; color: inherit;">
+            <div class="dot"></div>
+            <span>Seeding Round</span>
+        </a>
+    </div>
+
+    <!-- Section: Grand Final -->
+    <section class="story-section" id="grand-final">
+        <div class="section-header">
+            <h2 class="text-gold">Grand Final</h2>
+            <div class="section-line"></div>
+            <a href="ktpba_bracket.html" class="badge-purple" style="text-decoration: none; font-family: var(--font-heading); font-size: 0.8rem; padding: 4px 12px; border-radius: 4px; display: flex; align-items: center; gap: 8px;">View Full Bracket <span>&nearr;</span></a>
+        </div>
+        <div class="bracket-container" id="final-grid">
+            <!-- Grand Final match will be injected here -->
+        </div>
+    </section>
+
+    <!-- Section: Semi Finals -->
+    <section class="story-section" id="semi-finals">
+        <div class="section-header">
+            <h2>Semi Finals</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="bracket-container" id="sf-grid">
+            <!-- Semi final matches will be injected here -->
+        </div>
+    </section>
+
+    <!-- Section: Quarter Finals -->
+    <section class="story-section" id="quarter-finals">
+        <div class="section-header">
+            <h2>Quarter Final Showdown</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="bracket-container" id="qf-grid">
+            <!-- Quarter final matches will be injected here -->
+        </div>
+    </section>
+
+    <!-- Section: The Knockout Drama (R16) -->
+    <section class="story-section" id="knockout-results">
+        <div class="section-header">
+            <h2 class="text-pink">Round of 16 Drama</h2>
+            <div class="section-line"></div>
+            <div class="badge-neutral" style="font-family: var(--font-heading); font-size: 0.8rem; padding: 4px 12px; border-radius: 4px;">Scores Include Handicaps</div>
+        </div>
+        <div class="bracket-container" id="bracket-grid">
+            <!-- Matches will be injected here -->
+        </div>
+    </section>
+
+    <!-- Section: The Seeding Story -->
+    <section class="story-section" id="seeding-story">
+        <div class="section-header">
+            <h2>The Seeding Foundation</h2>
+            <div class="section-line"></div>
+        </div>
+        <div class="glass-table-container">
+            <table class="leaderboard-table" id="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Club</th>
+                        <th>Total Score</th>
+                        <th>AVG</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <!-- Players will be injected here -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script>
+    async function loadTournamentData() {
+        // In a real environment, we'd fetch from Supabase. 
+        // For this demo, we'll fetch the local JSON.
+        const response = await fetch('tournament_data.json');
+        const data = await response.json();
+        renderTournament(data);
+    }
+
+    function renderTournament(data) {
+        const lbBody = document.getElementById('leaderboard-body');
+        const bracketGrid = document.getElementById('bracket-grid');
+        const qfGrid = document.getElementById('qf-grid');
+
+        // Render Leaderboard (Top 40)
+        data.players.slice(0, 40).forEach((p, index) => {
+            const row = document.createElement('tr');
+            if(index < 16) row.style.background = 'rgba(26, 92, 42, 0.08)';
+            
+            const rankClass = index < 3 ? `rank-${index + 1}` : '';
+            
+            row.innerHTML = `
+                <td><span class="rank-badge ${rankClass}">${p.rank}</span></td>
+                <td><div class="player-name">${p.name}</div></td>
+                <td><span class="badge-neutral" style="padding: 2px 8px; border-radius: 4px;">${p.club}</span></td>
+                <td><span class="text-pink font-display" style="font-size: 1.2rem;">${p.stats.total_score}</span></td>
+                <td>${p.stats.avg.toFixed(2)}</td>
+            `;
+            lbBody.appendChild(row);
+        });
+
+        // Helper to render match card
+        const createMatchCard = (m) => {
+            const card = document.createElement('div');
+            card.className = `match-card ${m.status.toLowerCase()}`;
+            
+            const p1 = data.players.find(p => p.id === m.players[0]) || { name: 'TBD', id: null };
+            const p2 = data.players.find(p => p.id === m.players[1]) || { name: 'TBD', id: null };
+            
+            const s1 = m.scores[p1.id] || (m.status === 'Completed' ? '0' : '-');
+            const s2 = m.scores[p2.id] || (m.status === 'Completed' ? '0' : '-');
+
+            card.innerHTML = `
+                <div class="player-row ${m.winner === p1.id ? 'winner' : ''}">
+                    <span class="player-name">${p1.name}</span>
+                    <span class="score">${s1}</span>
+                </div>
+                <div style="text-align: center; margin: 4px 0; opacity: 0.3; font-style: italic; color: var(--color-pin-white);">VS</div>
+                <div class="player-row ${m.winner === p2.id ? 'winner' : ''}">
+                    <span class="player-name">${p2.name}</span>
+                    <span class="score">${s2}</span>
+                </div>
+            `;
+            return card;
+        };
+
+        // Render Grand Final
+        data.matches.filter(m => m.stage === 'Grand Final').forEach(m => {
+            document.getElementById('final-grid').appendChild(createMatchCard(m));
+        });
+
+        // Render SF
+        data.matches.filter(m => m.stage === 'Semi-Final').forEach(m => {
+            document.getElementById('sf-grid').appendChild(createMatchCard(m));
+        });
+
+        // Render QF
+        data.matches.filter(m => m.stage === 'Quarter-Final').forEach(m => {
+            qfGrid.appendChild(createMatchCard(m));
+        });
+
+        // Render Matches (R16)
+        data.matches.filter(m => m.stage === 'Knockout Round of 16').forEach(m => {
+            bracketGrid.appendChild(createMatchCard(m));
+        });
+    }
+
+    loadTournamentData();
+</script>
+
+</body>
+</html>

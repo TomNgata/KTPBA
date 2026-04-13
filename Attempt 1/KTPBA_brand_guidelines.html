@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KTPBA Brand Guidelines</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --ktpba-black:#1A1A1A;
+    --ktpba-red:#C0251E;
+    --ktpba-green:#1B5E20;
+    --ktpba-white:#F5F2ED;
+    --ktpba-red-light:#FAE8E7;
+    --ktpba-green-light:#E8F5E9;
+    --ktpba-gray:#6B6B6B;
+    --bg-primary:#ffffff;
+    --bg-secondary:#f7f7f5;
+    --text-primary:#1A1A1A;
+    --text-secondary:#6B6B6B;
+    --border-light:rgba(0,0,0,0.1);
+    --border-medium:rgba(0,0,0,0.18);
+    --radius-md:8px;
+    --radius-lg:12px;
+  }
+  body{font-family:'Source Sans 3',sans-serif;background:var(--ktpba-white);color:var(--text-primary);padding:2rem}
+  .doc{max-width:860px;margin:0 auto;padding:0 0 4rem}
+  .hero{background:var(--ktpba-black);color:#fff;padding:2.5rem 2rem;border-radius:var(--radius-lg);margin-bottom:2.5rem;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-40px;right:-40px;width:220px;height:220px;border-radius:50%;border:2px solid rgba(192,37,30,0.3)}
+  .hero::after{content:'';position:absolute;bottom:-60px;right:60px;width:150px;height:150px;border-radius:50%;border:1px solid rgba(27,94,32,0.4)}
+  .hero-label{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#C0251E;margin-bottom:8px}
+  .hero-title{font-family:'Oswald',sans-serif;font-size:32px;font-weight:700;line-height:1.1;margin-bottom:6px}
+  .hero-sub{font-size:14px;color:rgba(255,255,255,0.55);margin-top:6px}
+  .section{margin-bottom:2.5rem}
+  .section-header{display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;padding-bottom:10px;border-bottom:1.5px solid var(--ktpba-black)}
+  .section-num{font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;letter-spacing:2px;color:var(--ktpba-red);background:var(--ktpba-red-light);padding:3px 8px;border-radius:3px}
+  .section-title{font-family:'Oswald',sans-serif;font-size:19px;font-weight:700;color:var(--text-primary)}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .card{background:var(--bg-primary);border:0.5px solid var(--border-light);border-radius:var(--radius-lg);padding:1.1rem 1.25rem}
+  .card-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:6px;font-weight:600}
+  .card-value{font-family:'Oswald',sans-serif;font-size:15px;font-weight:500;color:var(--text-primary);line-height:1.4}
+  .card-sub{font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.5}
+  .color-swatch{border-radius:var(--radius-md);overflow:hidden;border:0.5px solid var(--border-light)}
+  .swatch-block{height:72px;width:100%}
+  .swatch-info{padding:10px 12px;background:var(--bg-primary)}
+  .swatch-name{font-family:'Oswald',sans-serif;font-size:13px;font-weight:500;color:var(--text-primary);margin-bottom:2px}
+  .swatch-codes{font-size:11px;color:var(--text-secondary);font-family:monospace;line-height:1.7}
+  .swatch-role{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--ktpba-red);margin-top:4px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{background:var(--bg-secondary);font-family:'Oswald',sans-serif;font-weight:500;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:9px 12px;text-align:left;color:var(--text-secondary);border-bottom:0.5px solid var(--border-medium)}
+  td{padding:9px 12px;border-bottom:0.5px solid var(--border-light);color:var(--text-primary);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:3px;margin:3px 3px 3px 0}
+  .tag-red{background:var(--ktpba-red-light);color:#9B1C17}
+  .tag-green{background:var(--ktpba-green-light);color:#1B4D1E}
+  .tag-black{background:#E8E7E5;color:#2C2C2A}
+  .font-demo{padding:1rem 1.25rem;background:var(--bg-primary);border:0.5px solid var(--border-light);border-radius:var(--radius-lg);margin-bottom:10px}
+  .archetype-box{background:var(--ktpba-black);border-radius:var(--radius-lg);padding:1.5rem;color:#fff;text-align:center}
+  .archetype-title{font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;color:var(--ktpba-red);margin-bottom:4px}
+  .archetype-sub{font-size:13px;color:rgba(255,255,255,0.55);letter-spacing:1px;text-transform:uppercase}
+  .do-dont{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  .do-box{background:var(--ktpba-green-light);border-left:3px solid var(--ktpba-green);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:12px 14px}
+  .dont-box{background:var(--ktpba-red-light);border-left:3px solid var(--ktpba-red);border-radius:0 var(--radius-md) var(--radius-md) 0;padding:12px 14px}
+  .do-dont-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .do-dont-label.do{color:#1B5E20}
+  .do-dont-label.dont{color:#9B1C17}
+  .pair-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-primary);border:0.5px solid var(--border-light);border-radius:var(--radius-md);margin-bottom:8px}
+  .pair-swatch{width:28px;height:28px;border-radius:4px;flex-shrink:0}
+  .pair-pass{font-size:10px;font-weight:700;letter-spacing:1px;background:var(--ktpba-green-light);color:#1B5E20;padding:2px 6px;border-radius:2px;margin-left:8px}
+  .pair-ratio{font-family:monospace;font-size:11px;color:var(--text-secondary);margin-left:auto}
+  .ui-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .ui-btn-primary{background:var(--ktpba-red);color:#fff;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px;border-radius:2px;border:none;cursor:pointer}
+  .ui-btn-secondary{background:transparent;color:var(--ktpba-black);font-family:'Oswald',sans-serif;font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;padding:9px 20px;border-radius:2px;border:1.5px solid var(--ktpba-black);cursor:pointer}
+  .ui-btn-ghost{background:transparent;color:var(--ktpba-green);font-family:'Oswald',sans-serif;font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;padding:9px 20px;border-radius:2px;border:1.5px solid var(--ktpba-green);cursor:pointer}
+  .radius-demo{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  .rdemo{background:var(--bg-secondary);border:0.5px solid var(--border-medium);width:60px;height:40px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-secondary)}
+  .motion-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .motion-tag{background:var(--bg-secondary);border:0.5px solid var(--border-medium);font-size:12px;color:var(--text-primary);padding:6px 12px;border-radius:var(--radius-md)}
+  .mockup-header{background:var(--ktpba-black);padding:10px 14px;display:flex;align-items:center;gap:8px}
+  .mockup-logo-dot{width:24px;height:24px;border-radius:50%;background:var(--ktpba-red)}
+  .mockup-nav{display:flex;gap:12px}
+  .mockup-nav span{font-size:11px;color:rgba(255,255,255,0.6);font-family:'Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase}
+  .mockup-nav span.active{color:#fff}
+  .mockup-hero{background:var(--ktpba-red);padding:20px 14px;color:#fff}
+  .mockup-hero-title{font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;margin-bottom:4px}
+  .mockup-hero-sub{font-size:11px;opacity:0.8;margin-bottom:10px}
+  .mockup-btn{background:#fff;color:var(--ktpba-red);font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:5px 12px;border-radius:2px;display:inline-block}
+  .mockup-content{background:var(--bg-primary);padding:12px 14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .mockup-mini-card{background:var(--bg-secondary);border-radius:4px;padding:8px;border-left:2px solid var(--ktpba-green)}
+  .mockup-mini-label{font-size:9px;color:var(--text-secondary);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+  .mockup-mini-val{font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;color:var(--text-primary)}
+  .bcard{background:var(--ktpba-black);border-radius:var(--radius-lg);padding:1.5rem;color:#fff;position:relative;overflow:hidden}
+  .bcard::after{content:'';position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;border-radius:50%;border:1px solid rgba(192,37,30,0.25)}
+  .bcard-name{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;margin-bottom:2px}
+  .bcard-role{font-size:11px;color:var(--ktpba-red);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+  .bcard-contact{font-size:11px;color:rgba(255,255,255,0.55);line-height:2}
+  .bcard-stripe{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1B5E20 0,#1B5E20 33.3%,#1A1A1A 33.3%,#1A1A1A 66.6%,#C0251E 66.6%)}
+  @media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}.do-dont{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <div class="hero">
+    <div class="hero-label">Brand Identity Guidelines</div>
+    <div class="hero-title">Kenya Ten Pin<br>Bowling Association</div>
+    <div class="hero-sub">Complete Brand System — Version 1.0 · April 2026</div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Brand Essence</span>
+    </div>
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="archetype-box">
+        <div class="archetype-sub">Primary Archetype</div>
+        <div class="archetype-title">The Champion</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.6">Competitive drive, national pride, community through sport. Motivates through achievement and belonging.</div>
+      </div>
+      <div style="display:grid;gap:10px">
+        <div class="card">
+          <div class="card-label">Personality</div>
+          <div style="margin-top:2px">
+            <span class="tag tag-red">Bold</span><span class="tag tag-black">Proud</span><span class="tag tag-green">Inclusive</span><span class="tag tag-red">Competitive</span><span class="tag tag-black">Authoritative</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Target Audience</div>
+          <div class="card-value" style="font-size:13px">Kenyan bowlers (youth to adult), sports federations, sponsors, and national media. Secondary: casual recreational players and new audiences to the sport.</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-label">Tone of Voice</div>
+        <div class="card-sub" style="font-size:13px;margin-top:2px"><strong style="color:#1A1A1A">Commanding yet welcoming.</strong> Use active voice and strong verbs. Short, punchy headlines for sport contexts. Warm, accessible copy for community and youth. Never corporate or overly formal. Think: national stadium announcer meets community coach.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Positioning</div>
+        <div class="card-sub" style="font-size:13px;margin-top:2px">The official governing body for ten-pin bowling in Kenya. Positioned as a legitimate, internationally-connected national sports federation that makes bowling accessible to all Kenyans while elevating performance on the world stage.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Color System</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:16px">
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#1A1A1A"></div>
+        <div class="swatch-info">
+          <div class="swatch-role">Primary</div>
+          <div class="swatch-name">KTPBA Black</div>
+          <div class="swatch-codes">HEX #1A1A1A<br>RGB 26, 26, 26<br>HSL 0°, 0%, 10%</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#C0251E"></div>
+        <div class="swatch-info">
+          <div class="swatch-role">Secondary</div>
+          <div class="swatch-name">Kenyan Red</div>
+          <div class="swatch-codes">HEX #C0251E<br>RGB 192, 37, 30<br>HSL 2°, 73%, 44%</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#1B5E20"></div>
+        <div class="swatch-info">
+          <div class="swatch-role">Accent</div>
+          <div class="swatch-name">Kenyan Green</div>
+          <div class="swatch-codes">HEX #1B5E20<br>RGB 27, 94, 32<br>HSL 124°, 55%, 24%</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-3" style="margin-bottom:16px">
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#F5F2ED"></div>
+        <div class="swatch-info">
+          <div class="swatch-role">Background / Off-white</div>
+          <div class="swatch-name">Lane White</div>
+          <div class="swatch-codes">HEX #F5F2ED<br>RGB 245, 242, 237<br>HSL 38°, 24%, 95%</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#FAE8E7"></div>
+        <div class="swatch-info">
+          <div class="swatch-role">Tint / Alert Background</div>
+          <div class="swatch-name">Red Tint</div>
+          <div class="swatch-codes">HEX #FAE8E7<br>RGB 250, 232, 231<br>HSL 2°, 83%, 94%</div>
+        </div>
+      </div>
+      <div class="color-swatch">
+        <div class="swatch-block" style="background:#6B6B6B"></div>
+        <div class="swatch-info">
+          <div class="swatch-role">Supporting / Body Text</div>
+          <div class="swatch-name">Neutral Gray</div>
+          <div class="swatch-codes">HEX #6B6B6B<br>RGB 107, 107, 107<br>HSL 0°, 0%, 42%</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-label" style="margin-bottom:10px">Usage Hierarchy</div>
+      <table>
+        <thead><tr><th>Color</th><th>Primary Use</th><th>Never Use For</th></tr></thead>
+        <tbody>
+          <tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#1A1A1A;margin-right:6px;vertical-align:middle"></span>Black</td><td>Backgrounds, wordmark, dominant fills</td><td>Reversing on dark surfaces</td></tr>
+          <tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#C0251E;margin-right:6px;vertical-align:middle"></span>Kenyan Red</td><td>CTAs, headline accents, bowling ball motif</td><td>Large background areas alone</td></tr>
+          <tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#1B5E20;margin-right:6px;vertical-align:middle"></span>Kenyan Green</td><td>Secondary CTAs, pin motif, success states</td><td>Primary CTAs (always defer to red)</td></tr>
+          <tr><td><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:#F5F2ED;border:1px solid #ccc;margin-right:6px;vertical-align:middle"></span>Lane White</td><td>Page backgrounds, card surfaces</td><td>Text on dark backgrounds</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-label" style="margin-bottom:10px">Accessible Color Pairings</div>
+      <div class="pair-row">
+        <div class="pair-swatch" style="background:#F5F2ED;border:1px solid #ccc"></div>
+        <div style="font-size:13px;font-weight:500;color:#1A1A1A;background:#F5F2ED;padding:3px 8px;border-radius:3px;flex:1">Black on Lane White</div>
+        <div class="pair-ratio">17.1:1</div>
+        <span class="pair-pass">AAA</span>
+      </div>
+      <div class="pair-row">
+        <div class="pair-swatch" style="background:#1A1A1A"></div>
+        <div style="font-size:13px;font-weight:500;color:#fff;background:#1A1A1A;padding:3px 8px;border-radius:3px;flex:1">White on Black</div>
+        <div class="pair-ratio">17.1:1</div>
+        <span class="pair-pass">AAA</span>
+      </div>
+      <div class="pair-row">
+        <div class="pair-swatch" style="background:#C0251E"></div>
+        <div style="font-size:13px;font-weight:700;color:#fff;background:#C0251E;padding:3px 8px;border-radius:3px;flex:1">White on Kenyan Red</div>
+        <div class="pair-ratio">5.4:1</div>
+        <span class="pair-pass">AA</span>
+      </div>
+      <div class="pair-row">
+        <div class="pair-swatch" style="background:#1B5E20"></div>
+        <div style="font-size:13px;font-weight:700;color:#fff;background:#1B5E20;padding:3px 8px;border-radius:3px;flex:1">White on Kenyan Green</div>
+        <div class="pair-ratio">6.8:1</div>
+        <span class="pair-pass">AA</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Typography System</span>
+    </div>
+    <div class="font-demo">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#6B6B6B;margin-bottom:6px">Display / Headline — Oswald Bold</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;color:#1A1A1A;line-height:1.05;letter-spacing:-0.5px">Kenya Strikes Gold</div>
+      <div style="font-size:11px;color:#6B6B6B;margin-top:6px">Oswald 700 · Tracking -0.5px · Use for all major headings and hero text</div>
+    </div>
+    <div class="font-demo">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#6B6B6B;margin-bottom:6px">Subheading — Oswald Medium</div>
+      <div style="font-family:'Oswald',sans-serif;font-size:20px;font-weight:500;color:#1A1A1A">2025 National Championship Results</div>
+      <div style="font-size:11px;color:#6B6B6B;margin-top:6px">Oswald 500 · Normal tracking · Use for section titles and card headers</div>
+    </div>
+    <div class="font-demo">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#6B6B6B;margin-bottom:6px">Body — Source Sans 3 Regular</div>
+      <div style="font-family:'Source Sans 3',sans-serif;font-size:15px;font-weight:400;color:#1A1A1A;line-height:1.7">The Kenya Ten Pin Bowling Association governs, promotes, and develops the sport of bowling across all 47 counties. We are committed to growing world-class athletes and accessible recreational play.</div>
+      <div style="font-size:11px;color:#6B6B6B;margin-top:6px">Source Sans 3 · 15–16px · Line height 1.7</div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="margin-bottom:10px">Typography Scale & Hierarchy</div>
+      <table>
+        <thead><tr><th>Level</th><th>Font</th><th>Size</th><th>Weight</th><th>Usage</th></tr></thead>
+        <tbody>
+          <tr><td>H1 / Hero</td><td>Oswald</td><td>48–72px</td><td>700</td><td>Campaign titles, jersey prints</td></tr>
+          <tr><td>H2 / Section</td><td>Oswald</td><td>28–36px</td><td>700</td><td>Page section headers</td></tr>
+          <tr><td>H3 / Card</td><td>Oswald</td><td>18–22px</td><td>500</td><td>Card headings, list titles</td></tr>
+          <tr><td>Body</td><td>Source Sans 3</td><td>15–16px</td><td>400</td><td>Articles, descriptions</td></tr>
+          <tr><td>Caption / Label</td><td>Source Sans 3</td><td>11–12px</td><td>600</td><td>Tags, stats labels, table headers</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <div class="card-label">Free Alternatives (Google Fonts)</div>
+      <div class="card-sub" style="margin-top:4px">Oswald is already free on Google Fonts. For body text, <strong style="color:#1A1A1A">Source Sans 3</strong> (Google Fonts) or <strong style="color:#1A1A1A">Nunito Sans</strong> as a fallback. Avoid Inter — too generic for a sports federation identity.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Logo System</span>
+    </div>
+    <div class="grid-2" style="margin-bottom:14px">
+      <div class="card">
+        <div class="card-label">Structure</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px"><strong style="color:#1A1A1A">Combination mark</strong> — stacked emblem above wordmark. The emblem combines: a circular arc with the Kenyan flag pattern (black/red/green + Maasai shield), bowling pins in the flag's white silhouette, and a bowling ball in flag red. Below: "KENYA" (green), "TEN PIN" (black), "BOWLING" (red — largest), "ASSOCIATION" (green).</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Clear Space Rule</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px">Minimum clear space = height of the letter "K" in the wordmark on all four sides. Never place any text, imagery, or competing graphic element inside this protected zone.</div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-label" style="margin-bottom:10px">Logo Variations</div>
+      <table>
+        <thead><tr><th>Variation</th><th>Use Case</th><th>Background</th></tr></thead>
+        <tbody>
+          <tr><td>Full color (primary)</td><td>All standard applications</td><td>White / light only</td></tr>
+          <tr><td>Reversed (white emblem + white wordmark)</td><td>Dark/black backgrounds, jerseys</td><td>Black or dark green</td></tr>
+          <tr><td>Monochrome black</td><td>Single-color print, embossing, fax</td><td>White only</td></tr>
+          <tr><td>Emblem only (icon/favicon)</td><td>Favicon, app icon, social avatar, watermark</td><td>Black preferred</td></tr>
+          <tr><td>Horizontal lockup</td><td>Letterheads, website header, scoreboard banners</td><td>White / black</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="do-dont">
+      <div class="do-box">
+        <div class="do-dont-label do">Do</div>
+        <ul>
+          <li style="list-style:disc;margin-left:14px;font-size:12px;margin-bottom:4px">Use on clean, contrasting backgrounds</li>
+          <li style="list-style:disc;margin-left:14px;font-size:12px;margin-bottom:4px">Maintain proportional scaling</li>
+          <li style="list-style:disc;margin-left:14px;font-size:12px">Minimum print size: 25mm wide</li>
+        </ul>
+      </div>
+      <div class="dont-box">
+        <div class="do-dont-label dont">Don't</div>
+        <ul>
+          <li style="list-style:disc;margin-left:14px;font-size:12px;margin-bottom:4px">Stretch, rotate, or skew the logo</li>
+          <li style="list-style:disc;margin-left:14px;font-size:12px;margin-bottom:4px">Apply drop shadows or gradients</li>
+          <li style="list-style:disc;margin-left:14px;font-size:12px">Place on busy photographic backgrounds</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Visual Language</span>
+    </div>
+    <div class="grid-3" style="margin-bottom:14px">
+      <div class="card">
+        <div class="card-label">Shape Language</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px">Strong circular forms (bowling ball, pin arc, flag shield). Sharp rectangular wordmarks. Avoid soft rounded corners in formal contexts — use 0–2px radius for authority.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Icon Style</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px">Filled icons with bold strokes. No thin outline icons. Sport-specific iconography should be solid and high-contrast. Reference: Material Design "Filled" or Phosphor "Bold" libraries.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Pattern / Motifs</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px">Kenyan flag tri-band stripe (black–red–green) as a horizontal rule or decorative stripe. Bowling lane gutters as parallel line textures. Circle/arc forms from the logo emblem.</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-label">Photography Style</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px">High-contrast action photography — motion blur on the ball, sharp on the athlete's face. Warm Kenyan light tones. Authentic — real bowlers, real alleys. Avoid overly staged stock photography. Slight saturation boost on reds and greens to reinforce brand palette.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Layout Principles</div>
+        <div class="card-sub" style="margin-top:4px;font-size:13px">Left-aligned dominant copy. 12-column grid at 1200px breakpoint. Bold typographic hierarchy over decorative elements. Generous whitespace in digital. Print materials can be more dense with stripe accents. Asymmetric layouts preferred for campaign materials.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">UI / Digital Style</span>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-label" style="margin-bottom:10px">Button Styles</div>
+      <div class="ui-row">
+        <button class="ui-btn-primary">Register Now</button>
+        <button class="ui-btn-secondary">View Results</button>
+        <button class="ui-btn-ghost">Join the Club</button>
+      </div>
+      <div style="font-size:11px;color:#6B6B6B">Primary (Kenyan Red fill) · Secondary (Black outline) · Ghost (Green outline)</div>
+    </div>
+    <div class="grid-2" style="margin-bottom:14px">
+      <div class="card">
+        <div class="card-label" style="margin-bottom:8px">Border Radius Scale</div>
+        <div class="radius-demo">
+          <div>
+            <div class="rdemo" style="border-radius:0">0px</div>
+            <div style="font-size:10px;text-align:center;color:#6B6B6B;margin-top:4px">Buttons</div>
+          </div>
+          <div>
+            <div class="rdemo" style="border-radius:4px">4px</div>
+            <div style="font-size:10px;text-align:center;color:#6B6B6B;margin-top:4px">Inputs</div>
+          </div>
+          <div>
+            <div class="rdemo" style="border-radius:8px">8px</div>
+            <div style="font-size:10px;text-align:center;color:#6B6B6B;margin-top:4px">Cards</div>
+          </div>
+          <div>
+            <div class="rdemo" style="border-radius:50%;width:40px">Full</div>
+            <div style="font-size:10px;text-align:center;color:#6B6B6B;margin-top:4px">Avatar</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-label" style="margin-bottom:8px">Animation Principles</div>
+        <div class="motion-row">
+          <div class="motion-tag">200ms transitions</div>
+          <div class="motion-tag">ease-out curves</div>
+          <div class="motion-tag">No bounce/elastic</div>
+          <div class="motion-tag">Score reveals: slide-up</div>
+          <div class="motion-tag">Subtle, purposeful</div>
+        </div>
+        <div style="font-size:12px;color:#6B6B6B">Energetic but controlled — mirrors the precision of the sport.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label" style="margin-bottom:8px">Interaction Feel</div>
+      <div class="card-sub" style="font-size:13px">Buttons: no border-radius (sharp, authoritative). Active state: scale(0.97) + slightly darker fill. Focus states: 2px offset ring in brand red. No glassmorphism or heavy shadows — flat surfaces with strong typographic hierarchy create the authority this federation brand requires.</div>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">Brand Applications</span>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6B6B6B;margin-bottom:10px;font-weight:600">Website Mockup</div>
+      <div style="border-radius:var(--radius-lg);overflow:hidden;border:0.5px solid rgba(0,0,0,0.1)">
+        <div class="mockup-header">
+          <div class="mockup-logo-dot"></div>
+          <div class="mockup-nav">
+            <span class="active">Home</span><span>Events</span><span>Rankings</span><span>Members</span><span>Contact</span>
+          </div>
+        </div>
+        <div class="mockup-hero">
+          <div class="mockup-hero-title">Kenya Ten Pin Bowling Association</div>
+          <div class="mockup-hero-sub">The official governing body for ten-pin bowling in Kenya</div>
+          <div class="mockup-btn">Register for Nationals →</div>
+        </div>
+        <div class="mockup-content">
+          <div class="mockup-mini-card"><div class="mockup-mini-label">Active Members</div><div class="mockup-mini-val">2,400+</div></div>
+          <div class="mockup-mini-card" style="border-left-color:#C0251E"><div class="mockup-mini-label">Events in 2025</div><div class="mockup-mini-val">18</div></div>
+          <div class="mockup-mini-card"><div class="mockup-mini-label">Clubs Nationwide</div><div class="mockup-mini-val">34</div></div>
+          <div class="mockup-mini-card" style="border-left-color:#C0251E"><div class="mockup-mini-label">Ranked Players</div><div class="mockup-mini-val">640</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6B6B6B;margin-bottom:10px;font-weight:600">Business Card</div>
+        <div class="bcard">
+          <div style="font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-bottom:12px;text-transform:uppercase">Kenya Ten Pin Bowling Association</div>
+          <div class="bcard-name">James Kamau</div>
+          <div class="bcard-role">National Secretary General</div>
+          <div class="bcard-contact">
+            james.kamau@ktpba.co.ke<br>
+            +254 700 000 000<br>
+            www.ktpba.co.ke
+          </div>
+          <div class="bcard-stripe"></div>
+        </div>
+        <div style="font-size:11px;color:#6B6B6B;margin-top:8px">Black face with Kenyan flag stripe footer. Oswald for names/titles, Source Sans 3 for contact details.</div>
+      </div>
+      <div>
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#6B6B6B;margin-bottom:10px;font-weight:600">Social Media Template</div>
+        <div style="background:#1A1A1A;border-radius:var(--radius-lg);overflow:hidden">
+          <div style="background:#C0251E;padding:14px 16px">
+            <div style="font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.7);text-transform:uppercase;margin-bottom:4px">National Championships</div>
+            <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;line-height:1.1">Results are in.<br>See who struck gold.</div>
+          </div>
+          <div style="padding:12px 16px;display:flex;align-items:center;justify-content:space-between">
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);font-family:'Oswald',sans-serif;letter-spacing:1px">KTPBA · 2025</div>
+            <div style="display:flex;gap:3px">
+              <div style="width:16px;height:6px;background:#1A1A1A;border:1px solid rgba(255,255,255,0.2)"></div>
+              <div style="width:16px;height:6px;background:#C0251E"></div>
+              <div style="width:16px;height:6px;background:#1B5E20"></div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:#6B6B6B;margin-top:8px">1:1 (Instagram) format. Red hero panel + black base. Flag stripe as accent bottom-right.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-label" style="margin-bottom:8px">Pitch Deck</div>
+      <div class="card-sub" style="font-size:13px">Cover slide: full-bleed black background, emblem centered large (white reversed), "KTPBA 2025 Season Overview" in Oswald 700. Body slides: white background, left sidebar in Kenyan Green, Oswald headings in black, Source Sans 3 body, data visualizations using brand red for primary series and green for secondary. Footer stripe: Kenyan flag colors, 4px height.</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

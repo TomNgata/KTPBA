@@ -1,0 +1,185 @@
+/**
+ * KTPBA TOURNAMENT 2026 — CSS Design Tokens
+ * Kenya Ten Pin Bowling Association · Singles Tournament
+ * Women's Day Edition · Strike Zone Games × KTPBA
+ * ─────────────────────────────────────────────────────
+ * Import this file at the root of your web application.
+ * All tokens are available as CSS custom properties.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@400;500;600&display=swap');
+
+:root {
+
+  /* ════════════════════════════════════════
+     CORE BRAND COLORS — KTPBA Crest
+  ════════════════════════════════════════ */
+
+  --color-ktpba-green:        #1A5C2A;  /* Primary green · logo ring, nav, buttons */
+  --color-ktpba-green-light:  #2E7D3A;  /* Score highlights, winner states */
+  --color-ktpba-green-dark:   #0D3A18;  /* Dark gradient anchor */
+  --color-ktpba-red:          #C8373A;  /* Red · CTAs, pin stripes, BOWLING wordmark */
+  --color-ktpba-red-dark:     #9B2226;  /* Red pressed/hover */
+  --color-champion-black:     #1A1A1A;  /* App background, bowling ball */
+  --color-pin-white:          #FFFFFF;  /* Pin bodies, card surfaces */
+
+  /* ════════════════════════════════════════
+     TOURNAMENT EDITION — Women's Day 2026
+  ════════════════════════════════════════ */
+
+  --color-tournament-pink:    #E91E8C;  /* Women's Day accent, highlights */
+  --color-prestige-purple:    #4A1080;  /* Prize banners, featured rows */
+  --color-violet-mid:         #7B2FBE;  /* Purple gradient midpoint */
+  --color-blush-bg:           #FDE8F0;  /* Light theme background wash */
+
+  /* ════════════════════════════════════════
+     PARTNER & SEMANTIC
+  ════════════════════════════════════════ */
+
+  --color-strikezone-blue:    #1565C0;  /* Venue partner · info elements */
+  --color-trophy-gold:        #C8A000;  /* 1st place leaderboard */
+  --color-silver-medal:       #B0B0B0;  /* 2nd place leaderboard */
+  --color-bronze-medal:       #B06000;  /* 3rd place leaderboard */
+  --color-success:            #4CAF50;  /* Rank-up delta indicator */
+
+  /* ── Neutrals */
+  --color-grey-100:           #F5F5F5;
+  --color-grey-200:           #E5E5E5;
+  --color-grey-300:           #CCCCCC;
+  --color-grey-500:           #888888;
+  --color-grey-600:           #666666;
+  --color-grey-700:           #444444;
+  --color-grey-900:           #111111;
+
+  /* ════════════════════════════════════════
+     TYPOGRAPHY
+  ════════════════════════════════════════ */
+
+  --font-display: 'Bebas Neue', Impact, 'Arial Black', sans-serif;
+  --font-heading: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+  --font-body:    'Barlow', Helvetica, Arial, sans-serif;
+  --font-mono:    'Courier New', Courier, monospace;
+
+  /* ── Type Scale */
+  --text-hero:      clamp(48px, 10vw, 96px);
+  --text-display:   clamp(36px, 5vw, 64px);
+  --text-h1:        36px;
+  --text-h2:        28px;
+  --text-h3:        20px;
+  --text-body-lg:   17px;
+  --text-body:      15px;
+  --text-body-sm:   13px;
+  --text-caption:   12px;
+  --text-label:     11px;
+  --text-score:     72px;  /* Leaderboard score display */
+
+  /* ── Font Weights */
+  --fw-display: 400;   /* Bebas Neue is single-weight */
+  --fw-black:   900;
+  --fw-bold:    700;
+  --fw-semi:    600;
+  --fw-normal:  400;
+
+  /* ════════════════════════════════════════
+     SPACING SCALE
+  ════════════════════════════════════════ */
+
+  --sp-1:   4px;
+  --sp-2:   8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-5:  20px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-10: 40px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* ════════════════════════════════════════
+     BORDER RADIUS
+  ════════════════════════════════════════ */
+
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-pill: 100px;
+
+  /* ════════════════════════════════════════
+     SURFACES & GRADIENTS
+  ════════════════════════════════════════ */
+
+  --surface-app:      #0e0e0e;
+  --surface-card:     rgba(255, 255, 255, 0.04);
+  --surface-card-hover: rgba(255, 255, 255, 0.07);
+  --border-default:   rgba(255, 255, 255, 0.08);
+  --border-accent:    rgba(200, 55, 58, 0.4);
+
+  /* ── Gradients */
+  --gradient-hero:
+    linear-gradient(135deg, #0D3A18 0%, #1A1A1A 40%, #2a0040 100%);
+
+  --gradient-prize:
+    linear-gradient(135deg, #4A1080, #E91E8C);
+
+  --gradient-green-glow:
+    radial-gradient(ellipse at center, rgba(26, 92, 42, 0.3), transparent 70%);
+
+  --gradient-pink-glow:
+    radial-gradient(ellipse at center, rgba(233, 30, 140, 0.2), transparent 70%);
+
+  /* ── Leaderboard row backgrounds */
+  --row-gold:   linear-gradient(90deg, rgba(200, 160, 0, 0.18), rgba(200, 160, 0, 0.04));
+  --row-silver: linear-gradient(90deg, rgba(180, 180, 180, 0.14), rgba(180, 180, 180, 0.03));
+  --row-bronze: linear-gradient(90deg, rgba(176, 96, 0, 0.14), rgba(176, 96, 0, 0.03));
+  --row-standard: rgba(255, 255, 255, 0.03);
+
+  /* ── Bracket connector */
+  --bracket-line: rgba(255, 255, 255, 0.15);
+  --bracket-line-active: var(--color-ktpba-green-light);
+
+  /* ════════════════════════════════════════
+     LETTER SPACING
+  ════════════════════════════════════════ */
+
+  --tracking-wide:   1.5px;  /* Subheadings */
+  --tracking-wider:  2px;    /* Nav items */
+  --tracking-widest: 4px;    /* Section labels */
+
+}
+
+/* ════════════════════════════════════════
+   UTILITY CLASSES
+════════════════════════════════════════ */
+
+/* Fonts */
+.font-display { font-family: var(--font-display); }
+.font-heading { font-family: var(--font-heading); }
+.font-body    { font-family: var(--font-body); }
+
+/* Colors */
+.text-green   { color: var(--color-ktpba-green-light); }
+.text-red     { color: var(--color-ktpba-red); }
+.text-pink    { color: var(--color-tournament-pink); }
+.text-gold    { color: var(--color-trophy-gold); }
+.text-muted   { color: var(--color-grey-600); }
+.text-white   { color: #ffffff; }
+
+/* Backgrounds */
+.bg-dark      { background: var(--surface-app); }
+.bg-card      { background: var(--surface-card); }
+.bg-hero      { background: var(--gradient-hero); }
+.bg-prize     { background: var(--gradient-prize); }
+
+/* Leaderboard rows */
+.row-gold     { background: var(--row-gold);   border-left: 3px solid var(--color-trophy-gold); }
+.row-silver   { background: var(--row-silver); border-left: 3px solid var(--color-silver-medal); }
+.row-bronze   { background: var(--row-bronze); border-left: 3px solid var(--color-bronze-medal); }
+.row-standard { background: var(--row-standard); border-left: 3px solid transparent; }
+
+/* Badges */
+.badge-green   { background: rgba(26, 92, 42, 0.2);  color: var(--color-ktpba-green-light); border: 1px solid rgba(26, 92, 42, 0.4); }
+.badge-red     { background: rgba(200, 55, 58, 0.15); color: #ff6b6e; border: 1px solid rgba(200, 55, 58, 0.3); }
+.badge-pink    { background: rgba(233, 30, 140, 0.12); color: var(--color-tournament-pink); border: 1px solid rgba(233, 30, 140, 0.25); }
+.badge-purple  { background: rgba(74, 16, 128, 0.2);  color: var(--color-violet-mid); border: 1px solid rgba(74, 16, 128, 0.4); }
+.badge-neutral { background: rgba(255, 255, 255, 0.06); color: var(--color-grey-300); border: 1px solid rgba(255, 255, 255, 0.1); }

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KTPBA | Tournament Bracket</title>
+    <link rel="stylesheet" href="ktpba-variables.css">
+    <style>
+        body {
+            background: var(--surface-app);
+            color: var(--color-pin-white);
+            font-family: var(--font-body);
+            margin: 0;
+            padding: var(--sp-12);
+            background-image: var(--gradient-hero);
+            background-attachment: fixed;
+            min-width: 1400px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--sp-8);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: var(--text-display);
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-widest);
+            margin: 0;
+            color: var(--color-pin-white);
+        }
+
+        /* BRACKET LAYOUT */
+        .bracket-symmetric-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 60px;
+            padding: 20px;
+        }
+
+        .bracket-side {
+            display: flex;
+            gap: 60px;
+            flex: 1;
+        }
+
+        .side-left {
+            flex-direction: row;
+            justify-content: flex-end;
+        }
+
+        .side-right {
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        .bracket-center {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .trophy {
+            font-size: 70px;
+            filter: drop-shadow(0 0 15px rgba(233, 30, 140, 0.4));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .center-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-tournament-pink);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .round {
+            display: flex;
+            flex-direction: column;
+            width: 240px;
+        }
+
+        .round-header {
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            color: var(--color-pin-white);
+            height: 30px;
+        }
+
+        .match-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            position: relative;
+        }
+
+        .match-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .match {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-md);
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            transition: 0.3s;
+        }
+
+        .match:hover {
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .match-body { padding: 12px; }
+
+        .player {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            color: var(--color-pin-white);
+            transition: 0.3s;
+        }
+
+        .player.winner { color: var(--color-ktpba-green-light); font-weight: 700; text-shadow: 0 0 8px rgba(46,125,58,0.5); }
+        .player.loser { opacity: 0.4; }
+        .player .score { color: var(--color-tournament-pink); font-family: var(--font-display); font-size: 1.3rem; }
+        .player.loser .score { color: var(--color-pin-white); }
+
+        .separator { height: 1px; background: rgba(255,255,255,0.05); margin: 4px 0; }
+
+        .match-margin {
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--color-ktpba-green-light);
+            color: var(--color-pin-white);
+            font-family: var(--font-heading);
+            font-size: 0.85rem;
+            padding: 2px 10px;
+            border-radius: 4px;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+            white-space: nowrap;
+        }
+
+        /* CONNECTORS CSS */
+        .match::after, .connector-h-in {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 30px;
+            height: 2px;
+            background: var(--bracket-line);
+            transition: 0.3s;
+        }
+
+        /* Active highlight for winners */
+        .match.match-active::after {
+            background: var(--bracket-line-active);
+            box-shadow: 0 0 8px var(--bracket-line-active);
+            z-index: 3;
+        }
+
+        /* Side Logic */
+        .side-left .match::after { right: -30px; }
+        .side-left .connector-h-in { left: -30px; }
+        .side-left .connector-v { right: -31px; }
+
+        .side-right .match::after { left: -30px; }
+        .side-right .connector-h-in { right: -30px; }
+        .side-right .connector-v { left: -31px; }
+
+        /* The vertical line */
+        .connector-v {
+            position: absolute;
+            width: 2px;
+            background: var(--bracket-line);
+            z-index: 1;
+        }
+
+        /* Center Connectors */
+        .connector-center-left {
+            position: absolute;
+            top: 50%;
+            left: -30px;
+            width: 30px;
+            height: 2px;
+            background: var(--bracket-line);
+        }
+        .connector-center-right {
+            position: absolute;
+            top: 50%;
+            right: -30px;
+            width: 30px;
+            height: 2px;
+            background: var(--bracket-line);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            color: var(--color-pin-white);
+            text-decoration: none;
+            font-family: var(--font-heading);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.6;
+            transition: 0.3s;
+            z-index: 100;
+        }
+
+        .back-btn:hover { opacity: 1; transform: translateX(-5px); }
+
+    </style>
+</head>
+<body>
+
+    <a href="ktpba_dashboard_v2.html" class="back-btn">&larr; BACK TO DASHBOARD</a>
+
+    <div class="header">
+        <img src="642453361_18025158044632791_6273328296060487728_n.jpg" alt="KTPBA Logo" style="width: 120px; border-radius: 50%; margin-bottom: var(--sp-4); box-shadow: 0 0 20px rgba(255,255,255,0.1);">
+        <h1>Tournament Bracket</h1>
+        <p class="text-pink">Road to the Grand Final · Singles Tournament 2026</p>
+    </div>
+
+    <div class="bracket-symmetric-wrapper" id="bracket-root">
+        <!-- JS will inject the symmetric tree here -->
+    </div>
+
+<script>
+    async function init() {
+        const res = await fetch('tournament_data.json');
+        const data = await res.json();
+        renderTree(data);
+    }
+
+    function createMatchHTML(m, data) {
+        if (!m || !m.players) return '';
+        
+        const p1 = data.players.find(p => p.id === m.players[0]) || { name: 'TBD', id: null };
+        const p2 = data.players.find(p => p.id === m.players[1]) || { name: 'TBD', id: null };
+        
+        const hasScores = m.scores && Object.keys(m.scores).length > 0;
+        const s1 = hasScores ? m.scores[p1.id] : '-';
+        const s2 = hasScores ? m.scores[p2.id] : '-';
+        
+        const isCompleted = m.status === 'Completed';
+        const isP1Winner = m.winner === p1.id;
+        const isP2Winner = m.winner === p2.id;
+
+        let marginHtml = '';
+        if (isCompleted && hasScores) {
+            const diff = Math.abs(parseFloat(s1) - parseFloat(s2));
+            const formattedDiff = Number.isInteger(diff) ? diff : diff.toFixed(2);
+            marginHtml = `<div class="match-margin">Margin: +${formattedDiff}</div>`;
+        }
+
+        const activeClass = isCompleted ? 'match-active' : '';
+
+        return `
+            <div class="match ${activeClass}">
+                <div class="match-body">
+                    <div class="player ${isP1Winner ? 'winner' : ''} ${isCompleted && !isP1Winner ? 'loser' : ''}">
+                        <span class="p-name">${p1.name}</span>
+                        <span class="score">${s1}</span>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="player ${isP2Winner ? 'winner' : ''} ${isCompleted && !isP2Winner ? 'loser' : ''}">
+                        <span class="p-name">${p2.name}</span>
+                        <span class="score">${s2}</span>
+                    </div>
+                </div>
+                ${marginHtml}
+            </div>
+        `;
+    }
+
+    function renderTree(data) {
+        const root = document.getElementById('bracket-root');
+        const stages = ['Knockout Round of 16', 'Quarter-Final', 'Semi-Final'];
+        
+        const leftMatches = {};
+        const rightMatches = {};
+        
+        stages.forEach(stage => {
+            const matches = data.matches.filter(m => m.stage === stage);
+            const half = Math.ceil(matches.length / 2);
+            leftMatches[stage] = matches.slice(0, half);
+            rightMatches[stage] = matches.slice(half);
+        });
+
+        const sideLeft = document.createElement('div');
+        sideLeft.className = 'bracket-side side-left';
+
+        const sideRight = document.createElement('div');
+        sideRight.className = 'bracket-side side-right';
+
+        function buildRounds(sideDiv, matchesByStage) {
+            stages.forEach((stage, sIdx) => {
+                const matches = matchesByStage[stage];
+                if (matches.length === 0 && sIdx > 0) return;
+
+                const roundDiv = document.createElement('div');
+                roundDiv.className = 'round';
+                roundDiv.innerHTML = `<div class="round-header">${stage}</div>`;
+                
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'match-group';
+                
+                matches.forEach((m, mIdx) => {
+                    const matchContainer = document.createElement('div');
+                    matchContainer.className = 'match-wrapper';
+                    matchContainer.innerHTML = createMatchHTML(m, data);
+                    
+                    // Add incoming line except for first round
+                    if (sIdx > 0) {
+                        const hIn = document.createElement('div');
+                        hIn.className = 'connector-h-in';
+                        // Keep neutral or highlight if previous match was completed?
+                        // Simple approach: Keep neutral. The outgoing highlight from previous round takes center stage.
+                        matchContainer.appendChild(hIn);
+                    }
+
+                    // Add vertical connector to the FIRST of every pair
+                    if (mIdx % 2 === 0 && matches.length > 1) {
+                        const vLine = document.createElement('div');
+                        vLine.className = 'connector-v';
+                        matchContainer.appendChild(vLine);
+                    }
+                    
+                    groupDiv.appendChild(matchContainer);
+                });
+
+                roundDiv.appendChild(groupDiv);
+                sideDiv.appendChild(roundDiv);
+            });
+        }
+
+        buildRounds(sideLeft, leftMatches);
+        buildRounds(sideRight, rightMatches);
+
+        // Build Center
+        const center = document.createElement('div');
+        center.className = 'bracket-center';
+        
+        let fm = data.matches.find(m => m.stage === 'Grand Final');
+        if (!fm) {
+            fm = { players: [null, null], scores: {}, winner: null, status: 'Scheduled', stage: 'Grand Final' };
+        }
+
+        center.innerHTML = `
+            <div class="round-header" style="opacity:0;">Final</div> <!-- Spacing alignment -->
+            <div class="trophy">🏆</div>
+            <div class="center-title">GRAND FINAL</div>
+            <div class="match-wrapper" style="width:100%;">
+                ${createMatchHTML(fm, data)}
+                <div class="connector-center-left"></div>
+                <div class="connector-center-right"></div>
+            </div>
+        `;
+
+        root.appendChild(sideLeft);
+        root.appendChild(center);
+        root.appendChild(sideRight);
+
+        // Adjust vertical lines after layout renders
+        setTimeout(adjustConnectors, 100);
+    }
+
+    function adjustConnectors() {
+        ['.side-left', '.side-right'].forEach(selector => {
+            const wrappers = document.querySelectorAll(selector + ' .match-wrapper');
+            wrappers.forEach(wrapper => {
+                const vLine = wrapper.querySelector('.connector-v');
+                if (vLine) {
+                    const nextWrapper = wrapper.nextElementSibling;
+                    if (nextWrapper) {
+                        const match1 = wrapper.querySelector('.match');
+                        const match2 = nextWrapper.querySelector('.match');
+                        const topPos = match1.offsetTop + (match1.offsetHeight / 2);
+                        const bottomPos = match2.offsetTop + (match2.offsetHeight / 2);
+                        vLine.style.top = topPos + 'px';
+                        vLine.style.height = (bottomPos - topPos) + 'px';
+                    }
+                }
+            });
+        });
+    }
+
+    window.addEventListener('resize', () => { setTimeout(adjustConnectors, 100); });
+    
+    init();
+</script>
+
+</body>
+</html>

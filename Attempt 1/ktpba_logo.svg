@@ -1,0 +1,129 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+  <defs>
+    <clipPath id="circle-clip">
+      <circle cx="100" cy="100" r="94"/>
+    </clipPath>
+    <!-- Kenyan flag gradient for background -->
+    <linearGradient id="kenyaStripes" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#006600"/>
+      <stop offset="33%" stop-color="#006600"/>
+      <stop offset="33%" stop-color="#BB0000"/>
+      <stop offset="67%" stop-color="#BB0000"/>
+      <stop offset="67%" stop-color="#000000"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <!-- Shield gradient -->
+    <linearGradient id="shieldGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1A5C2A"/>
+      <stop offset="100%" stop-color="#0D3A18"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer green ring -->
+  <circle cx="100" cy="100" r="98" fill="#1A5C2A"/>
+  <!-- White ring separator -->
+  <circle cx="100" cy="100" r="93" fill="white"/>
+  <!-- Inner dark border -->
+  <circle cx="100" cy="100" r="91" fill="#1A1A1A" stroke="#1A5C2A" stroke-width="1"/>
+
+  <!-- White inner background -->
+  <circle cx="100" cy="100" r="88" fill="white"/>
+
+  <!-- ===================== -->
+  <!-- CENTER GRAPHIC AREA  -->
+  <!-- ===================== -->
+
+  <!-- Bowling lane / alley perspective lines (subtle) -->
+  <g opacity="0.08">
+    <line x1="100" y1="130" x2="60" y2="88" stroke="#1A5C2A" stroke-width="1.5"/>
+    <line x1="100" y1="130" x2="140" y2="88" stroke="#1A5C2A" stroke-width="1.5"/>
+    <line x1="100" y1="130" x2="75" y2="88" stroke="#1A5C2A" stroke-width="1"/>
+    <line x1="100" y1="130" x2="125" y2="88" stroke="#1A5C2A" stroke-width="1"/>
+  </g>
+
+  <!-- Bowling Pins (classic triangle 4-3-2-1 formation, small) -->
+  <!-- Row 4 (back): 4 pins -->
+  <circle cx="83" cy="72" r="5.2" fill="white" stroke="#C8373A" stroke-width="1.4"/>
+  <circle cx="93" cy="72" r="5.2" fill="white" stroke="#C8373A" stroke-width="1.4"/>
+  <circle cx="103" cy="72" r="5.2" fill="white" stroke="#C8373A" stroke-width="1.4"/>
+  <circle cx="113" cy="72" r="5.2" fill="white" stroke="#C8373A" stroke-width="1.4"/>
+  <!-- Pin neck lines -->
+  <line x1="83" y1="74" x2="83" y2="77.5" stroke="#C8373A" stroke-width="1.2"/>
+  <line x1="93" y1="74" x2="93" y2="77.5" stroke="#C8373A" stroke-width="1.2"/>
+  <line x1="103" y1="74" x2="103" y2="77.5" stroke="#C8373A" stroke-width="1.2"/>
+  <line x1="113" y1="74" x2="113" y2="77.5" stroke="#C8373A" stroke-width="1.2"/>
+  <!-- Pin bases -->
+  <rect x="79.5" y="77.5" width="7" height="3" rx="1" fill="#C8373A"/>
+  <rect x="89.5" y="77.5" width="7" height="3" rx="1" fill="#C8373A"/>
+  <rect x="99.5" y="77.5" width="7" height="3" rx="1" fill="#C8373A"/>
+  <rect x="109.5" y="77.5" width="7" height="3" rx="1" fill="#C8373A"/>
+
+  <!-- Row 3: 3 pins -->
+  <circle cx="88" cy="83" r="5.2" fill="white" stroke="#1A5C2A" stroke-width="1.4"/>
+  <circle cx="98" cy="83" r="5.2" fill="white" stroke="#1A5C2A" stroke-width="1.4"/>
+  <circle cx="108" cy="83" r="5.2" fill="white" stroke="#1A5C2A" stroke-width="1.4"/>
+  <line x1="88" y1="85" x2="88" y2="88.5" stroke="#1A5C2A" stroke-width="1.2"/>
+  <line x1="98" y1="85" x2="98" y2="88.5" stroke="#1A5C2A" stroke-width="1.2"/>
+  <line x1="108" y1="85" x2="108" y2="88.5" stroke="#1A5C2A" stroke-width="1.2"/>
+  <rect x="84.5" y="88.5" width="7" height="3" rx="1" fill="#1A5C2A"/>
+  <rect x="94.5" y="88.5" width="7" height="3" rx="1" fill="#1A5C2A"/>
+  <rect x="104.5" y="88.5" width="7" height="3" rx="1" fill="#1A5C2A"/>
+
+  <!-- Row 2: 2 pins -->
+  <circle cx="93" cy="94" r="5.2" fill="white" stroke="#C8373A" stroke-width="1.4"/>
+  <circle cx="103" cy="94" r="5.2" fill="white" stroke="#C8373A" stroke-width="1.4"/>
+  <line x1="93" y1="96" x2="93" y2="99.5" stroke="#C8373A" stroke-width="1.2"/>
+  <line x1="103" y1="96" x2="103" y2="99.5" stroke="#C8373A" stroke-width="1.2"/>
+  <rect x="89.5" y="99.5" width="7" height="3" rx="1" fill="#C8373A"/>
+  <rect x="99.5" y="99.5" width="7" height="3" rx="1" fill="#C8373A"/>
+
+  <!-- Row 1 (front): 1 head pin -->
+  <circle cx="98" cy="105" r="5.5" fill="white" stroke="#1A1A1A" stroke-width="1.6"/>
+  <line x1="98" y1="107.5" x2="98" y2="111" stroke="#1A1A1A" stroke-width="1.4"/>
+  <rect x="94.5" y="111" width="7" height="3" rx="1" fill="#1A1A1A"/>
+
+  <!-- Bowling Ball (coming from left, large) -->
+  <circle cx="70" cy="118" r="16" fill="#1A1A1A"/>
+  <!-- Ball shine -->
+  <ellipse cx="64" cy="112" rx="4" ry="3" fill="white" opacity="0.2" transform="rotate(-20,64,112)"/>
+  <!-- Ball finger holes -->
+  <circle cx="73" cy="113" r="2.2" fill="#2a2a2a"/>
+  <circle cx="79" cy="111" r="2.2" fill="#2a2a2a"/>
+  <circle cx="75" cy="108" r="2.2" fill="#2a2a2a"/>
+  <!-- Red stripe on ball (Kenyan) -->
+  <path d="M 56 112 Q 70 102 84 112" stroke="#C8373A" stroke-width="2" fill="none" opacity="0.7"/>
+
+  <!-- Kenyan shield motif (small, centered below pins) -->
+  <g transform="translate(98,118)">
+    <!-- Small Maasai shield shape -->
+    <path d="M 0,-8 L 6,0 L 0,9 L -6,0 Z" fill="#C8373A" stroke="#1A1A1A" stroke-width="0.8" opacity="0.85"/>
+    <line x1="0" y1="-8" x2="0" y2="9" stroke="white" stroke-width="1" opacity="0.9"/>
+    <line x1="-6" y1="0" x2="6" y2="0" stroke="white" stroke-width="1" opacity="0.9"/>
+  </g>
+
+  <!-- ===================== -->
+  <!-- TEXT ELEMENTS         -->
+  <!-- ===================== -->
+
+  <!-- "KENYA" curved text at top -->
+  <path id="topArc" d="M 20,100 A 80,80 0 0,1 180,100" fill="none"/>
+  <text font-family="'Arial Black', 'Impact', sans-serif" font-size="13" font-weight="900" fill="#1A5C2A" letter-spacing="4">
+    <textPath href="#topArc" startOffset="22%">KENYA</textPath>
+  </text>
+
+  <!-- "TEN PIN" text - straight, large -->
+  <text x="100" y="149" text-anchor="middle" font-family="'Arial Black', 'Impact', sans-serif" font-size="11.5" font-weight="900" fill="#1A1A1A" letter-spacing="2">TEN PIN</text>
+
+  <!-- "BOWLING" text - red, bold, large -->
+  <text x="100" y="162" text-anchor="middle" font-family="'Arial Black', 'Impact', sans-serif" font-size="14" font-weight="900" fill="#C8373A" letter-spacing="2">BOWLING</text>
+
+  <!-- "ASSOCIATION" curved text at bottom -->
+  <path id="bottomArc" d="M 18,100 A 82,82 0 0,0 182,100" fill="none"/>
+  <text font-family="'Arial Black', sans-serif" font-size="9" font-weight="700" fill="#1A5C2A" letter-spacing="2">
+    <textPath href="#bottomArc" startOffset="12%">ASSOCIATION</textPath>
+  </text>
+
+  <!-- Outer green ring (decorative) -->
+  <circle cx="100" cy="100" r="98" fill="none" stroke="#1A5C2A" stroke-width="3"/>
+  <circle cx="100" cy="100" r="91" fill="none" stroke="#1A5C2A" stroke-width="1" opacity="0.4"/>
+</svg>
