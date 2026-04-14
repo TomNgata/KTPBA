@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS teams (
   name text NOT NULL,
   slug text UNIQUE NOT NULL,
   color_hex text,
+  group_name text, -- 'A' or 'B'
+  penalty_points int DEFAULT 0,
   is_active boolean DEFAULT true,
   created_at timestamp with time zone DEFAULT now()
 );
@@ -36,6 +38,7 @@ CREATE TABLE IF NOT EXISTS matchups (
   home_team_id uuid REFERENCES teams(id),
   away_team_id uuid REFERENCES teams(id),
   lane_pair text,
+  type text CHECK (type IN ('seeding', 'regular', 'knockout')) DEFAULT 'regular',
   status text CHECK (status IN ('tbd', 'scheduled', 'live', 'done')) DEFAULT 'scheduled',
   summary text -- For AI Match Summary
 );
@@ -96,8 +99,17 @@ SELECT
   t.id as team_id,
   t.name,
   t.slug,
+  t.group_name,
+  t.penalty_points,
+  -- Total Pinfall (All Matches)
   COALESCE(SUM(CASE WHEN mu.home_team_id = t.id THEN g.home_score ELSE 0 END), 0) +
   COALESCE(SUM(CASE WHEN mu.away_team_id = t.id THEN g.away_score ELSE 0 END), 0) AS total_pinfall,
+  -- Seeding Pinfall (Phase 1)
+  COALESCE(SUM(CASE WHEN mu.type = 'seeding' AND mu.home_team_id = t.id THEN g.home_score 
+                    WHEN mu.type = 'seeding' AND mu.away_team_id = t.id THEN g.away_score ELSE 0 END), 0) AS seeding_pinfall,
+  -- Match Points (Games Won in Phase 2)
+  COALESCE(SUM(CASE WHEN mu.type = 'regular' AND g.winner_team_id = t.id THEN 1 ELSE 0 END), 0) AS match_points,
+  -- Detailed Pinfall
   COALESCE(SUM(CASE WHEN fm.format = 'singles' AND mu.home_team_id = t.id THEN g.home_score 
                     WHEN fm.format = 'singles' AND mu.away_team_id = t.id THEN g.away_score ELSE 0 END), 0) AS singles_pinfall,
   COALESCE(SUM(CASE WHEN fm.format = 'doubles' AND mu.home_team_id = t.id THEN g.home_score 
@@ -109,8 +121,8 @@ LEFT JOIN matchups mu ON (mu.home_team_id = t.id OR mu.away_team_id = t.id)
 LEFT JOIN format_matches fm ON fm.matchup_id = mu.id
 LEFT JOIN games g ON g.format_match_id = fm.id
 WHERE t.is_active = TRUE
-GROUP BY t.id, t.name, t.slug
-ORDER BY total_pinfall DESC;
+GROUP BY t.id, t.name, t.slug, t.group_name, t.penalty_points
+ORDER BY match_points DESC, total_pinfall DESC;
 
 -- Grant access to the view
 GRANT SELECT ON team_standings TO anon, authenticated;

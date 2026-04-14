@@ -66,7 +66,8 @@ export default function ScoreEntry() {
       const formats = ['singles', 'doubles', 'teams'] as const;
       
       for (const f of formats) {
-        const { data: fm } = await supabase
+        // 1. Get or Create Format Match record
+        let { data: fm } = await supabase
           .from('format_matches')
           .select('id')
           .eq('matchup_id', selectedMatch.id)
@@ -85,25 +86,50 @@ export default function ScoreEntry() {
         }
 
         if (formatMatchId) {
-          const gameData = (scores as any)[f].map((g: any, i: number) => ({
-            format_match_id: formatMatchId,
-            game_number: i + 1,
-            home_score: parseInt(g.home) || 0,
-            away_score: parseInt(g.away) || 0
-          }));
+          // 2. Prepare Game data with Winner Logic
+          const gameData = (scores as any)[f].map((g: any, i: number) => {
+            const hScore = parseInt(g.home) || 0;
+            const aScore = parseInt(g.away) || 0;
+            
+            // Determine winner for Match Points
+            let winnerId = null;
+            if (hScore > aScore) winnerId = selectedMatch.home_team_id;
+            else if (aScore > hScore && selectedMatch.away_team_id) winnerId = selectedMatch.away_team_id;
+            else if (hScore > 0 && !selectedMatch.away_team_id) winnerId = selectedMatch.home_team_id; // Seeding round auto-win
 
+            return {
+              format_match_id: formatMatchId,
+              game_number: i + 1,
+              home_score: hScore,
+              away_score: aScore,
+              winner_team_id: winnerId
+            };
+          });
+
+          // 3. Clear existing games if re-entering
+          await supabase.from('games').delete().eq('format_match_id', formatMatchId);
           await supabase.from('games').insert(gameData);
 
-          // Update format match status only
+          // 4. Update format match status (and aggregated wins for convenience)
+          const homeWins = gameData.filter((g: any) => g.winner_team_id === selectedMatch.home_team_id).length;
+          const awayWins = selectedMatch.away_team_id ? gameData.filter((g: any) => g.winner_team_id === selectedMatch.away_team_id).length : 0;
+          
+          let formatWinnerId = null;
+          if (homeWins > awayWins) formatWinnerId = selectedMatch.home_team_id;
+          else if (awayWins > homeWins) formatWinnerId = selectedMatch.away_team_id;
+
           await supabase.from('format_matches').update({
-            status: 'completed'
+            status: 'completed',
+            home_wins: homeWins,
+            away_wins: awayWins,
+            winner_team_id: formatWinnerId
           }).eq('id', formatMatchId);
         }
       }
 
       await supabase.from('matchups').update({ status: 'done' }).eq('id', selectedMatch.id);
 
-      alert('All session scores published successfully!');
+      alert('All session scores and match points published successfully!');
       setStep('matchup');
       setSelectedMatch(null);
     } catch (err) {
