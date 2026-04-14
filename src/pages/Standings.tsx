@@ -11,20 +11,27 @@ export default function Standings() {
   const [filter, setFilter] = useState<'overall' | 'singles' | 'doubles' | 'teams'>('overall');
 
   useEffect(() => {
-    // Mock data for now since Supabase isn't provisioned yet
-    const mockStandings: Standing[] = TEAMS.map((name, i) => ({
-      team_id: i.toString(),
-      name,
-      slug: name.toLowerCase().replace(/ /g, '-'),
-      total_points: Math.floor(Math.random() * 30),
-      singles_pts: Math.floor(Math.random() * 10),
-      doubles_pts: Math.floor(Math.random() * 10),
-      teams_pts: Math.floor(Math.random() * 10),
-      total_pinfall: Math.floor(Math.random() * 15000) + 5000,
-    })).sort((a, b) => b.total_points - a.total_points || b.total_pinfall - a.total_pinfall);
+    async function fetchStandings() {
+      const supabase = getSupabase();
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
 
-    setStandings(mockStandings);
-    setLoading(false);
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('team_standings')
+        .select('*');
+
+      if (error) {
+        console.error('Error fetching standings:', error);
+      } else if (data) {
+        setStandings(data);
+      }
+      setLoading(false);
+    }
+
+    fetchStandings();
   }, []);
 
   return (
@@ -62,12 +69,10 @@ export default function Standings() {
               <tr className="bg-ktpba-black text-white font-display uppercase tracking-widest text-[10px]">
                 <th className="px-6 py-4 font-bold">Rank</th>
                 <th className="px-6 py-4 font-bold">Team</th>
-                <th className="px-6 py-4 font-bold text-center">Played</th>
-                <th className="px-6 py-4 font-bold text-center">Singles</th>
-                <th className="px-6 py-4 font-bold text-center">Doubles</th>
-                <th className="px-6 py-4 font-bold text-center">Teams</th>
-                <th className="px-6 py-4 font-bold text-center bg-ktpba-red">Points</th>
-                <th className="px-6 py-4 font-bold text-right">Pinfall</th>
+                <th className="px-6 py-4 font-bold text-center">Singles Pins</th>
+                <th className="px-6 py-4 font-bold text-center">Doubles Pins</th>
+                <th className="px-6 py-4 font-bold text-center">Teams Pins</th>
+                <th className="px-6 py-4 font-bold text-right bg-ktpba-red">Total Pinfall</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -89,14 +94,10 @@ export default function Standings() {
                       {team.name}
                     </span>
                   </td>
-                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">13</td>
-                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">{team.singles_pts}</td>
-                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">{team.doubles_pts}</td>
-                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">{team.teams_pts}</td>
-                  <td className="px-6 py-5 text-center font-display font-bold text-xl bg-ktpba-red/5 text-ktpba-red">
-                    {team.total_points}
-                  </td>
-                  <td className="px-6 py-5 text-right font-mono text-sm font-bold">
+                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">{team.singles_pinfall.toLocaleString()}</td>
+                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">{team.doubles_pinfall.toLocaleString()}</td>
+                  <td className="px-6 py-5 text-center font-mono text-sm text-gray-500">{team.teams_pinfall.toLocaleString()}</td>
+                  <td className="px-6 py-5 text-right font-display font-bold text-xl bg-ktpba-red/5 text-ktpba-red">
                     {team.total_pinfall.toLocaleString()}
                   </td>
                 </tr>
@@ -108,34 +109,34 @@ export default function Standings() {
 
       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-ktpba-black p-8 text-white">
-          <h3 className="font-display text-xl font-bold mb-4 uppercase tracking-wider text-ktpba-red">Scoring Rules</h3>
+          <h3 className="font-display text-xl font-bold mb-4 uppercase tracking-wider text-ktpba-red">Marathon Rules</h3>
           <ul className="space-y-4 text-sm text-gray-400">
             <li className="flex items-start gap-3">
               <div className="w-5 h-5 bg-ktpba-red rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">1</div>
-              <span>Singles and Doubles are best of 3 games. Teams are best of 5.</span>
+              <span>Ranking is determined strictly by <strong>Total Pinfall</strong> across all formats.</span>
             </li>
             <li className="flex items-start gap-3">
               <div className="w-5 h-5 bg-ktpba-red rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">2</div>
-              <span>Doubles and Teams are played in Baker's Style.</span>
+              <span>Singles/Doubles consist of 3 games each. Teams format consists of 5 Baker-style games.</span>
             </li>
             <li className="flex items-start gap-3">
               <div className="w-5 h-5 bg-ktpba-red rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">3</div>
-              <span>Winning a format earns the team 1 standings point. Max 3 per matchday.</span>
+              <span>All scores are cumulative. High total pinfall at the end of the marathon wins.</span>
             </li>
           </ul>
         </div>
         <div className="bg-white border border-gray-200 p-8">
           <h3 className="font-display text-xl font-bold mb-4 uppercase tracking-wider">Tie-Breakers</h3>
           <p className="text-gray-500 text-sm leading-relaxed mb-6">
-            If teams are tied on points, the following tie-breakers apply in order:
+            In the event of a tie in total pinfall, the following criteria apply in order:
           </p>
           <div className="space-y-3">
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-sm">
-              <span className="text-xs font-bold uppercase tracking-widest">1. Total Pinfall</span>
+              <span className="text-xs font-bold uppercase tracking-widest">1. Highest Single Session Total</span>
               <ArrowUp className="w-4 h-4 text-ktpba-green" />
             </div>
             <div className="flex justify-between items-center p-3 bg-gray-50 rounded-sm">
-              <span className="text-xs font-bold uppercase tracking-widest">2. Head-to-Head</span>
+              <span className="text-xs font-bold uppercase tracking-widest">2. Single Game High Team Score</span>
               <Minus className="w-4 h-4 text-gray-300" />
             </div>
           </div>

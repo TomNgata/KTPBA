@@ -1,22 +1,25 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { WEEK_1_MATCHUPS } from '../../constants';
-import { Trophy, ChevronRight, ChevronLeft, Save, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Trophy, ChevronRight, ChevronLeft, Save, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { determineGameWinner } from '../../lib/scoring';
+import { getSupabase } from '../../lib/supabase';
 
 type Step = 'matchup' | 'singles' | 'doubles' | 'teams' | 'review';
 
 export default function ScoreEntry() {
   const [step, setStep] = useState<Step>('matchup');
-  const [selectedMatch, setSelectedMatch] = useState<typeof WEEK_1_MATCHUPS[0] | null>(null);
+  const [matchups, setMatchups] = useState<any[]>([]);
+  const [selectedMatch, setSelectedMatch] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
   
   // Scoring state
   const [scores, setScores] = useState({
     singles: [
-      { home: '', away: '', winner: '', homePlayer: '', awayPlayer: '' },
-      { home: '', away: '', winner: '', homePlayer: '', awayPlayer: '' },
-      { home: '', away: '', winner: '', homePlayer: '', awayPlayer: '' },
+      { home: '', away: '', winner: '', homePlayer: '', awayPlayer: '', homePlayerId: '', awayPlayerId: '' },
+      { home: '', away: '', winner: '', homePlayer: '', awayPlayer: '', homePlayerId: '', awayPlayerId: '' },
+      { home: '', away: '', winner: '', homePlayer: '', awayPlayer: '', homePlayerId: '', awayPlayerId: '' },
     ],
     doubles: [
       { home: '', away: '', winner: '' },
@@ -32,20 +35,84 @@ export default function ScoreEntry() {
     ],
   });
 
+  useEffect(() => {
+    async function fetchMatchups() {
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      setLoading(true);
+      const { data } = await supabase
+        .from('matchups')
+        .select('*, home_team:teams!home_team_id(id, name), away_team:teams!away_team_id(id, name)')
+        .eq('status', 'scheduled');
+      
+      if (data) setMatchups(data);
+      setLoading(false);
+    }
+    fetchMatchups();
+  }, []);
+
   const handleScoreChange = (format: 'singles' | 'doubles' | 'teams', index: number, side: 'home' | 'away', value: string) => {
     const newScores = { ...scores };
     (newScores[format][index] as any)[side] = value;
-    
-    // Auto-determine winner
-    const h = parseInt((newScores[format][index] as any).home);
-    const a = parseInt((newScores[format][index] as any).away);
-    if (!isNaN(h) && !isNaN(a)) {
-      (newScores[format][index] as any).winner = determineGameWinner(h, a);
-    } else {
-      (newScores[format][index] as any).winner = '';
-    }
-    
     setScores(newScores);
+  };
+
+  const handlePublish = async () => {
+    if (!selectedMatch) return;
+    const supabase = getSupabase();
+    if (!supabase) return;
+
+    setLoading(true);
+    try {
+      const formats = ['singles', 'doubles', 'teams'] as const;
+      
+      for (const f of formats) {
+        const { data: fm } = await supabase
+          .from('format_matches')
+          .select('id')
+          .eq('matchup_id', selectedMatch.id)
+          .eq('format', f)
+          .single();
+        
+        let formatMatchId = fm?.id;
+        
+        if (!formatMatchId) {
+          const { data: newFm } = await supabase
+            .from('format_matches')
+            .insert({ matchup_id: selectedMatch.id, format: f })
+            .select('id')
+            .single();
+          formatMatchId = newFm?.id;
+        }
+
+        if (formatMatchId) {
+          const gameData = (scores as any)[f].map((g: any, i: number) => ({
+            format_match_id: formatMatchId,
+            game_number: i + 1,
+            home_score: parseInt(g.home) || 0,
+            away_score: parseInt(g.away) || 0
+          }));
+
+          await supabase.from('games').insert(gameData);
+
+          // Update format match status only
+          await supabase.from('format_matches').update({
+            status: 'completed'
+          }).eq('id', formatMatchId);
+        }
+      }
+
+      await supabase.from('matchups').update({ status: 'done' }).eq('id', selectedMatch.id);
+
+      alert('All session scores published successfully!');
+      setStep('matchup');
+      setSelectedMatch(null);
+    } catch (err) {
+      console.error('Failed to publish scores:', err);
+      alert('Error publishing scores. Check console.');
+    }
+    setLoading(false);
   };
 
   const handlePlayerChange = (index: number, side: 'homePlayer' | 'awayPlayer', value: string) => {
@@ -55,7 +122,7 @@ export default function ScoreEntry() {
   };
 
   const steps: { id: Step; label: string }[] = [
-    { id: 'matchup', label: 'Select Match' },
+    { id: 'matchup', label: 'Select Session' },
     { id: 'singles', label: 'Singles' },
     { id: 'doubles', label: 'Doubles' },
     { id: 'teams', label: 'Teams' },
@@ -65,7 +132,7 @@ export default function ScoreEntry() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-12">
       <div className="mb-12">
-        <h1 className="text-4xl font-bold mb-6 tracking-tight">Score Entry</h1>
+        <h1 className="text-4xl font-bold mb-6 tracking-tight uppercase">Score Entry</h1>
         
         {/* Progress Bar */}
         <div className="flex items-center gap-2">
@@ -94,9 +161,13 @@ export default function ScoreEntry() {
       <div className="bg-white border border-gray-200 shadow-xl p-8 min-h-[500px] flex flex-col">
         {step === 'matchup' && (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-8 uppercase tracking-tight border-b pb-4">Select Active Matchup</h2>
+            <h2 className="text-2xl font-bold mb-8 uppercase tracking-tight border-b pb-4">Select Active Session</h2>
             <div className="grid grid-cols-1 gap-4">
-              {WEEK_1_MATCHUPS.map((match, i) => (
+              {loading ? (
+                <div className="py-20 flex justify-center">
+                  <Loader2 className="w-12 h-12 text-ktpba-red animate-spin" />
+                </div>
+              ) : (matchups.length > 0 ? matchups : WEEK_1_MATCHUPS).map((match, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedMatch(match)}
@@ -106,11 +177,11 @@ export default function ScoreEntry() {
                   )}
                 >
                   <div className="flex items-center gap-8">
-                    <span className="font-display text-xs font-bold text-gray-400 uppercase tracking-widest">{match.lanes}</span>
+                    <span className="font-display text-xs font-bold text-gray-400 uppercase tracking-widest">{match.lane_pair || match.lanes}</span>
                     <div className="flex items-center gap-4">
-                      <span className="font-display text-xl font-bold uppercase">{match.home}</span>
-                      <span className="text-xs font-bold text-gray-300">VS</span>
-                      <span className="font-display text-xl font-bold uppercase">{match.away}</span>
+                      <span className="font-display text-xl font-bold uppercase">{match.home_team?.name || match.home}</span>
+                      <span className="px-3 py-1 bg-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">&</span>
+                      <span className="font-display text-xl font-bold uppercase">{match.away_team?.name || match.away}</span>
                     </div>
                   </div>
                   <div className={cn(
@@ -129,15 +200,17 @@ export default function ScoreEntry() {
           <div className="space-y-10">
             <div className="flex items-center justify-between border-b pb-6">
               <div>
-                <h2 className="text-3xl font-bold uppercase tracking-tight">{step} Match</h2>
+                <h2 className="text-3xl font-bold uppercase tracking-tight">{step} Session</h2>
                 <p className="text-gray-400 text-xs uppercase tracking-widest mt-1">
-                  {step === 'teams' ? 'Best of 5 Games' : 'Best of 3 Games'}
+                  {step === 'teams' ? '5 Games Series' : '3 Games Series'}
                   {(step === 'doubles' || step === 'teams') && ' · Baker\'s Style'}
                 </p>
               </div>
               <div className="text-right">
-                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Matchup</span>
-                <span className="font-display font-bold text-sm uppercase">{selectedMatch.home} vs {selectedMatch.away}</span>
+                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Lane Pairing</span>
+                <span className="font-display font-bold text-sm uppercase">
+                  {selectedMatch.lane_pair || selectedMatch.lanes}
+                </span>
               </div>
             </div>
 
@@ -148,10 +221,10 @@ export default function ScoreEntry() {
                     Game {idx + 1}
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center mt-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mt-4">
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.home}</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.home_team?.name || selectedMatch.home}</label>
                         {step === 'singles' && (
                           <input 
                             type="text" 
@@ -171,27 +244,9 @@ export default function ScoreEntry() {
                       />
                     </div>
                     
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      {(scores[step][idx] as any).winner === 'rolloff' ? (
-                        <div className="flex flex-col items-center gap-1 text-ktpba-red">
-                          <AlertTriangle className="w-6 h-6" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">Roll-off Required</span>
-                        </div>
-                      ) : (scores[step][idx] as any).winner ? (
-                        <div className="flex flex-col items-center gap-1 text-ktpba-green">
-                          <Trophy className="w-6 h-6" />
-                          <span className="text-[10px] font-bold uppercase tracking-widest">
-                            {(scores[step][idx] as any).winner === 'home' ? 'Home Win' : 'Away Win'}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-gray-300 font-display text-4xl font-bold">VS</span>
-                      )}
-                    </div>
-
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-1 text-right">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.away}</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.away_team?.name || selectedMatch.away}</label>
                         {step === 'singles' && (
                           <input 
                             type="text" 
@@ -223,21 +278,20 @@ export default function ScoreEntry() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {(['singles', 'doubles', 'teams'] as const).map(f => {
-                const homeWins = scores[f].filter(s => s.winner === 'home').length;
-                const awayWins = scores[f].filter(s => s.winner === 'away').length;
-                const winner = homeWins > awayWins ? selectedMatch.home : awayWins > homeWins ? selectedMatch.away : 'TBD';
+                const homeTotal = scores[f].reduce((sum, s) => sum + (parseInt(s.home) || 0), 0);
+                const awayTotal = scores[f].reduce((sum, s) => sum + (parseInt(s.away) || 0), 0);
                 
                 return (
                   <div key={f} className="border border-gray-200 p-6">
-                    <h4 className="font-display font-bold text-xs uppercase tracking-widest text-gray-400 mb-4">{f}</h4>
-                    <div className="flex justify-between items-center mb-4">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase">Winner</span>
-                        <span className="font-display font-bold text-lg text-ktpba-red uppercase">{winner}</span>
+                    <h4 className="font-display font-bold text-xs uppercase tracking-widest text-gray-400 mb-4">{f} Totals</h4>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-gray-600 uppercase truncate max-w-[100px]">{selectedMatch.home_team?.name || selectedMatch.home}</span>
+                        <span className="font-display font-bold text-lg text-ktpba-red">{homeTotal}</span>
                       </div>
-                      <div className="text-right">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase">Score</span>
-                        <span className="font-display font-bold text-lg">{homeWins}-{awayWins}</span>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[10px] font-bold text-gray-600 uppercase truncate max-w-[100px]">{selectedMatch.away_team?.name || selectedMatch.away}</span>
+                        <span className="font-display font-bold text-lg text-ktpba-red">{awayTotal}</span>
                       </div>
                     </div>
                   </div>
@@ -246,11 +300,10 @@ export default function ScoreEntry() {
             </div>
 
             <div className="bg-ktpba-black p-8 text-white">
-              <h4 className="font-display font-bold uppercase tracking-widest text-ktpba-red mb-4">Summary</h4>
+              <h4 className="font-display font-bold uppercase tracking-widest text-ktpba-red mb-4">Daily Performance Summary</h4>
               <p className="text-gray-400 text-sm italic">
-                "A dominant performance by {selectedMatch.home} tonight at Village Bowl, securing key wins in Singles and Teams to take the matchday points."
+                "Verified scores for {selectedMatch.home_team?.name || selectedMatch.home} and {selectedMatch.away_team?.name || selectedMatch.away} at Village Bowl. Total pinfall calculated for seasonal leaderboard inclusion."
               </p>
-              <p className="text-[10px] text-gray-600 uppercase tracking-widest mt-4">AI Generated Preview</p>
             </div>
           </div>
         )}
@@ -269,6 +322,7 @@ export default function ScoreEntry() {
           
           {step === 'review' ? (
             <button
+              onClick={handlePublish}
               className="px-8 py-4 bg-ktpba-green text-white font-display font-bold uppercase tracking-wider hover:bg-ktpba-black transition-all flex items-center gap-2"
             >
               <Save className="w-4 h-4" /> Publish Results

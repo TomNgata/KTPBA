@@ -65,11 +65,10 @@ export interface Standing {
   team_id: string;
   name: string;
   slug: string;
-  total_points: number;
-  singles_pts: number;
-  doubles_pts: number;
-  teams_pts: number;
   total_pinfall: number;
+  singles_pinfall: number;
+  doubles_pinfall: number;
+  teams_pinfall: number;
 }
 
 export interface Sponsor {

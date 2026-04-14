@@ -1,9 +1,34 @@
 
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { SPONSORS } from '../constants';
-import { Star } from 'lucide-react';
+import { Star, Loader2 } from 'lucide-react';
+import { getSupabase } from '../lib/supabase';
 
 export default function Sponsors() {
+  const [sponsors, setSponsors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchSponsors() {
+      const supabase = getSupabase();
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('sponsors')
+        .select('*')
+        .eq('is_active', true);
+
+      if (data) setSponsors(data);
+      setLoading(false);
+    }
+    fetchSponsors();
+  }, []);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-20">
       <div className="text-center mb-20">
@@ -19,18 +44,26 @@ export default function Sponsors() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {SPONSORS.map((sponsor, i) => (
+        {loading ? (
+          <div className="col-span-full py-20 flex justify-center">
+            <Loader2 className="w-12 h-12 text-ktpba-red animate-spin" />
+          </div>
+        ) : (sponsors.length > 0 ? sponsors : SPONSORS.map(s => ({ name: s }))).map((sponsor: any, i: number) => (
           <motion.div
-            key={sponsor}
+            key={sponsor.name}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: i * 0.05 }}
             className="bg-white border border-gray-200 p-10 flex flex-col items-center justify-center text-center group hover:border-ktpba-red transition-all shadow-sm hover:shadow-xl"
           >
             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-ktpba-red/10 transition-colors">
-              <Star className="w-8 h-8 text-gray-300 group-hover:text-ktpba-red transition-colors" />
+              {sponsor.logo_url ? (
+                <img src={sponsor.logo_url} alt={sponsor.name} className="w-12 h-12 object-contain" />
+              ) : (
+                <Star className="w-8 h-8 text-gray-300 group-hover:text-ktpba-red transition-colors" />
+              )}
             </div>
-            <h3 className="font-display text-2xl font-bold uppercase tracking-tight mb-2">{sponsor}</h3>
+            <h3 className="font-display text-2xl font-bold uppercase tracking-tight mb-2">{sponsor.name}</h3>
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Official Partner</span>
           </motion.div>
         ))}

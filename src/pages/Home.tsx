@@ -1,17 +1,62 @@
 
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Trophy, Calendar, Users, ArrowRight, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SPONSORS, TEAMS, WEEK_1_MATCHUPS } from '../constants';
+import { getSupabase } from '../lib/supabase';
+import { cn } from '../lib/utils';
 
 export default function Home() {
+  const [stats, setStats] = useState({
+    teams: 20,
+    weeks: 13,
+    points: 0
+  });
+  const [nextMatchday, setNextMatchday] = useState<any>(null);
+  const [matchups, setMatchups] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      // Fetch points total
+      const { data: standings } = await supabase.from('team_standings').select('total_points');
+      if (standings) {
+        const total = standings.reduce((acc, curr) => acc + (curr.total_points || 0), 0);
+        setStats(prev => ({ ...prev, points: total }));
+      }
+
+      // Fetch next matchup
+      const { data: week } = await supabase
+        .from('weeks')
+        .select('*')
+        .eq('status', 'scheduled')
+        .order('play_date', { ascending: true })
+        .limit(1)
+        .single();
+      
+      if (week) {
+        setNextMatchday(week);
+        const { data: matches } = await supabase
+          .from('matchups')
+          .select('*, home_team:teams!home_team_id(name), away_team:teams!away_team_id(name)')
+          .eq('week_id', week.id)
+          .limit(3);
+        if (matches) setMatchups(matches);
+      }
+    }
+    fetchData();
+  }, []);
+
   return (
     <div className="flex flex-col gap-20 pb-20">
       {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center justify-center overflow-hidden bg-ktpba-black text-white">
         <div className="absolute inset-0 opacity-20">
           <img 
-            src="https://picsum.photos/seed/bowling/1920/1080" 
+            src="https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070&auto=format&fit=crop" 
             alt="Bowling Background" 
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"
@@ -52,9 +97,9 @@ export default function Home() {
       {/* Stats / Quick Info */}
       <section className="max-w-7xl mx-auto px-4 w-full grid grid-cols-1 md:grid-cols-3 gap-8 -mt-32 relative z-20">
         {[
-          { label: 'Competing Teams', value: '20', icon: Users, color: 'bg-ktpba-black' },
-          { label: 'Match Weeks', value: '13', icon: Calendar, color: 'bg-ktpba-red' },
-          { label: 'Tournament Points', value: '1,500+', icon: Trophy, color: 'bg-ktpba-green' },
+          { label: 'Competing Teams', value: stats.teams, icon: Users, color: 'bg-ktpba-black' },
+          { label: 'Match Weeks', value: stats.weeks, icon: Calendar, color: 'bg-ktpba-red' },
+          { label: 'Tournament Points', value: stats.points > 0 ? stats.points : '1,500+', icon: Trophy, color: 'bg-ktpba-green' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -78,7 +123,11 @@ export default function Home() {
         <div className="flex items-end justify-between mb-10 border-b-2 border-ktpba-black pb-4">
           <div>
             <h2 className="text-4xl font-bold uppercase tracking-tight">Next Matchday</h2>
-            <p className="text-gray-500 uppercase tracking-widest text-sm mt-1">Monday 13 April 2026 · Village Bowl</p>
+            <p className="text-gray-500 uppercase tracking-widest text-sm mt-1">
+              {nextMatchday 
+                ? `${new Date(nextMatchday.play_date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · ${nextMatchday.venue}` 
+                : 'Monday 13 April 2026 · Village Bowl'}
+            </p>
           </div>
           <Link to="/schedule" className="text-ktpba-red font-display font-bold uppercase text-sm flex items-center gap-1 hover:gap-2 transition-all">
             Full Schedule <ArrowRight className="w-4 h-4" />
@@ -86,15 +135,17 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {WEEK_1_MATCHUPS.slice(0, 3).map((match, i) => (
+          {(matchups.length > 0 ? matchups : WEEK_1_MATCHUPS.slice(0, 3)).map((match, i) => (
             <div key={i} className="bg-white border border-gray-200 p-6 flex flex-col gap-6 hover:shadow-lg transition-shadow">
               <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                <span>Lane {match.lanes}</span>
+                <span>Lane {match.lane_pair || match.lanes}</span>
                 <span className="text-ktpba-red">6:45 PM</span>
               </div>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-lg font-bold truncate max-w-[150px]">{match.home}</span>
+                  <span className="font-display text-lg font-bold truncate max-w-[150px]">
+                    {match.home_team?.name || match.home}
+                  </span>
                   <span className="text-xs font-bold text-gray-300">HOME</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -103,7 +154,9 @@ export default function Home() {
                   <div className="h-[1px] flex-grow bg-gray-100" />
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="font-display text-lg font-bold truncate max-w-[150px]">{match.away}</span>
+                  <span className="font-display text-lg font-bold truncate max-w-[150px]">
+                    {match.away_team?.name || match.away}
+                  </span>
                   <span className="text-xs font-bold text-gray-300">AWAY</span>
                 </div>
               </div>
@@ -130,4 +183,3 @@ export default function Home() {
   );
 }
 
-import { cn } from '../lib/utils';
