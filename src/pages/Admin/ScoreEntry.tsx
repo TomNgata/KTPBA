@@ -1,6 +1,4 @@
-
 import { useState, useEffect } from 'react';
-import { WEEK_1_MATCHUPS } from '../../constants';
 import { Trophy, ChevronRight, ChevronLeft, Save, AlertTriangle, CheckCircle2, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { determineGameWinner } from '../../lib/scoring';
@@ -167,7 +165,7 @@ export default function ScoreEntry() {
                 <div className="py-20 flex justify-center">
                   <Loader2 className="w-12 h-12 text-ktpba-red animate-spin" />
                 </div>
-              ) : (matchups.length > 0 ? matchups : WEEK_1_MATCHUPS).map((match, i) => (
+              ) : matchups.length > 0 ? matchups.map((match, i) => (
                 <button
                   key={i}
                   onClick={() => setSelectedMatch(match)}
@@ -177,11 +175,11 @@ export default function ScoreEntry() {
                   )}
                 >
                   <div className="flex items-center gap-8">
-                    <span className="font-display text-xs font-bold text-gray-400 uppercase tracking-widest">{match.lane_pair || match.lanes}</span>
+                    <span className="font-display text-xs font-bold text-gray-400 uppercase tracking-widest">{match.lane_pair}</span>
                     <div className="flex items-center gap-4">
-                      <span className="font-display text-xl font-bold uppercase">{match.home_team?.name || match.home}</span>
+                      <span className="font-display text-xl font-bold uppercase">{match.home_team?.name}</span>
                       <span className="px-3 py-1 bg-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-widest">&</span>
-                      <span className="font-display text-xl font-bold uppercase">{match.away_team?.name || match.away}</span>
+                      <span className="font-display text-xl font-bold uppercase">{match.away_team?.name}</span>
                     </div>
                   </div>
                   <div className={cn(
@@ -191,8 +189,13 @@ export default function ScoreEntry() {
                     {selectedMatch === match && <CheckCircle2 className="w-4 h-4" />}
                   </div>
                 </button>
-              ))}
+              )) : (
+                <div className="py-20 text-center border-2 border-dashed border-gray-100">
+                  <span className="text-gray-400 font-display text-xs font-bold uppercase tracking-widest">No active sessions scheduled for entry</span>
+                </div>
+              )}
             </div>
+
           </div>
         )}
 
@@ -224,7 +227,7 @@ export default function ScoreEntry() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center mt-4">
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-1">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.home_team?.name || selectedMatch.home}</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.home_team?.name}</label>
                         {step === 'singles' && (
                           <input 
                             type="text" 
@@ -246,7 +249,7 @@ export default function ScoreEntry() {
                     
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-1 text-right">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.away_team?.name || selectedMatch.away}</label>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{selectedMatch.away_team?.name}</label>
                         {step === 'singles' && (
                           <input 
                             type="text" 
@@ -286,11 +289,11 @@ export default function ScoreEntry() {
                     <h4 className="font-display font-bold text-xs uppercase tracking-widest text-gray-400 mb-4">{f} Totals</h4>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-gray-600 uppercase truncate max-w-[100px]">{selectedMatch.home_team?.name || selectedMatch.home}</span>
+                        <span className="text-[10px] font-bold text-gray-600 uppercase truncate max-w-[100px]">{selectedMatch.home_team?.name}</span>
                         <span className="font-display font-bold text-lg text-ktpba-red">{homeTotal}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] font-bold text-gray-600 uppercase truncate max-w-[100px]">{selectedMatch.away_team?.name || selectedMatch.away}</span>
+                        <span className="text-[10px] font-bold text-gray-600 uppercase truncate max-w-[100px]">{selectedMatch.away_team?.name}</span>
                         <span className="font-display font-bold text-lg text-ktpba-red">{awayTotal}</span>
                       </div>
                     </div>

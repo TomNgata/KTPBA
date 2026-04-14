@@ -1,12 +1,10 @@
-
 import { useState, useEffect } from 'react';
-import { Standing } from '../types';
 import { getSupabase } from '../lib/supabase';
 import { Trophy, ArrowUp, ArrowDown, Minus } from 'lucide-react';
-import { TEAMS } from '../constants';
+import { cn } from '../lib/utils';
 
 export default function Standings() {
-  const [standings, setStandings] = useState<Standing[]>([]);
+  const [standings, setStandings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'overall' | 'singles' | 'doubles' | 'teams'>('overall');
 
@@ -146,4 +144,6 @@ export default function Standings() {
   );
 }
 
-import { cn } from '../lib/utils';
+    </div>
+  );
+}

@@ -1,8 +1,45 @@
 
-import { TEAMS } from '../../constants';
-import { Users, Search, Filter, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { getSupabase } from '../../lib/supabase';
+import { Users, Search, Filter, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function PlayerAdmin() {
+  const [teams, setTeams] = useState<any[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
+  const [players, setPlayers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchInitialData() {
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      const { data } = await supabase.from('teams').select('*').order('name');
+      if (data) {
+        setTeams(data);
+        if (data.length > 0) setSelectedTeam(data[0].id);
+      }
+      setLoading(false);
+    }
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchPlayers() {
+      if (!selectedTeam) return;
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      const { data } = await supabase
+        .from('players')
+        .select('*')
+        .eq('team_id', selectedTeam);
+      
+      if (data) setPlayers(data);
+    }
+    fetchPlayers();
+  }, [selectedTeam]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12">
@@ -30,9 +67,13 @@ export default function PlayerAdmin() {
         <div className="lg:col-span-1 space-y-4">
           <h3 className="font-display font-bold uppercase tracking-wider text-gray-400 text-xs mb-4">Teams</h3>
           <div className="bg-white border border-gray-200 divide-y divide-gray-100 max-h-[600px] overflow-y-auto">
-            {TEAMS.map((team) => (
-              <button key={team} className="w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition-colors font-medium">
-                {team}
+            {teams.map((team) => (
+              <button 
+                key={team.id} 
+                onClick={() => setSelectedTeam(team.id)}
+                className={`w-full text-left px-4 py-3 text-sm hover:bg-gray-50 transition-colors font-medium ${selectedTeam === team.id ? 'bg-ktpba-red/5 border-l-4 border-ktpba-red text-ktpba-red' : ''}`}
+              >
+                {team.name}
               </button>
             ))}
           </div>
@@ -52,21 +93,27 @@ export default function PlayerAdmin() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <tr key={i} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4 font-bold text-sm">Player {i}</td>
-                    <td className="px-6 py-4 text-xs text-gray-500 uppercase">{i === 1 ? 'Captain' : 'Member'}</td>
+                {players.length > 0 ? players.map((player) => (
+                  <tr key={player.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 font-bold text-sm">{player.name}</td>
+                    <td className="px-6 py-4 text-xs text-gray-500 uppercase">{player.role || 'Member'}</td>
                     <td className="px-6 py-4 text-center font-mono text-xs">0</td>
                     <td className="px-6 py-4 text-center font-mono text-xs">0</td>
                     <td className="px-6 py-4 text-center font-mono text-xs">0</td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-1.5 text-amber-500">
+                      <div className={`flex items-center gap-1.5 ${player.is_active ? 'text-ktpba-green' : 'text-gray-400'}`}>
                         <AlertCircle className="w-4 h-4" />
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Ineligible</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest">{player.is_active ? 'Eligible' : 'Inactive'}</span>
                       </div>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-20 text-center text-gray-400 font-display uppercase tracking-widest text-xs">
+                      {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : 'No players registered for this team'}
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -88,3 +135,4 @@ export default function PlayerAdmin() {
     </div>
   );
 }
+

@@ -1,16 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Oswald", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   --color-ktpba-black: #1A1A1A;
   --color-ktpba-red: #C0251E;
   --color-ktpba-green: #1B5E20;
   --color-ktpba-white: #F5F2ED;
 }
+
 
 @layer base {
   body {

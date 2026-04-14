@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { SPONSORS } from '../constants';
-import { Star, Loader2 } from 'lucide-react';
+import { Star, Loader2, Handshake } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
+import EmptyState from '../components/EmptyState';
 
 export default function Sponsors() {
   const [sponsors, setSponsors] = useState<any[]>([]);
@@ -48,25 +48,35 @@ export default function Sponsors() {
           <div className="col-span-full py-20 flex justify-center">
             <Loader2 className="w-12 h-12 text-ktpba-red animate-spin" />
           </div>
-        ) : (sponsors.length > 0 ? sponsors : SPONSORS.map(s => ({ name: s }))).map((sponsor: any, i: number) => (
-          <motion.div
-            key={sponsor.name}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.05 }}
-            className="bg-white border border-gray-200 p-10 flex flex-col items-center justify-center text-center group hover:border-ktpba-red transition-all shadow-sm hover:shadow-xl"
-          >
-            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-ktpba-red/10 transition-colors">
-              {sponsor.logo_url ? (
-                <img src={sponsor.logo_url} alt={sponsor.name} className="w-12 h-12 object-contain" />
-              ) : (
-                <Star className="w-8 h-8 text-gray-300 group-hover:text-ktpba-red transition-colors" />
-              )}
-            </div>
-            <h3 className="font-display text-2xl font-bold uppercase tracking-tight mb-2">{sponsor.name}</h3>
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Official Partner</span>
-          </motion.div>
-        ))}
+        ) : sponsors.length > 0 ? (
+          sponsors.map((sponsor: any, i: number) => (
+            <motion.div
+              key={sponsor.id}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: i * 0.05 }}
+              className="bg-white border border-gray-200 p-10 flex flex-col items-center justify-center text-center group hover:border-ktpba-red transition-all shadow-sm hover:shadow-xl"
+            >
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6 group-hover:bg-ktpba-red/10 transition-colors">
+                {sponsor.logo_url ? (
+                  <img src={sponsor.logo_url} alt={sponsor.name} className="w-12 h-12 object-contain" />
+                ) : (
+                  <Star className="w-8 h-8 text-gray-300 group-hover:text-ktpba-red transition-colors" />
+                )}
+              </div>
+              <h3 className="font-display text-2xl font-bold uppercase tracking-tight mb-2">{sponsor.name}</h3>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Official Partner</span>
+            </motion.div>
+          ))
+        ) : (
+          <EmptyState 
+            icon={Handshake}
+            title="Strategic Partnerships"
+            description="We are currently finalizing partnership agreements for the 2026 season. Official tournament sponsors will be showcased here shortly."
+            actionLabel="Partner With Us"
+            actionLink="/sponsors" // In a real app this might open a modal or form
+          />
+        )}
       </div>
 
       <div className="mt-32 p-12 bg-ktpba-black text-white text-center relative overflow-hidden">
@@ -85,3 +95,4 @@ export default function Sponsors() {
     </div>
   );
 }
+
