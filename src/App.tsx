@@ -18,6 +18,8 @@ import AdminDashboard from './pages/Admin/Dashboard';
 import ScoreEntry from './pages/Admin/ScoreEntry';
 import PlayerAdmin from './pages/Admin/Players';
 import ScheduleAdmin from './pages/Admin/Schedule';
+import AdminAnnouncements from './pages/Admin/Announcements';
+import AnnouncementBanner from './components/AnnouncementBanner';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -186,6 +188,7 @@ export default function App() {
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
+        <AnnouncementBanner />
         <Navbar />
         <main className="flex-grow">
           <Routes>
@@ -203,6 +206,7 @@ export default function App() {
             <Route path="/admin/score-entry" element={<ScoreEntry />} />
             <Route path="/admin/players" element={<PlayerAdmin />} />
             <Route path="/admin/schedule" element={<ScheduleAdmin />} />
+            <Route path="/admin/announcements" element={<AdminAnnouncements />} />
           </Routes>
         </main>
         <Footer />

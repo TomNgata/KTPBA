@@ -1,11 +1,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Trophy, Calendar, Users, ArrowRight, Star, Loader2 } from 'lucide-react';
+import { Trophy, Calendar, Users, ArrowRight, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabase';
 import { cn } from '../lib/utils';
 import Logo from '../components/Logo';
+import CountdownCard from '../components/CountdownCard';
 
 export default function Home() {
   const [stats, setStats] = useState({
@@ -143,6 +144,17 @@ export default function Home() {
           </motion.div>
         ))}
       </section>
+
+      {/* Countdown to Next Match Night */}
+      {nextMatchday && (
+        <section className="max-w-7xl mx-auto px-4 w-full -mt-6">
+          <CountdownCard nextMatch={{
+            weekNumber: nextMatchday.week_number,
+            playDate: nextMatchday.play_date,
+            dayOfWeek: nextMatchday.day_of_week,
+          }} />
+        </section>
+      )}
 
       {/* Next Matchday */}
       <section className="max-w-7xl mx-auto px-4 w-full">

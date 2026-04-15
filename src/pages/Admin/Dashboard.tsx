@@ -87,11 +87,11 @@ export default function AdminDashboard() {
               <h3 className="font-display font-bold text-lg uppercase mb-1">Player Roster</h3>
               <p className="text-gray-400 text-xs">Track participation and eligibility</p>
             </Link>
-            <div className="p-6 bg-gray-50 border border-dashed border-gray-300 opacity-50 cursor-not-allowed">
-              <Settings className="w-8 h-8 mb-4 text-gray-300" />
-              <h3 className="font-display font-bold text-lg uppercase mb-1">Settings</h3>
-              <p className="text-gray-400 text-xs">Tournament rules and configuration</p>
-            </div>
+            <Link to="/admin/announcements" className="p-6 bg-white border border-gray-200 hover:border-ktpba-red transition-all group">
+              <Settings className="w-8 h-8 mb-4 text-gray-300 group-hover:text-ktpba-red transition-colors" />
+              <h3 className="font-display font-bold text-lg uppercase mb-1">Announcements</h3>
+              <p className="text-gray-400 text-xs">Post match night updates and alerts</p>
+            </Link>
           </div>
         </div>
 

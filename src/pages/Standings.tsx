@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getSupabase } from '../lib/supabase';
-import { Trophy, ArrowUp, Minus, ShieldAlert } from 'lucide-react';
+import { Trophy, ShieldAlert, BarChart2, TrendingUp } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { DivisionChart, PinfallDistributionChart } from '../components/Charts';
 
-type StandingsTab = 'overall' | 'group-a' | 'group-b';
+type StandingsTab = 'overall' | 'unified' | 'group-a' | 'group-b';
 
 export default function Standings() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -59,12 +60,21 @@ export default function Standings() {
       if (activeTab === 'overall') {
         return b.seeding_pinfall - a.seeding_pinfall;
       }
-      // Group Stage: Match Points first, then Pinfall
+      
+      // Points first
       if (b.match_points !== a.match_points) {
         return b.match_points - a.match_points;
       }
+      // Then Total Pinfall (Season Prediction for roll-off)
       return b.total_pinfall - a.total_pinfall;
     });
+
+  const getTier = (index: number) => {
+    if (activeTab !== 'unified') return null;
+    if (index < 8) return { label: 'GOLD', color: 'bg-yellow-500', bg: 'bg-yellow-50/50' };
+    if (index < 16) return { label: 'SILVER', color: 'bg-gray-400', bg: 'bg-gray-50/50' };
+    return { label: 'BRONZE', color: 'bg-amber-600', bg: 'bg-amber-50/30' };
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-20">
@@ -79,7 +89,7 @@ export default function Standings() {
         </div>
         
         <div className="flex bg-gray-100 p-1 rounded-sm overflow-x-auto">
-          {(['overall', 'group-a', 'group-b'] as const).map((tab) => (
+          {(['overall', 'unified', 'group-a', 'group-b'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => handleTabChange(tab)}
@@ -88,7 +98,7 @@ export default function Standings() {
                 activeTab === tab ? "bg-ktpba-black text-white shadow-lg" : "text-gray-500 hover:text-ktpba-black"
               )}
             >
-              {tab === 'overall' ? 'Seeding Phase' : tab === 'group-a' ? 'Monday Division' : 'Tuesday Division'}
+              {tab === 'overall' ? 'Seeding Phase' : tab === 'unified' ? 'Unified (Gold/Silver/Bronze)' : tab === 'group-a' ? 'Monday Division' : 'Tuesday Division'}
             </button>
           ))}
         </div>
@@ -108,54 +118,68 @@ export default function Standings() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredStandings.map((team, i) => (
-                <tr key={team.team_id} className="hover:bg-gray-50 transition-colors group">
-                  <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <span className={cn(
-                        "w-8 h-8 flex items-center justify-center font-display font-bold text-sm",
-                        i === 0 ? "bg-ktpba-red text-white" : "bg-gray-100 text-gray-500"
-                      )}>
-                        {i + 1}
-                      </span>
-                      {i < 3 && <Trophy className={cn("w-4 h-4", i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : "text-amber-600")} />}
-                    </div>
-                  </td>
-                  <td className="px-6 py-5 text-center">
-                    <span className={cn(
-                      "px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full",
-                      team.group_name === 'A' ? "bg-blue-50 text-blue-600" : 
-                      team.group_name === 'B' ? "bg-purple-50 text-purple-600" : 
-                      "bg-gray-50 text-gray-400"
-                    )}>
-                      {team.group_name ? `Group ${team.group_name}` : 'TBD'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-5">
-                    <span className="font-display font-bold text-lg uppercase tracking-tight group-hover:text-ktpba-red transition-colors">
-                      {team.name}
-                    </span>
-                  </td>
-                  <td className="px-6 py-5 text-center bg-gray-50/50">
-                    <span className="font-display text-2xl font-bold">
-                      {team.match_points}
-                    </span>
-                  </td>
-                  <td className="px-6 py-5 text-center">
-                    {team.penalty_points > 0 ? (
-                      <div className="flex items-center justify-center gap-2 text-ktpba-red font-bold animate-pulse">
-                        <ShieldAlert className="w-4 h-4" />
-                        <span>-{team.penalty_points}</span>
-                      </div>
-                    ) : (
-                      <span className="text-gray-200">0</span>
+              {filteredStandings.map((team, i) => {
+                const tier = getTier(i);
+                return (
+                  <tr 
+                    key={team.team_id} 
+                    className={cn(
+                      "hover:bg-gray-50 transition-colors group relative",
+                      tier?.bg
                     )}
-                  </td>
-                  <td className="px-6 py-5 text-right font-display font-bold text-xl bg-ktpba-red/5 text-ktpba-red">
-                    {team.total_pinfall.toLocaleString()}
-                  </td>
-                </tr>
-              ))}
+                  >
+                    <td className="px-6 py-5">
+                      <div className="flex items-center gap-3">
+                        <span className={cn(
+                          "w-8 h-8 flex items-center justify-center font-display font-bold text-sm",
+                          i === 0 ? "bg-ktpba-red text-white" : "bg-white border border-gray-100 text-gray-400"
+                        )}>
+                          {i + 1}
+                        </span>
+                        {i < 3 && <Trophy className={cn("w-4 h-4", i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : "text-amber-600")} />}
+                        {tier && (
+                          <span className={cn("px-2 py-0.5 text-[8px] font-black text-white rounded-sm", tier.color)}>
+                            {tier.label}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <span className={cn(
+                        "px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full",
+                        team.group_name === 'A' ? "bg-blue-50 text-blue-600" : 
+                        team.group_name === 'B' ? "bg-purple-50 text-purple-600" : 
+                        "bg-gray-50 text-gray-400"
+                      )}>
+                        {team.group_name ? `Group ${team.group_name}` : 'TBD'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-5">
+                      <span className="font-display font-bold text-lg uppercase tracking-tight group-hover:text-ktpba-red transition-colors">
+                        {team.name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-5 text-center bg-gray-50/50">
+                      <span className="font-display text-2xl font-bold">
+                        {team.match_points}
+                      </span>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      {team.penalty_points > 0 ? (
+                        <div className="flex items-center justify-center gap-2 text-ktpba-red font-bold animate-pulse">
+                          <ShieldAlert className="w-4 h-4" />
+                          <span>-{team.penalty_points}</span>
+                        </div>
+                      ) : (
+                        <span className="text-gray-200">0</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-5 text-right font-display font-bold text-xl bg-ktpba-red/5 text-ktpba-red">
+                      {team.total_pinfall.toLocaleString()}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -194,6 +218,42 @@ export default function Standings() {
               <span className="block text-gray-400 mb-1">Phase 03</span>
               Knockouts (Gold, Silver, Bronze)
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Analytics Charts */}
+      <div className="mt-16 space-y-12">
+        <div className="border-b-4 border-ktpba-black pb-4 flex items-center gap-3">
+          <TrendingUp className="w-6 h-6 text-ktpba-red" />
+          <h2 className="text-3xl font-bold uppercase tracking-tighter">Performance Analytics</h2>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Pinfall Distribution */}
+          <div className="bg-white border border-gray-200 p-8">
+            <div className="flex items-center gap-2 mb-6">
+              <BarChart2 className="w-5 h-5 text-ktpba-red" />
+              <h3 className="font-display font-bold text-lg uppercase tracking-wider">Pinfall Distribution</h3>
+            </div>
+            <PinfallDistributionChart
+              data={standings.map(t => ({
+                team: t.name,
+                singles: t.singles_pinfall || 0,
+                doubles: t.doubles_pinfall || 0,
+                teams: t.teams_pinfall || 0,
+              }))}
+            />
+          </div>
+
+          {/* Monday Division Chart */}
+          <div className="bg-white border border-gray-200 p-8">
+            <DivisionChart
+              title="Monday Division — Match Points"
+              data={[]}
+              teams={standings.filter(t => t.group_name === 'A').map(t => t.name)}
+            />
+            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-4">Match data accumulates as each round is completed</p>
           </div>
         </div>
       </div>

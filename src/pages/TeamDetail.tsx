@@ -1,17 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Trophy, Users, Calendar, ArrowLeft, Info, Loader2, Gauge } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowLeft, Info, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import EmptyState from '../components/EmptyState';
 import { cn } from '../lib/utils';
 import TeamSessionCard from '../components/TeamSessionCard';
+import TeamFormWidget from '../components/TeamFormWidget';
 
 export default function TeamDetail() {
   const { slug } = useParams();
   const [team, setTeam] = useState<any>(null);
   const [standings, setStandings] = useState<any>(null);
   const [history, setHistory] = useState<any[]>([]);
+  const [form, setForm] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -92,10 +94,20 @@ export default function TeamDetail() {
               totalScore: totalPins,
               matchPoints: isSeeding ? null : points,
               phase: m.type,
+              opponentName: isHome ? m.away_team.name : m.home_team.name,
               status: m.status
             };
           });
           setHistory(sessions);
+
+          // Compute form from Round Robin matches only (most recent first)
+          const rrMatches = sessions.filter((s: any) => s.phase === 'regular');
+          const formData = rrMatches.map((s: any) => {
+            const pts = s.matchPoints ?? 0;
+            const result = pts >= 6 ? 'W' : pts <= 5 && pts > 0 ? 'L' : pts === 0 ? 'L' : 'D';
+            return { weekNumber: s.weekNumber, result, matchPoints: pts, opponentName: s.opponentName };
+          });
+          setForm(formData);
         }
       }
       
@@ -167,6 +179,17 @@ export default function TeamDetail() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-ktpba-red/10 rounded-full -mr-48 -mt-48 blur-3xl" />
         <div className="kenyan-stripe absolute bottom-0 left-0 right-0" />
       </div>
+
+      {/* Form Widget — below hero banner */}
+      {form.length > 0 && (
+        <TeamFormWidget
+          teamName={team.name}
+          groupName={team.group_name || '?'}
+          matchPoints={standings?.match_points || 0}
+          rank={standings?.rank || 0}
+          form={form}
+        />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-12">
