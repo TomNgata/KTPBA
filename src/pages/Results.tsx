@@ -19,11 +19,14 @@ export default function Results() {
         .select(`
           id, 
           status, 
+          type,
           lane_pair,
           weeks(play_date),
           home_team:teams!home_team_id(name), 
           away_team:teams!away_team_id(name),
           format_matches(
+            format,
+            winner_team_id,
             games(home_score, away_score)
           )
         `)
@@ -35,16 +38,27 @@ export default function Results() {
           const lanes = m.lane_pair ? m.lane_pair.split('-') : ['?', '?'];
           const date = m.weeks ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD';
           
-          // Calculate total scores for home and away
+          // Calculate total scores and Match Points
           let homePins = 0;
           let awayPins = 0;
+          let homePoints = 0;
+          let awayPoints = 0;
           
           m.format_matches?.forEach((fm: any) => {
             fm.games?.forEach((g: any) => {
               homePins += g.home_score || 0;
               awayPins += g.away_score || 0;
+              
+              if (m.type === 'regular') {
+                 if (g.home_score > g.away_score) homePoints++;
+                 else if (g.away_score > g.home_score) awayPoints++;
+                 // In case of a rare draw in a single game of a best-of match, 
+                 // the tournament usually has a roll-off, but logic-wise we count strictly by winner
+              }
             });
           });
+
+          const isSeeding = m.type === 'seeding';
 
           acc.push({
             teamName: m.home_team.name,
@@ -52,6 +66,8 @@ export default function Results() {
             date,
             status: m.status,
             totalScore: homePins,
+            matchPoints: isSeeding ? null : homePoints,
+            phase: m.type,
             id: `${m.id}-home`
           });
           acc.push({
@@ -60,6 +76,8 @@ export default function Results() {
             date,
             status: m.status,
             totalScore: awayPins,
+            matchPoints: isSeeding ? null : awayPoints,
+            phase: m.type,
             id: `${m.id}-away`
           });
           return acc;
@@ -101,6 +119,8 @@ export default function Results() {
                 date={session.date}
                 status={session.status}
                 totalScore={session.totalScore}
+                matchPoints={session.matchPoints}
+                phase={session.phase}
               />
             ))}
           </div>

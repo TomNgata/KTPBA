@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KTPBA Teams Marathon 2026 — Web App Implementation Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --black:#1A1A1A;
+  --red:#C0251E;
+  --green:#1B5E20;
+  --white:#F5F2ED;
+  --red-light:#FAE8E7;
+  --green-light:#E8F5E9;
+  --gray:#6B6B6B;
+  --bg:#ffffff;
+  --bg2:#f7f7f5;
+  --border:rgba(0,0,0,0.1);
+  --border2:rgba(0,0,0,0.18);
+  --r:8px;
+  --rl:12px;
+}
+body{font-family:'Source Sans 3',sans-serif;background:var(--white);color:var(--black);padding:2rem 1rem;font-size:15px;line-height:1.7}
+.doc{max-width:900px;margin:0 auto;padding-bottom:5rem}
+
+/* HERO */
+.hero{background:var(--black);color:#fff;padding:3rem 2.5rem;border-radius:var(--rl);margin-bottom:3rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50px;right:-50px;width:260px;height:260px;border-radius:50%;border:2px solid rgba(192,37,30,0.25)}
+.hero::after{content:'';position:absolute;bottom:-70px;right:80px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(27,94,32,0.3)}
+.hero-tag{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:10px}
+.hero-title{font-family:'Oswald',sans-serif;font-size:34px;font-weight:700;line-height:1.05;margin-bottom:8px}
+.hero-sub{font-size:14px;color:rgba(255,255,255,0.5);margin-top:6px;line-height:1.7}
+.flag-stripe{height:5px;background:linear-gradient(90deg,var(--green) 0,var(--green) 33.3%,var(--black) 33.3%,var(--black) 66.6%,var(--red) 66.6%);margin-top:1.5rem;border-radius:2px}
+
+/* SECTION */
+.section{margin-bottom:3rem}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:10px;border-bottom:2px solid var(--black)}
+.sec-num{font-family:'Oswald',sans-serif;font-size:11px;font-weight:500;letter-spacing:2px;color:var(--red);background:var(--red-light);padding:3px 9px;border-radius:3px}
+.sec-title{font-family:'Oswald',sans-serif;font-size:20px;font-weight:700}
+.sec-sub{font-family:'Oswald',sans-serif;font-size:13px;font-weight:400;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin-left:4px}
+
+/* CARDS */
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rl);padding:1.25rem 1.5rem;margin-bottom:14px}
+.card-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);font-weight:600;margin-bottom:8px}
+.card-title{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;margin-bottom:6px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+
+/* TOOL CARD */
+.tool-card{border-radius:var(--rl);overflow:hidden;margin-bottom:1.5rem}
+.tool-header{padding:1.25rem 1.5rem;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.tool-header.google{background:linear-gradient(135deg,#1A1A1A 0%,#2a2a2a 100%);border-left:4px solid #4285F4}
+.tool-header.anti{background:linear-gradient(135deg,#1A1A1A 0%,#2a2a2a 100%);border-left:4px solid var(--green)}
+.tool-name{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700}
+.tool-badge{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:4px 10px;border-radius:3px}
+.badge-google{background:#4285F4;color:#fff}
+.badge-anti{background:var(--green);color:#fff}
+.tool-body{background:var(--bg);border:0.5px solid var(--border);border-top:none;border-radius:0 0 var(--rl) var(--rl);padding:1.5rem}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px}
+th{background:var(--bg2);font-family:'Oswald',sans-serif;font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:9px 12px;text-align:left;color:var(--gray);border-bottom:0.5px solid var(--border2)}
+td{padding:9px 12px;border-bottom:0.5px solid var(--border);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+td strong{color:var(--black);font-weight:600}
+td code{font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--bg2);padding:2px 6px;border-radius:3px;color:var(--red)}
+
+/* STEP SEQUENCE */
+.steps{counter-reset:step;list-style:none;padding:0}
+.steps li{counter-increment:step;display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-bottom:0.5px solid var(--border)}
+.steps li:last-child{border-bottom:none}
+.step-num{font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;color:#fff;background:var(--red);min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-num.green{background:var(--green)}
+.step-content{flex:1}
+.step-title{font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;color:var(--black);margin-bottom:3px}
+.step-detail{font-size:12px;color:var(--gray);line-height:1.6}
+
+/* TAGS */
+.tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 9px;border-radius:3px;margin:2px 2px 2px 0}
+.tag-red{background:var(--red-light);color:#9B1C17}
+.tag-green{background:var(--green-light);color:#1B4D1E}
+.tag-black{background:#E8E7E5;color:#2C2C2A}
+.tag-blue{background:#E8F0FE;color:#1a56b0}
+
+/* CODE BLOCK */
+.code-block{background:#1A1A1A;border-radius:var(--r);padding:1.25rem 1.5rem;margin-bottom:14px;overflow-x:auto}
+.code-block pre{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:#e8e8e8}
+.code-block .kw{color:#C0251E}
+.code-block .fn{color:#7dd3af}
+.code-block .str{color:#fbbf24}
+.code-block .cm{color:#6B6B6B}
+
+/* ALERT */
+.alert{border-radius:var(--r);padding:12px 16px;margin-bottom:12px;font-size:13px;line-height:1.6;display:flex;gap:10px;align-items:flex-start}
+.alert-red{background:var(--red-light);border-left:3px solid var(--red)}
+.alert-green{background:var(--green-light);border-left:3px solid var(--green)}
+.alert-gray{background:var(--bg2);border-left:3px solid var(--gray)}
+.alert-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.alert-text{flex:1}
+.alert-text strong{display:block;font-weight:600;color:var(--black);margin-bottom:2px}
+
+/* ENTITY */
+.entity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.entity{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);padding:10px 12px}
+.entity-name{font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;color:var(--black);margin-bottom:4px}
+.entity-fields{font-size:11px;color:var(--gray);line-height:2;font-family:'JetBrains Mono',monospace}
+.entity-pk{color:var(--red);font-weight:500}
+
+/* DATA SUMMARY */
+.data-box{background:var(--black);color:#fff;border-radius:var(--rl);padding:1.5rem;margin-bottom:1.5rem}
+.data-box-title{font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);margin-bottom:1rem}
+.data-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.data-item{background:rgba(255,255,255,0.06);border-radius:var(--r);padding:10px 12px}
+.data-val{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff}
+.data-lbl{font-size:11px;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* SCHEDULE TABLE */
+.schedule-header{background:var(--green);color:#fff;font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;border-radius:var(--r) var(--r) 0 0}
+.matchup-row{display:flex;align-items:center;padding:10px 12px;background:var(--bg);border:0.5px solid var(--border);border-top:none;gap:12px}
+.matchup-row:last-child{border-radius:0 0 var(--r) var(--r)}
+.lane-badge{font-family:'Oswald',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;background:var(--red-light);color:var(--red);padding:2px 7px;border-radius:2px;flex-shrink:0}
+.team-name{font-family:'Oswald',sans-serif;font-size:13px;font-weight:500;flex:1}
+.vs{font-size:10px;font-weight:600;color:var(--gray);letter-spacing:1px;text-transform:uppercase}
+.tbd{font-size:12px;color:var(--gray);font-style:italic}
+
+/* MVP BADGE */
+.mvp-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:8px}
+.mvp-phase{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;min-width:70px;padding:3px 8px;border-radius:2px;text-align:center}
+.phase-mvp{background:var(--red);color:#fff}
+.phase-v2{background:var(--green);color:#fff}
+.phase-v3{background:var(--black);color:#fff}
+.mvp-label{font-size:13px;font-weight:600;flex:1}
+.mvp-detail{font-size:11px;color:var(--gray)}
+
+/* RISK */
+.risk-row{display:grid;grid-template-columns:auto 1fr 1fr;gap:12px;align-items:start;padding:10px 12px;border-bottom:0.5px solid var(--border);font-size:12px}
+.risk-row:last-child{border-bottom:none}
+.risk-level{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:2px;white-space:nowrap}
+.risk-high{background:#FAE8E7;color:#9B1C17}
+.risk-med{background:#FFF8E1;color:#7B5800}
+.risk-low{background:var(--green-light);color:#1B4D1E}
+
+@media(max-width:600px){
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .hero-title{font-size:26px}
+  .code-block pre{font-size:11px}
+  .risk-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Product Architecture &amp; Implementation Strategy</div>
+    <div class="hero-title">KTPBA Teams Marathon 2026<br>Web App — Full Implementation Plan</div>
+    <div class="hero-sub">Sequential build: Google AI Studio builds the app first → Antigravity refines + handles all Supabase via MCP · Tie-breaks by roll-off game · Tournament starts 13 April 2026</div>
+    <div class="flag-stripe"></div>
+  </div>
+
+  <!-- SECTION 0: TOURNAMENT INTELLIGENCE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">00</span>
+      <span class="sec-title">Tournament Intelligence</span>
+      <span class="sec-sub">Inferred from all attached files &amp; images</span>
+    </div>
+
+    <div class="data-box">
+      <div class="data-box-title">Tournament At A Glance</div>
+      <div class="data-grid">
+        <div class="data-item"><div class="data-val">20</div><div class="data-lbl">Competing Teams</div></div>
+        <div class="data-item"><div class="data-val">13</div><div class="data-lbl">Sponsors</div></div>
+        <div class="data-item"><div class="data-val">~13</div><div class="data-lbl">Match Weeks</div></div>
+        <div class="data-item"><div class="data-val">3</div><div class="data-lbl">Formats Per Night</div></div>
+        <div class="data-item"><div class="data-val">9</div><div class="data-lbl">Max Points/Matchday</div></div>
+        <div class="data-item"><div class="data-val">Baker</div><div class="data-lbl">Teams Style</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Inferred Tournament Structure</div>
+      <p style="font-size:13px;line-height:1.8;margin-bottom:10px">Each match week, teams are paired on adjacent bowling lanes (odd lane vs even lane). Each pairing plays three competitive formats in sequence on the same evening. Each format is <strong>best of 3 games</strong>, and winning a format earns the team <strong>1 standings point</strong>. Maximum 3 points available per team per matchday.</p>
+      <table>
+        <thead><tr><th>Format</th><th>Structure</th><th>Player Rule</th><th>Time Slot</th><th>Points</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Singles</strong></td><td>1 player bowls 3 individual games</td><td>Every team player must bowl ≥1 singles game across the season</td><td>7:00–8:00 PM</td><td>1 for match winner</td></tr>
+          <tr><td><strong>Doubles</strong></td><td>2 players bowl 3 games, alternating frames</td><td>Every team player must bowl ≥1 doubles game across the season</td><td>8:10–9:10 PM</td><td>1 for match winner</td></tr>
+          <tr><td><strong>Teams (Baker)</strong></td><td>5 players rotate, each bowls 2 frames per game</td><td>Lineup can change between games; min 5 players required</td><td>9:25–11:05 PM</td><td>1 for match winner</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Baker's Style — Rules Engine</div>
+      <p style="font-size:13px;line-height:1.8;margin-bottom:10px">In Baker's Style, a team of 5 players shares a single 10-frame game. Each player bowls exactly 2 frames in a fixed rotation (Player 1: frames 1&amp;6, Player 2: frames 2&amp;7, Player 3: frames 3&amp;8, Player 4: frames 4&amp;9, Player 5: frames 5&amp;10). The 10th frame is bowled by Player 5. Lineup order can be changed between games (not during). Best of 3 games: first team to win 2 games wins the Teams match.</p>
+      <div class="alert alert-green">
+        <span class="alert-icon">✓</span>
+        <div class="alert-text"><strong>Tie-Break Rule — Confirmed</strong> If both teams bowl identical pin totals in a game, a <strong>roll-off game</strong> is played immediately to determine the winner of that game. The roll-off result is recorded as a separate game entry in the <code>games</code> table with <code>is_rolloff = true</code>. The roll-off winner takes that game's win in the best-of-3 count. This applies to all three formats (Singles, Doubles, and Teams/Baker).</div>
+      </div>
+      <div class="alert alert-red">
+        <span class="alert-icon">⚠</span>
+        <div class="alert-text"><strong>Privacy Rule (Critical)</strong> Team player identities and lineups must NEVER be displayed on the public-facing frontend. Player participation tracking is backend-only (Supabase). Leaderboards show team standings only. This is to prevent competitive intelligence between opponents.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Week 1 — Monday 13 April 2026 — Confirmed Matchups (Inferred from Adjacent Lanes)</div>
+      <div class="schedule-header">WEEK 01 · MON 13 APR 2026 · VILLAGE BOWL · 6:45 PM</div>
+      <div class="matchup-row">
+        <span class="lane-badge">L03</span>
+        <span class="team-name">The Big Five Rangers</span>
+        <span class="vs">VS</span>
+        <span class="lane-badge">L04</span>
+        <span class="team-name">PlayMasters Mavericks</span>
+      </div>
+      <div class="matchup-row">
+        <span class="lane-badge">L05</span>
+        <span class="team-name">Mahadev Strikers</span>
+        <span class="vs">VS</span>
+        <span class="lane-badge">L06</span>
+        <span class="team-name">The Big Five</span>
+      </div>
+      <div class="matchup-row">
+        <span class="lane-badge">L07</span>
+        <span class="team-name">Citihub</span>
+        <span class="vs">VS</span>
+        <span class="lane-badge">L08</span>
+        <span class="team-name">Amigos Estrella</span>
+      </div>
+      <div class="matchup-row">
+        <span class="lane-badge">L09</span>
+        <span class="team-name">Noisy Kings</span>
+        <span class="vs">VS</span>
+        <span class="lane-badge">L10</span>
+        <span class="team-name">4 Baggerz</span>
+      </div>
+      <div class="matchup-row">
+        <span class="lane-badge">L11</span>
+        <span class="team-name">4 Baggerz Nation</span>
+        <span class="vs">VS</span>
+        <span class="lane-badge">L12</span>
+        <span class="team-name">Ndovu Rev Strikers</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Week 1 — Tuesday &amp; Wednesday — TBD Matchups (10 Remaining Teams)</div>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:10px">The following teams have no confirmed lane assignment in the provided schedule. Their Week 1 matches are marked TBD and will be entered by the league manager.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag tag-black">Playmasters</span>
+        <span class="tag tag-black">Amigos Segundo</span>
+        <span class="tag tag-black">Playmasters Warriors</span>
+        <span class="tag tag-black">Playmasters Rising</span>
+        <span class="tag tag-black">Unbowlivable Strikers</span>
+        <span class="tag tag-black">Unbowlivables</span>
+        <span class="tag tag-black">The Who Hurt You Movement</span>
+        <span class="tag tag-black">Eastline Stars</span>
+        <span class="tag tag-black">The Incredi-Bowls</span>
+        <span class="tag tag-black">Amigos Senoras</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Known Player Roster — Seeding Round (Week 1 Teams Only)</div>
+      <div class="alert alert-gray">
+        <span class="alert-icon">ℹ</span>
+        <div class="alert-text"><strong>Backend Only</strong> — This data populates Supabase but is never exposed on the public frontend. Only the league admin can view it.</div>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Team</th><th>Singles Player</th><th>Doubles P1</th><th>Doubles P2</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>The Big Five Rangers</strong></td><td>Dipin Khetani</td><td>Riten Valani</td><td>Vinesh Vekariya</td></tr>
+          <tr><td>3</td><td><strong>PlayMasters Mavericks</strong></td><td>Ian Serge</td><td>Darshi Chandaria</td><td>Dorothy Williams</td></tr>
+          <tr><td>5</td><td><strong>Mahadev Strikers</strong></td><td>Jagdish Kabariya</td><td>Kishan Pindoria</td><td>Prakash Vekaria</td></tr>
+          <tr><td>7</td><td><strong>The Big Five</strong></td><td>Dipesh Halai</td><td>Tarang Kara</td><td>Dilkush Vekaria</td></tr>
+          <tr><td>9</td><td><strong>Citihub</strong></td><td>Tutte</td><td>Osminde Abdi</td><td>Saif</td></tr>
+          <tr><td>11</td><td><strong>Amigos Estrella</strong></td><td>Munzel Moses</td><td>Benjamin Atandi</td><td>Samuel Atandi</td></tr>
+          <tr><td>13</td><td><strong>Noisy Kings</strong></td><td>Brian</td><td>Sadam Shariff</td><td>Zakariya Habib</td></tr>
+          <tr><td>15</td><td><strong>4 Baggerz</strong></td><td>Aman Patel</td><td>Biral Dedhia</td><td>Jazir Teja</td></tr>
+          <tr><td>17</td><td><strong>4 Baggerz Nation</strong></td><td>Nihil Patel</td><td>Josline Anthony</td><td>Chirag Patani</td></tr>
+          <tr><td>19</td><td><strong>Ndovu Rev Strikers</strong></td><td>Pradyuman Jivani</td><td>Manav Rabadia</td><td>Dikshit Raghvani</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--gray);margin-top:6px">⚠ Full 5-player Baker's Style roster for each team is not in the provided files. Team captains will submit full rosters via admin input before their first team match.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Sponsors — 13 Confirmed (from Image 1)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="tag tag-black">Alexa Dashcams</span>
+        <span class="tag tag-black">Bowl Village</span>
+        <span class="tag tag-black">RAA</span>
+        <span class="tag tag-black">emami Mentho Plus</span>
+        <span class="tag tag-black">WOW Safaris</span>
+        <span class="tag tag-black">Parklane Construction</span>
+        <span class="tag tag-black">Max Protein (BiteBite)</span>
+        <span class="tag tag-black">Tribe</span>
+        <span class="tag tag-black">Bondé</span>
+        <span class="tag tag-black">Village Market</span>
+        <span class="tag tag-black">King's Collection</span>
+        <span class="tag tag-black">Simba Mbili</span>
+        <span class="tag tag-black">Mr. Berry's</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Explicit Assumptions &amp; Open Questions</div>
+      <table>
+        <thead><tr><th>Item</th><th>Status</th><th>Resolution</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lane pairing logic</strong></td><td><span class="tag tag-black">Assumed</span></td><td>Adjacent odd/even lanes are paired (L3vsL4, L5vsL6, etc.); admin corrects if wrong</td></tr>
+          <tr><td><strong>Match win = highest pinfall</strong></td><td><span class="tag tag-black">Assumed</span></td><td>Highest total pins wins a game; 2-of-3 games wins the format</td></tr>
+          <tr><td><strong>Tie-break rule</strong></td><td><span class="tag tag-green">Confirmed</span></td><td>Identical pinfall → roll-off game played immediately; winner takes the game</td></tr>
+          <tr><td><strong>Supabase setup ownership</strong></td><td><span class="tag tag-green">Confirmed</span></td><td>Antigravity handles all Supabase work via MCP (schema, seed, RLS, score loading)</td></tr>
+          <tr><td><strong>Full team rosters</strong></td><td><span class="tag tag-black">Assumed</span></td><td>5-player Baker roster must be entered by admin; not in provided files</td></tr>
+          <tr><td><strong>TBD matchups (Tue/Wed)</strong></td><td><span class="tag tag-black">Assumed</span></td><td>Admin enters pairings before Tuesday; no scoring on TBD matchups</td></tr>
+          <tr><td><strong>Standings tiebreaker</strong></td><td><span class="tag tag-black">Assumed</span></td><td>Total pinfall as secondary tiebreaker when points are equal</td></tr>
+          <tr><td><strong>Season format</strong></td><td><span class="tag tag-black">Assumed</span></td><td>Round-robin league (~13 weeks) followed by playoffs; league manager to confirm</td></tr>
+          <tr><td><strong>Player eligibility threshold</strong></td><td><span class="tag tag-black">Assumed</span></td><td>"At least one game" per format = once per season, not per week</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 1: DATA MODEL -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">01</span>
+      <span class="sec-title">Unified Data Model</span>
+      <span class="sec-sub">Supabase / PostgreSQL — provisioned by Antigravity via MCP</span>
+    </div>
+
+    <div class="entity-grid">
+      <div class="entity">
+        <div class="entity-name">teams</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          name text<br>
+          slug text UNIQUE<br>
+          color_hex text<br>
+          is_active bool<br>
+          created_at timestamp
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">players</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          team_id uuid FK→teams<br>
+          name text<br>
+          role text (captain/member)<br>
+          is_active bool<br>
+          <em style="color:#C0251E">⚠ NEVER exposed frontend</em>
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">weeks</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          week_number int<br>
+          play_date date<br>
+          day_of_week text<br>
+          venue text<br>
+          status enum(scheduled/live/completed)
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">matchups</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          week_id uuid FK→weeks<br>
+          home_team_id uuid FK<br>
+          away_team_id uuid FK<br>
+          lane_pair text (e.g. L03/L04)<br>
+          status enum(tbd/scheduled/live/done)
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">format_matches</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          matchup_id uuid FK<br>
+          format enum(singles/doubles/teams)<br>
+          home_wins int (0-3)<br>
+          away_wins int (0-3)<br>
+          winner_team_id uuid FK<br>
+          status enum
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">games</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          format_match_id uuid FK<br>
+          game_number int (1-4)<br>
+          home_score int<br>
+          away_score int<br>
+          winner_team_id uuid FK<br>
+          is_rolloff bool DEFAULT false<br>
+          entered_at timestamp
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">player_participation</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          player_id uuid FK<br>
+          game_id uuid FK<br>
+          format enum<br>
+          game_number int<br>
+          <em style="color:#C0251E">⚠ backend/admin only</em>
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">standings</div>
+        <div class="entity-fields">
+          <em style="color:#6B6B6B">Computed view</em><br>
+          team_id uuid<br>
+          total_points int<br>
+          matches_played int<br>
+          singles_pts / doubles_pts / teams_pts<br>
+          total_pinfall bigint
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">baker_lineups</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          game_id uuid FK<br>
+          team_id uuid FK<br>
+          player_id uuid FK<br>
+          frame_position int (1-5)<br>
+          <em style="color:#C0251E">⚠ backend/admin only</em>
+        </div>
+      </div>
+      <div class="entity">
+        <div class="entity-name">sponsors</div>
+        <div class="entity-fields">
+          <span class="entity-pk">id</span> uuid PK<br>
+          name text<br>
+          logo_url text<br>
+          tier text<br>
+          is_active bool
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block">
+      <pre><span class="cm">-- Standings view (Supabase SQL)</span>
+<span class="kw">CREATE OR REPLACE VIEW</span> <span class="fn">team_standings</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+  t.id, t.name, t.slug,
+  <span class="fn">COUNT</span>(fm.id) FILTER (<span class="kw">WHERE</span> fm.winner_team_id = t.id) <span class="kw">AS</span> total_points,
+  <span class="fn">COUNT</span>(fm.id) FILTER (<span class="kw">WHERE</span> fm.format = <span class="str">'singles'</span> <span class="kw">AND</span> fm.winner_team_id = t.id) <span class="kw">AS</span> singles_pts,
+  <span class="fn">COUNT</span>(fm.id) FILTER (<span class="kw">WHERE</span> fm.format = <span class="str">'doubles'</span> <span class="kw">AND</span> fm.winner_team_id = t.id) <span class="kw">AS</span> doubles_pts,
+  <span class="fn">COUNT</span>(fm.id) FILTER (<span class="kw">WHERE</span> fm.format = <span class="str">'teams'</span> <span class="kw">AND</span> fm.winner_team_id = t.id) <span class="kw">AS</span> teams_pts,
+  <span class="fn">COALESCE</span>(<span class="fn">SUM</span>(g.home_score) FILTER (<span class="kw">WHERE</span> mu.home_team_id = t.id), 0) +
+  <span class="fn">COALESCE</span>(<span class="fn">SUM</span>(g.away_score) FILTER (<span class="kw">WHERE</span> mu.away_team_id = t.id), 0) <span class="kw">AS</span> total_pinfall
+<span class="kw">FROM</span> teams t
+<span class="kw">LEFT JOIN</span> format_matches fm <span class="kw">ON TRUE</span>
+<span class="kw">LEFT JOIN</span> matchups mu <span class="kw">ON</span> fm.matchup_id = mu.id
+  <span class="kw">AND</span> (mu.home_team_id = t.id <span class="kw">OR</span> mu.away_team_id = t.id)
+<span class="kw">LEFT JOIN</span> games g <span class="kw">ON</span> g.format_match_id = fm.id
+<span class="kw">WHERE</span> t.is_active = <span class="kw">TRUE</span>
+<span class="kw">GROUP BY</span> t.id, t.name, t.slug
+<span class="kw">ORDER BY</span> total_points <span class="kw">DESC</span>, total_pinfall <span class="kw">DESC</span>;</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Supabase Row Level Security (RLS) — Privacy Rules</div>
+      <table>
+        <thead><tr><th>Table</th><th>Public Read</th><th>Admin Read/Write</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><code>players</code></td><td style="color:#C0251E">DENIED</td><td>✓ Full access</td><td>No player identity exposed to public</td></tr>
+          <tr><td><code>player_participation</code></td><td style="color:#C0251E">DENIED</td><td>✓ Full access</td><td>Participation logs are admin-only</td></tr>
+          <tr><td><code>baker_lineups</code></td><td style="color:#C0251E">DENIED</td><td>✓ Full access</td><td>Lineup secrecy is a core league rule</td></tr>
+          <tr><td><code>teams</code></td><td>✓ Name, slug, color</td><td>✓ Full access</td><td>Team identity is public</td></tr>
+          <tr><td><code>matchups</code></td><td>✓ Schedule data</td><td>✓ Full access</td><td>Future matchups visible as schedule</td></tr>
+          <tr><td><code>games</code></td><td>✓ Scores only</td><td>✓ Full access</td><td>Scores public after match completed</td></tr>
+          <tr><td><code>team_standings</code></td><td>✓ View</td><td>✓ Full access</td><td>Points, no player breakdown</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 2: GOOGLE AI STUDIO PLAN -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">02</span>
+      <span class="sec-title">Phase 1 — Google AI Studio</span>
+      <span class="sec-sub">Builds the complete app · no Supabase setup here</span>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header google">
+        <div>
+          <div class="tool-name">Google AI Studio — App Builder</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px">Phase 1: Generate the full Next.js app with all pages, components, and logic · Antigravity handles Supabase in Phase 2</div>
+        </div>
+        <span class="tool-badge badge-google">Phase 1</span>
+      </div>
+      <div class="tool-body">
+
+        <div class="card">
+          <div class="card-label">Role in the Build</div>
+          <p style="font-size:13px;line-height:1.8">Google AI Studio is the <strong>app construction engine</strong>. It builds the entire Next.js frontend — all pages, UI components, routing, scoring logic, and admin workflows. Gemini 1.5 Pro's large context window lets you paste this entire implementation plan plus all tournament data and get production-ready code back in one pass. Supabase credentials are wired in as environment variables but the actual database provisioning, seeding, and RLS configuration is entirely handled by Antigravity in Phase 2 via MCP. AI Studio has no MCP configuration in this project — its job ends at deploying a working app to Vercel.</p>
+          <div class="alert alert-green" style="margin-top:12px">
+            <span class="alert-icon">→</span>
+            <div class="alert-text"><strong>Handoff Point</strong> AI Studio outputs: a deployed Next.js app on Vercel with all pages functional, Supabase client configured, and env vars set. Antigravity then takes over to provision the Supabase backend, seed all data, and begin loading game results.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Architecture — What AI Studio Builds</div>
+          <table>
+            <thead><tr><th>Layer</th><th>Technology</th><th>AI Studio's Job</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Frontend</strong></td><td>Next.js 14 (App Router)</td><td>Generate all page components, layouts, and routing</td></tr>
+              <tr><td><strong>Styling</strong></td><td>Tailwind CSS + KTPBA tokens</td><td>Apply brand colors (#1A1A1A, #C0251E, #1B5E20), Oswald + Source Sans 3</td></tr>
+              <tr><td><strong>Data Layer</strong></td><td>Supabase JS client</td><td>Wire up all queries; database itself provisioned by Antigravity</td></tr>
+              <tr><td><strong>Auth</strong></td><td>Supabase Auth helpers</td><td>Admin login gate on all /admin routes; public routes unauthenticated</td></tr>
+              <tr><td><strong>Scoring Logic</strong></td><td>TypeScript utilities</td><td>Best-of-3 engine, roll-off trigger, standings calculator</td></tr>
+              <tr><td><strong>AI Features</strong></td><td>Gemini 1.5 Flash API</td><td>Match summary generator, standings wrap-up, social captions</td></tr>
+              <tr><td><strong>Hosting</strong></td><td>Vercel</td><td>CI/CD from GitHub; preview URL per branch for testing</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Pages &amp; Screens — Full Specification</div>
+          <table>
+            <thead><tr><th>Route</th><th>Page</th><th>Access</th><th>Key Content</th></tr></thead>
+            <tbody>
+              <tr><td><code>/</code></td><td>Home / Landing</td><td>Public</td><td>Tournament hero, next match countdown, top 3 standings, sponsor ticker</td></tr>
+              <tr><td><code>/standings</code></td><td>League Table</td><td>Public</td><td>Full standings: Pts, W/L by format, pinfall. NO player names.</td></tr>
+              <tr><td><code>/schedule</code></td><td>Full Schedule</td><td>Public</td><td>All weeks, matchups, status (TBD/Scheduled/Live/Done)</td></tr>
+              <tr><td><code>/results</code></td><td>Results &amp; Scores</td><td>Public</td><td>Completed weeks, game-by-game scores per format, roll-off indicator</td></tr>
+              <tr><td><code>/teams</code></td><td>Teams Directory</td><td>Public</td><td>Team cards with name, record. No player names.</td></tr>
+              <tr><td><code>/teams/[slug]</code></td><td>Team Profile</td><td>Public</td><td>Match history, points breakdown. No roster, no lineup.</td></tr>
+              <tr><td><code>/sponsors</code></td><td>Sponsors Wall</td><td>Public</td><td>Logo grid for all 13 sponsors</td></tr>
+              <tr><td><code>/admin</code></td><td>Admin Dashboard</td><td>Admin only</td><td>Score entry, schedule management, player roster (full)</td></tr>
+              <tr><td><code>/admin/score-entry</code></td><td>Live Score Entry</td><td>Admin only</td><td>Enter game scores, auto-detect roll-off, log participation</td></tr>
+              <tr><td><code>/admin/players</code></td><td>Player Management</td><td>Admin only</td><td>Full roster, participation tracker, eligibility checker</td></tr>
+              <tr><td><code>/admin/schedule</code></td><td>Schedule Builder</td><td>Admin only</td><td>Set TBD matchups, add weeks, manage lanes</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Scoring Engine Logic — AI Studio Must Implement</div>
+          <table>
+            <thead><tr><th>Rule</th><th>Implementation</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Game winner</strong></td><td>Higher pin total wins; if equal → flag as tie, create roll-off game record (<code>is_rolloff=true</code>), winner of roll-off takes the game</td></tr>
+              <tr><td><strong>Best of 3</strong></td><td>Track home_wins + away_wins per format match; stop entering games once either reaches 2. If 1-1 after Game 2, Game 3 is mandatory.</td></tr>
+              <tr><td><strong>Format point</strong></td><td>Team that wins 2 games in a format gets 1 standings point. Update <code>format_matches.winner_team_id</code> and auto-refresh standings view.</td></tr>
+              <tr><td><strong>Standings sort</strong></td><td>Primary: total_points DESC. Secondary: total_pinfall DESC. Tertiary: head-to-head (V2).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">AI Features with Gemini — Built in Phase 1</div>
+          <table>
+            <thead><tr><th>Feature</th><th>How It Works</th><th>Priority</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Match Summary Generator</strong></td><td>After admin publishes result → server action calls Gemini with match data → stores 2-sentence recap in <code>matchups.summary</code></td><td><span class="tag tag-green">MVP</span></td></tr>
+              <tr><td><strong>Standings Wrap-Up</strong></td><td>After each match night → Gemini generates homepage "Week X Results" blurb from standings movement</td><td><span class="tag tag-green">MVP</span></td></tr>
+              <tr><td><strong>Roll-off Alert Copy</strong></td><td>When roll-off is triggered, Gemini generates a dramatic one-liner for the live results feed: "It's a tie — roll-off incoming!"</td><td><span class="tag tag-green">MVP</span></td></tr>
+              <tr><td><strong>Social Caption Generator</strong></td><td>Admin clicks "Generate Post" → Gemini writes Instagram/X caption in KTPBA tone of voice</td><td><span class="tag tag-black">V2</span></td></tr>
+              <tr><td><strong>Eligibility Warning</strong></td><td>Gemini formats a natural-language alert for admin when players haven't met format participation rules mid-season</td><td><span class="tag tag-black">V2</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Step-by-Step Build Sequence — Google AI Studio (Phase 1)</div>
+          <ul class="steps">
+            <li>
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <div class="step-title">Prompt AI Studio with Full Context</div>
+                <div class="step-detail">Paste this implementation plan document into AI Studio as system context alongside the tournament images. Prompt: "Build a complete Next.js 14 app for the KTPBA Teams Marathon 2026 bowling tournament. Use the data model, pages, and logic defined in the plan. Use Tailwind CSS with the KTPBA brand tokens. Wire Supabase client via env vars (database to be provisioned separately)."</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <div class="step-title">Generate Project Scaffold</div>
+                <div class="step-detail">AI Studio outputs: <code>npx create-next-app@latest ktpba-app --typescript --tailwind --app</code> scaffold + <code>tailwind.config.ts</code> with KTPBA brand tokens + <code>.env.local</code> template with <code>NEXT_PUBLIC_SUPABASE_URL</code> and <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> placeholders (values filled by Antigravity in Phase 2).</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <div class="step-title">Generate All Public Pages</div>
+                <div class="step-detail">Prompt AI Studio to generate: Home, Standings, Schedule, Results, Teams directory, Team profile, Sponsors wall. Each page queries Supabase but gracefully shows empty states if no data yet — so the app is deployable before Antigravity loads data.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">4</div>
+              <div class="step-content">
+                <div class="step-title">Generate Scoring Engine (TypeScript)</div>
+                <div class="step-detail">Prompt: "Generate a <code>lib/scoring.ts</code> module with: determineGameWinner(homeScore, awayScore) → returns winner or 'rolloff'; updateFormatMatch(formatMatchId, gameResult) → updates wins and checks if format is decided; getFormatWinner(homeWins, awayWins) → returns winning team or null." This is the core business logic.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">5</div>
+              <div class="step-content">
+                <div class="step-title">Generate Admin Score Entry Flow</div>
+                <div class="step-detail">Prompt: "Generate /admin/score-entry with a multi-step form: Step 1 select matchup, Step 2 enter Singles games one at a time with auto roll-off detection, Step 3 Doubles, Step 4 Teams. Show running win count per team. Publish button finalises and triggers Gemini summary generation."</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">6</div>
+              <div class="step-content">
+                <div class="step-title">Generate Admin Player + Schedule Management</div>
+                <div class="step-detail">Prompt: "Generate /admin/players with a table of all players per team showing their format participation history (singles games bowled, doubles games bowled). Generate /admin/schedule for setting TBD matchup pairings. Both pages are RLS-protected — only visible to authenticated admin."</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">7</div>
+              <div class="step-content">
+                <div class="step-title">Add Gemini AI Server Actions</div>
+                <div class="step-detail">Prompt: "Generate Next.js server actions in <code>app/actions/ai.ts</code>: generateMatchSummary(matchupId), generateWeeklyWrapup(weekId), generateRolloffAlert(). Each calls Gemini 1.5 Flash with structured match data and stores output back to Supabase. Use KTPBA tone of voice: bold, sports-announcer energy."</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">8</div>
+              <div class="step-content">
+                <div class="step-title">Add Supabase Realtime Subscriptions</div>
+                <div class="step-detail">Prompt: "Add Supabase Realtime to the standings page and homepage mini-standings. Subscribe to changes on <code>format_matches</code> and <code>games</code> tables. When a new result is entered by admin, the public standings page refreshes automatically without a browser reload."</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">9</div>
+              <div class="step-content">
+                <div class="step-title">Push to GitHub + Deploy to Vercel</div>
+                <div class="step-detail">Push generated project to GitHub. Connect to Vercel → deploy. Set SUPABASE_URL and SUPABASE_ANON_KEY as Vercel environment variables (these will be provided by Antigravity after Phase 2 Supabase setup). App will be live but show empty states until Antigravity loads data.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num">10</div>
+              <div class="step-content">
+                <div class="step-title">Handoff to Antigravity (Phase 2)</div>
+                <div class="step-detail">Share the deployed Vercel URL + GitHub repo with the Antigravity setup. Antigravity will connect to Supabase via MCP, provision the schema, seed all teams and Week 1 data, configure RLS, and begin loading game results. The app will populate with real data automatically.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: ANTIGRAVITY PLAN -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">03</span>
+      <span class="sec-title">Phase 2 — Antigravity</span>
+      <span class="sec-sub">Supabase via MCP · Data seeding · Refinement · Ongoing score entry</span>
+    </div>
+
+    <div class="tool-card">
+      <div class="tool-header anti">
+        <div>
+          <div class="tool-name">Antigravity — Supabase + Refinement Engine</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px">Phase 2: Provision Supabase via MCP · seed all tournament data · refine the app · run ongoing game result entry</div>
+        </div>
+        <span class="tool-badge badge-anti">Phase 2</span>
+      </div>
+      <div class="tool-body">
+
+        <div class="card">
+          <div class="card-label">Role in the Build</div>
+          <p style="font-size:13px;line-height:1.8">Antigravity takes over after the AI Studio app is deployed. Its MCP configuration gives it <strong>direct tool-call access to Supabase</strong> — it can create tables, run migrations, insert seed data, configure RLS policies, and load game results entirely through natural language prompts without touching SQL directly. This makes Antigravity the right owner for the entire backend layer and for the ongoing weekly workflow of loading scores as the season progresses. Antigravity also refines any UI components from Phase 1 that need adjustments, and builds out the admin score-entry workflow that the league manager will use every match night.</p>
+          <div class="alert alert-green" style="margin-top:12px">
+            <span class="alert-icon">→</span>
+            <div class="alert-text"><strong>MCP Supabase Integration</strong> Antigravity's MCP connection to Supabase means it can execute: CREATE TABLE, INSERT, UPDATE, DELETE, CREATE POLICY, and CREATE VIEW directly — no separate Supabase dashboard work needed. All schema from Section 01 is provisioned by Antigravity in this phase.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">What Antigravity Owns — Full Responsibility List</div>
+          <table>
+            <thead><tr><th>Responsibility</th><th>Tool Used</th><th>When</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Supabase schema creation</strong></td><td>MCP → Supabase SQL execution</td><td>Phase 2 start</td></tr>
+              <tr><td><strong>RLS policy configuration</strong></td><td>MCP → ALTER TABLE + CREATE POLICY</td><td>Before any public URL is shared</td></tr>
+              <tr><td><strong>Seed all 20 teams</strong></td><td>MCP → INSERT into teams</td><td>Phase 2 start</td></tr>
+              <tr><td><strong>Seed Week 1 player roster (10 teams)</strong></td><td>MCP → INSERT into players</td><td>Phase 2 start</td></tr>
+              <tr><td><strong>Seed Week 1 Monday matchups</strong></td><td>MCP → INSERT into weeks + matchups</td><td>Phase 2 start</td></tr>
+              <tr><td><strong>Mark Tue/Wed matchups as TBD</strong></td><td>MCP → INSERT with status='tbd'</td><td>Phase 2 start</td></tr>
+              <tr><td><strong>Seed all 13 sponsors</strong></td><td>MCP → INSERT into sponsors</td><td>Phase 2 start</td></tr>
+              <tr><td><strong>Set Vercel env vars</strong></td><td>Provide SUPABASE_URL + ANON_KEY to Vercel</td><td>After schema creation</td></tr>
+              <tr><td><strong>Load game results each match night</strong></td><td>MCP → INSERT into games + format_matches</td><td>Ongoing weekly</td></tr>
+              <tr><td><strong>Enter player participation logs</strong></td><td>MCP → INSERT into player_participation</td><td>Ongoing weekly (admin-only)</td></tr>
+              <tr><td><strong>Enter Baker lineups</strong></td><td>MCP → INSERT into baker_lineups</td><td>Ongoing weekly (admin-only)</td></tr>
+              <tr><td><strong>Update TBD matchup pairings</strong></td><td>MCP → UPDATE matchups</td><td>Before each match day</td></tr>
+              <tr><td><strong>UI refinement of Phase 1 app</strong></td><td>Antigravity visual editor + prompts</td><td>After data is live</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">MCP Supabase Prompts — Antigravity Execution</div>
+          <p style="font-size:13px;line-height:1.8;margin-bottom:12px">These are the natural language prompts Antigravity will execute via its MCP Supabase connection:</p>
+
+          <div class="code-block">
+            <pre><span class="cm">-- MCP PROMPT 1: Schema + RLS Setup</span>
+Using the Supabase MCP tool, run these SQL migrations in order:
+1. Create all tables from the KTPBA data model (teams, players, weeks,
+   matchups, format_matches, games, player_participation, baker_lineups,
+   sponsors). Include the is_rolloff boolean on the games table.
+2. Create the team_standings computed view with total_points, 
+   singles_pts, doubles_pts, teams_pts, total_pinfall.
+3. Enable RLS on all tables. 
+4. Create policies: players, player_participation, baker_lineups → 
+   DENY all public reads. teams, matchups, games, team_standings → 
+   ALLOW public SELECT. All tables → ALLOW full access for service_role.</pre>
+          </div>
+
+          <div class="code-block">
+            <pre><span class="cm">-- MCP PROMPT 2: Seed All 20 Teams</span>
+Using Supabase MCP, INSERT all 20 teams into the teams table:
+The Big Five Rangers, PlayMasters Mavericks, Mahadev Strikers, 
+The Big Five, Citihub, Amigos Estrella, Noisy Kings, 4 Baggerz,
+4 Baggerz Nation, Ndovu Rev Strikers, Playmasters, Amigos Segundo,
+Playmasters Warriors, Playmasters Rising, Unbowlivable Strikers,
+Unbowlivables, The Who Hurt You Movement, Eastline Stars,
+The Incredi-Bowls, Amigos Senoras.
+Generate slugs automatically from team names.</pre>
+          </div>
+
+          <div class="code-block">
+            <pre><span class="cm">-- MCP PROMPT 3: Seed Week 1 Players (Backend-Only)</span>
+Using Supabase MCP, INSERT the following players into the players table.
+These are NEVER shown on the public frontend (RLS blocks public reads).
+The Big Five Rangers: Dipin Khetani (singles), Riten Valani (doubles), Vinesh Vekariya (doubles)
+PlayMasters Mavericks: Ian Serge (singles), Darshi Chandaria (doubles), Dorothy Williams (doubles)
+Mahadev Strikers: Jagdish Kabariya (singles), Kishan Pindoria (doubles), Prakash Vekaria (doubles)
+The Big Five: Dipesh Halai (singles), Tarang Kara (doubles), Dilkush Vekaria (doubles)
+Citihub: Tutte (singles), Osminde Abdi (doubles), Saif (doubles)
+Amigos Estrella: Munzel Moses (singles), Benjamin Atandi (doubles), Samuel Atandi (doubles)
+Noisy Kings: Brian (singles), Sadam Shariff (doubles), Zakariya Habib (doubles)
+4 Baggerz: Aman Patel (singles), Biral Dedhia (doubles), Jazir Teja (doubles)
+4 Baggerz Nation: Nihil Patel (singles), Josline Anthony (doubles), Chirag Patani (doubles)
+Ndovu Rev Strikers: Pradyuman Jivani (singles), Manav Rabadia (doubles), Dikshit Raghvani (doubles)</pre>
+          </div>
+
+          <div class="code-block">
+            <pre><span class="cm">-- MCP PROMPT 4: Seed Week 1 Schedule</span>
+Using Supabase MCP, INSERT Week 1 schedule:
+1. Create week record: week_number=1, play_date=2026-04-13, 
+   venue='Village Bowl', status='live'.
+2. Create Monday matchups (all status='scheduled'):
+   - The Big Five Rangers vs PlayMasters Mavericks (L03/L04)
+   - Mahadev Strikers vs The Big Five (L05/L06)
+   - Citihub vs Amigos Estrella (L07/L08)
+   - Noisy Kings vs 4 Baggerz (L09/L10)
+   - 4 Baggerz Nation vs Ndovu Rev Strikers (L11/L12)
+3. Create 10 TBD matchups for Tuesday and Wednesday 
+   (status='tbd', teams TBD) for the 10 remaining teams.</pre>
+          </div>
+
+          <div class="code-block">
+            <pre><span class="cm">-- MCP PROMPT 5: Load Game Results (Recurring Weekly)</span>
+Using Supabase MCP, INSERT tonight's game results:
+Matchup: [Team A] vs [Team B], Week [N], Format: Singles
+  Game 1: [Team A score] vs [Team B score]
+  Game 2: [Team A score] vs [Team B score]
+  [If tied: Game 3 is a roll-off — set is_rolloff=true]
+Auto-calculate format winner (2 game wins) and update 
+format_matches.winner_team_id. The standings view will 
+recalculate automatically.</pre>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Validation Rules — Enforced via Antigravity MCP Checks</div>
+          <table>
+            <thead><tr><th>Rule</th><th>MCP Logic</th><th>When Triggered</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Tie → roll-off</strong></td><td>If home_score = away_score → INSERT new game with is_rolloff=true before marking format done</td><td>On game score entry</td></tr>
+              <tr><td><strong>Best of 3 enforcement</strong></td><td>Query existing wins count; reject Game 3 insert if either team already has 2 wins</td><td>On each game insert</td></tr>
+              <tr><td><strong>Baker team size</strong></td><td>COUNT baker_lineups for game_id must = 5 before allowing game result entry</td><td>On lineup submit</td></tr>
+              <tr><td><strong>No duplicate frame positions</strong></td><td>Each frame_position 1–5 must be unique per game_id + team_id</td><td>On baker_lineups insert</td></tr>
+              <tr><td><strong>Player eligibility check</strong></td><td>Weekly query: SELECT players with 0 singles or 0 doubles in player_participation → flag in admin view</td><td>Admin dashboard load</td></tr>
+              <tr><td><strong>No scoring on TBD matchups</strong></td><td>Reject game inserts where matchup.status = 'tbd'</td><td>On game insert</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Step-by-Step Build Sequence — Antigravity (Phase 2)</div>
+          <ul class="steps">
+            <li>
+              <div class="step-num green">1</div>
+              <div class="step-content">
+                <div class="step-title">Connect Antigravity MCP to Supabase</div>
+                <div class="step-detail">In Antigravity, configure the Supabase MCP server with your project URL and service role key. Verify connection by running a test SELECT. This gives Antigravity full tool-call access to the database.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">2</div>
+              <div class="step-content">
+                <div class="step-title">Run Schema + RLS via MCP (MCP Prompt 1)</div>
+                <div class="step-detail">Execute MCP Prompt 1 above. Verify all tables created, standings view exists, and RLS is active. Test with an anonymous Supabase query to confirm players table returns 0 rows publicly.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">3</div>
+              <div class="step-content">
+                <div class="step-title">Seed All 20 Teams + 13 Sponsors (MCP Prompts 2 + sponsors)</div>
+                <div class="step-detail">Execute MCP Prompt 2 for teams. Then INSERT all 13 sponsors (Alexa Dashcams, Bowl Village, RAA, emami Mentho Plus, WOW Safaris, Parklane Construction, Max Protein, Tribe, Bondé, Village Market, King's Collection, Simba Mbili, Mr. Berry's) into the sponsors table.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">4</div>
+              <div class="step-content">
+                <div class="step-title">Seed Player Roster — Backend Only (MCP Prompt 3)</div>
+                <div class="step-detail">Execute MCP Prompt 3. All 10 known players for Week 1 teams are in Supabase but invisible to the public frontend. Verify RLS is blocking public reads on the players table before proceeding.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">5</div>
+              <div class="step-content">
+                <div class="step-title">Seed Week 1 Schedule (MCP Prompt 4)</div>
+                <div class="step-detail">Execute MCP Prompt 4. Five confirmed Monday matchups are now in Supabase with status='scheduled'. Ten TBD matchups created for Tuesday/Wednesday. The schedule page in the Phase 1 app will now show real data.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">6</div>
+              <div class="step-content">
+                <div class="step-title">Update Vercel Env Vars — App Goes Live</div>
+                <div class="step-detail">Provide the Supabase URL + anon key to Vercel environment variables. Trigger a Vercel redeploy. The Phase 1 app now has a live database behind it — standings, schedule, and all public pages show real data.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">7</div>
+              <div class="step-content">
+                <div class="step-title">UI Refinement Pass via Antigravity Editor</div>
+                <div class="step-detail">Review each public page against the KTPBA brand guidelines. Use Antigravity's visual editor to refine: flag stripe motifs, Oswald heading fonts, button styles (0px radius, red fill for primary), Kenyan flag footer stripe. Adjust card layouts and spacing as needed.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">8</div>
+              <div class="step-content">
+                <div class="step-title">Load Game Results — Tonight and Every Match Night</div>
+                <div class="step-detail">After each format at Village Bowl, use MCP Prompt 5 template to INSERT game results. Antigravity executes the insert, auto-calculates winners, and the standings view updates immediately. Public standings page refreshes via Realtime subscription. This is the recurring weekly workflow for the league manager.</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">9</div>
+              <div class="step-content">
+                <div class="step-title">Log Player Participation (Backend-Only)</div>
+                <div class="step-detail">After each match, MCP INSERT into player_participation for each player who bowled. This feeds the eligibility checker but is never exposed on the frontend. Antigravity can prompt: "Log that [player] bowled singles game 1 in week 1 matchup [X]."</div>
+              </div>
+            </li>
+            <li>
+              <div class="step-num green">10</div>
+              <div class="step-content">
+                <div class="step-title">Set Tuesday/Wednesday Matchup Pairings</div>
+                <div class="step-detail">Before each Tuesday/Wednesday match, prompt Antigravity via MCP: "Update the TBD matchups for Week 1 Tuesday: pair [Team A] vs [Team B], lane [X/Y]." This flips status from 'tbd' to 'scheduled' and the schedule page updates automatically.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: FRONTEND SPEC -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">04</span>
+      <span class="sec-title">Frontend Behavior — Public App</span>
+      <span class="sec-sub">Applies to both build paths</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-label">Homepage</div>
+        <ul style="font-size:13px;line-height:2;padding-left:16px;list-style:disc">
+          <li>Tournament title hero (black bg, Oswald 700)</li>
+          <li>Countdown to next match evening</li>
+          <li>Top 3 teams in mini standings cards</li>
+          <li>Latest results (last completed week)</li>
+          <li>AI-generated week wrap-up blurb</li>
+          <li>Sponsor logo ticker (auto-scroll)</li>
+          <li>Kenyan flag stripe as horizontal rule</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label">Standings Page</div>
+        <ul style="font-size:13px;line-height:2;padding-left:16px;list-style:disc">
+          <li>League table: Rank, Team, Pts, S/D/T breakdown</li>
+          <li>Filter tabs: Overall / Singles / Doubles / Teams</li>
+          <li>Highlight leader row in Kenyan Red</li>
+          <li>Real-time update via Supabase subscription</li>
+          <li>Zero player names visible anywhere</li>
+          <li>Pinfall shown as secondary sort indicator</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label">Schedule Page</div>
+        <ul style="font-size:13px;line-height:2;padding-left:16px;list-style:disc">
+          <li>Group by Week → Day → Match</li>
+          <li>Status: TBD / Scheduled / Live / Done</li>
+          <li>Live pulse badge (red) for tonight's games</li>
+          <li>TBD teams greyed out with "TBD" placeholder</li>
+          <li>Each matchup card links to result when done</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label">Team Profile Page</div>
+        <ul style="font-size:13px;line-height:2;padding-left:16px;list-style:disc">
+          <li>Team name + color banner</li>
+          <li>Record: W/L overall and by format</li>
+          <li>Match-by-match results table</li>
+          <li>Points progression chart (V2)</li>
+          <li>NO player names, NO roster, NO lineup history</li>
+          <li>Head-to-head record vs other teams (V2)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Admin Score Entry — Flow Detail</div>
+      <ol style="font-size:13px;line-height:2.2;padding-left:20px">
+        <li>Admin logs in via Supabase Auth → lands on /admin dashboard</li>
+        <li>Selects active matchup (tonight's games pre-populated)</li>
+        <li>Selects format: Singles → enters Game 1 home pin total and away pin total</li>
+        <li>System auto-determines game winner (higher score) and displays it</li>
+        <li>Admin enters Game 2; system checks if format is decided (2-0) or continues to Game 3</li>
+        <li>After all 3 formats done: system calculates which team wins each format → adds 1 standing point each</li>
+        <li>Admin optionally logs player participation (backend-only dropdown)</li>
+        <li>Admin optionally enters Baker lineup for teams games (backend-only)</li>
+        <li>Admin clicks "Publish Result" → scores go live on public pages</li>
+        <li>AI summary auto-generates and is stored for the results page</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- SECTION 5: RISKS -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">05</span>
+      <span class="sec-title">Risks, Edge Cases &amp; Mitigations</span>
+    </div>
+
+    <div class="card" style="padding:0;overflow:hidden">
+      <table style="margin:0">
+        <thead><tr><th>Level</th><th>Risk / Edge Case</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="risk-level risk-high">HIGH</span></td>
+            <td><strong>App not ready before tonight's match starts</strong> — Tournament begins today</td>
+            <td>Build admin score entry first (Step 4 AI Studio / Step 3 Antigravity). Can use a simple Google Form → Sheet as temporary fallback, then back-enter to Supabase.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-high">HIGH</span></td>
+            <td><strong>Player lineup leaked</strong> — Privacy rule is core to fair play</td>
+            <td>Supabase RLS policies must be set BEFORE frontend is deployed. Test with an unauthenticated API call to confirm players/baker_lineups return 0 rows.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-high">HIGH</span></td>
+            <td><strong>Full Baker rosters not yet submitted</strong> for 10 Monday teams</td>
+            <td>Admin enters "provisional" roster before match, can update after. Baker validation is a soft warning, not a hard block in MVP.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-med">MED</span></td>
+            <td><strong>Tuesday/Wednesday matchup pairings unknown</strong></td>
+            <td>Show TBD cards on schedule. Admin enters pairings before those evenings. No scoring allowed on TBD matchups.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-med">MED</span></td>
+            <td><strong>Tie in a game</strong> — Both teams bowl exactly the same pinfall</td>
+            <td>Confirmed rule: roll-off game played immediately. Score entry form must detect home_score = away_score and prompt admin to enter the roll-off game (is_rolloff=true). Roll-off result determines game winner; the tied game itself is not counted in the 3-game sequence.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-med">MED</span></td>
+            <td><strong>Player eligibility end-of-season</strong> — Someone never bowled singles or doubles</td>
+            <td>Admin dashboard flags non-compliant players each week. Eligibility checker runs as a Supabase RPC function, result shown only in admin panel.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-low">LOW</span></td>
+            <td><strong>Score entry error / wrong score submitted</strong></td>
+            <td>Admin can edit any game record directly in Supabase or via admin edit form. Standings view recalculates automatically on any change.</td>
+          </tr>
+          <tr>
+            <td><span class="risk-level risk-low">LOW</span></td>
+            <td><strong>Sponsor logo image quality</strong></td>
+            <td>Upload all 13 sponsor logos to Supabase Storage in consistent format (PNG transparent, 400px wide). Create logos table with fallback text name if image missing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 6: MVP SCOPE -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">06</span>
+      <span class="sec-title">MVP vs Later Enhancements</span>
+    </div>
+
+    <div class="mvp-row">
+      <div class="mvp-phase phase-mvp">MVP</div>
+      <div class="mvp-label">Admin score entry (singles, doubles, teams — game-by-game)</div>
+      <div class="mvp-detail">Needed tonight</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-mvp">MVP</div>
+      <div class="mvp-label">Public standings page (team points only, no player data)</div>
+      <div class="mvp-detail">Week 1 same evening</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-mvp">MVP</div>
+      <div class="mvp-label">Schedule page (Week 1 confirmed + TBD placeholders)</div>
+      <div class="mvp-detail">Week 1 launch</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-mvp">MVP</div>
+      <div class="mvp-label">Results page (completed format scores, no player names)</div>
+      <div class="mvp-detail">After first match</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-mvp">MVP</div>
+      <div class="mvp-label">Supabase RLS policies protecting all player/lineup tables</div>
+      <div class="mvp-detail">Before first deploy</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-mvp">MVP</div>
+      <div class="mvp-label">Player participation logging (backend admin only)</div>
+      <div class="mvp-detail">Week 1 admin panel</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v2">V2</div>
+      <div class="mvp-label">AI-generated match summaries + social captions</div>
+      <div class="mvp-detail">Week 2 or 3</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v2">V2</div>
+      <div class="mvp-label">Team profile pages with match history and points progression chart</div>
+      <div class="mvp-detail">Week 3</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v2">V2</div>
+      <div class="mvp-label">Baker lineup entry form with frame position assignment</div>
+      <div class="mvp-detail">Week 2</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v2">V2</div>
+      <div class="mvp-label">Player eligibility dashboard with automated season compliance alerts</div>
+      <div class="mvp-detail">Midseason</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v3">V3</div>
+      <div class="mvp-label">Playoff bracket builder + automatic seeding from final standings</div>
+      <div class="mvp-detail">Final weeks</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v3">V3</div>
+      <div class="mvp-label">Head-to-head records, historical match archive, season records</div>
+      <div class="mvp-detail">Post-season</div>
+    </div>
+    <div class="mvp-row">
+      <div class="mvp-phase phase-v3">V3</div>
+      <div class="mvp-label">Mobile score entry app (PWA) with offline mode for poor Village Bowl connectivity</div>
+      <div class="mvp-detail">Future season</div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: RECOMMENDED PATH -->
+  <div class="section">
+    <div class="section-header">
+      <span class="sec-num">07</span>
+      <span class="sec-title">Recommended Build Path — Sequential MVP</span>
+    </div>
+
+    <div class="card" style="background:var(--black);border:none">
+      <div style="font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:8px">Phase 1 then Phase 2 — One Handoff, One Database</div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.6);line-height:1.8">Google AI Studio builds the complete app first. Once deployed to Vercel, Antigravity takes over — it provisions Supabase via MCP, loads all data, and becomes the ongoing score-entry engine for the season.</p>
+      <div class="flag-stripe" style="margin-top:1rem"></div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0;margin-top:14px;margin-bottom:14px;border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden">
+      <div style="display:grid;grid-template-columns:120px 1fr;background:var(--bg2);border-bottom:0.5px solid var(--border2)">
+        <div style="padding:10px 14px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:#4285F4;letter-spacing:1px;text-transform:uppercase;border-right:0.5px solid var(--border2)">Phase 1<br>AI Studio</div>
+        <div style="padding:10px 14px;font-size:13px;color:var(--black)">Build the complete Next.js app — all pages, scoring engine, admin workflows, Gemini AI features. Wire Supabase client but leave database empty (env vars are placeholders). Deploy to Vercel.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:120px 1fr;background:var(--bg)">
+        <div style="padding:10px 14px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--green);letter-spacing:1px;text-transform:uppercase;border-right:0.5px solid var(--border2)">Phase 2<br>Antigravity</div>
+        <div style="padding:10px 14px;font-size:13px;color:var(--black)">Connect MCP to Supabase → provision schema + RLS → seed 20 teams, players, Week 1 schedule, 13 sponsors → update Vercel env vars → app goes live with real data. Then load game results every match night going forward.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-label">Critical Timeline for Today</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;align-items:flex-start;gap:12px;font-size:13px">
+          <span style="font-family:'Oswald',sans-serif;font-weight:700;color:var(--red);min-width:90px;flex-shrink:0">Now → 2 PM</span>
+          <span><strong>Phase 1:</strong> Feed this plan to Google AI Studio. Generate scaffold, all pages, scoring engine, admin score-entry form, Gemini server actions. Deploy to Vercel with placeholder env vars.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;font-size:13px">
+          <span style="font-family:'Oswald',sans-serif;font-weight:700;color:var(--red);min-width:90px;flex-shrink:0">2 PM → 4 PM</span>
+          <span><strong>Phase 2 start:</strong> Antigravity MCP connects to Supabase → runs schema + RLS → seeds all 20 teams, players, Week 1 Monday matchups, sponsors. Provide keys to Vercel → trigger redeploy → app is live with real data.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;font-size:13px">
+          <span style="font-family:'Oswald',sans-serif;font-weight:700;color:var(--red);min-width:90px;flex-shrink:0">4 PM → 6 PM</span>
+          <span>Test admin score-entry form end-to-end. Enter a mock game result and verify standings update live. Share public URL with players and teams. Antigravity enters Tuesday/Wednesday TBD pairings when confirmed.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;font-size:13px">
+          <span style="font-family:'Oswald',sans-serif;font-weight:700;color:var(--green);min-width:90px;flex-shrink:0">6:45 PM+</span>
+          <span>League manager at Village Bowl uses the admin panel to enter game results as each format completes. Antigravity MCP can also be used to INSERT results directly if the admin form needs troubleshooting. Standings update in real-time.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;font-size:13px">
+          <span style="font-family:'Oswald',sans-serif;font-weight:700;color:var(--green);min-width:90px;flex-shrink:0">Post-match</span>
+          <span>Gemini auto-generates match summaries and a Week 1 wrap-up for the homepage. Antigravity logs player participation data into Supabase (backend-only). Public site shows completed results with no player names exposed.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-label" style="color:#4285F4">Phase 1 Ends When...</div>
+        <ul style="font-size:13px;line-height:2;padding-left:16px;list-style:disc">
+          <li>Next.js app is on Vercel (even with empty DB)</li>
+          <li>All pages render without errors</li>
+          <li>Score entry form logic is complete</li>
+          <li>Roll-off detection is implemented</li>
+          <li>Gemini server actions are wired up</li>
+          <li>Supabase client is configured via env vars</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-label" style="color:var(--green)">Phase 2 Ends When...</div>
+        <ul style="font-size:13px;line-height:2;padding-left:16px;list-style:disc">
+          <li>Supabase schema + RLS is live via MCP</li>
+          <li>All 20 teams are seeded</li>
+          <li>Week 1 Monday matchups are in the DB</li>
+          <li>Players table seeded (backend-only)</li>
+          <li>Vercel env vars are set → app shows real data</li>
+          <li>First game result loaded and standings confirmed</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="alert alert-red">
+      <span class="alert-icon">⚠</span>
+      <div class="alert-text">
+        <strong>RLS Must Be Active Before Vercel Env Vars Are Added</strong>
+        Antigravity must configure RLS policies blocking public reads on <code>players</code>, <code>player_participation</code>, and <code>baker_lineups</code> tables in Supabase BEFORE the Vercel environment variables are updated. Once the env vars are set, the public app connects to Supabase and any unprotected table becomes visible. Run a test anonymous query to confirm 0 rows are returned from the players table before proceeding.
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

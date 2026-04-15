@@ -49,6 +49,7 @@ export default function TeamDetail() {
           .select(`
             id, 
             status, 
+            type,
             lane_pair,
             weeks(play_date, week_number),
             home_team:teams!home_team_id(name), 
@@ -69,11 +70,19 @@ export default function TeamDetail() {
             const lanes = m.lane_pair ? m.lane_pair.split('-') : ['?', '?'];
             
             let totalPins = 0;
+            let points = 0;
             m.format_matches?.forEach((fm: any) => {
               fm.games?.forEach((g: any) => {
                 totalPins += isHome ? (g.home_score || 0) : (g.away_score || 0);
+                
+                if (m.type === 'regular') {
+                  if (isHome && g.home_score > g.away_score) points++;
+                  else if (!isHome && g.away_score > g.home_score) points++;
+                }
               });
             });
+
+            const isSeeding = m.type === 'seeding';
 
             return {
               id: m.id,
@@ -81,6 +90,8 @@ export default function TeamDetail() {
               date: new Date(m.weeks.play_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
               lane: isHome ? lanes[0] : lanes[1],
               totalScore: totalPins,
+              matchPoints: isSeeding ? null : points,
+              phase: m.type,
               status: m.status
             };
           });
@@ -174,6 +185,8 @@ export default function TeamDetail() {
                     date={`Week ${session.weekNumber} · ${session.date}`}
                     status={session.status}
                     totalScore={session.totalScore}
+                    matchPoints={session.matchPoints}
+                    phase={session.phase}
                   />
                 ))}
               </div>

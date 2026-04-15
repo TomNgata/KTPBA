@@ -9,6 +9,8 @@ interface TeamSessionCardProps {
   date: string;
   status: MatchStatus;
   totalScore?: number;
+  matchPoints?: number | null;
+  phase?: 'seeding' | 'regular';
   className?: string;
 }
 
@@ -18,6 +20,8 @@ const TeamSessionCard: React.FC<TeamSessionCardProps> = ({
   date, 
   status, 
   totalScore, 
+  matchPoints,
+  phase = 'regular',
   className 
 }) => {
   const isLive = status === 'live';
@@ -49,19 +53,33 @@ const TeamSessionCard: React.FC<TeamSessionCardProps> = ({
               <div className="w-8 h-8 bg-ktpba-black text-white rounded-full flex items-center justify-center font-display font-bold text-xs uppercase">
                 {teamName[0]}
               </div>
-              <span className="text-[10px] font-bold text-ktpba-red uppercase tracking-widest">Team Profile</span>
+              <span className="text-[10px] font-bold text-ktpba-red uppercase tracking-widest">
+                {phase === 'seeding' ? 'Seeding Session' : 'Round Robin'}
+              </span>
             </div>
             <h4 className="font-display font-bold text-2xl uppercase tracking-tight group-hover:text-ktpba-red transition-colors">
               {teamName}
             </h4>
           </div>
 
-          {isDone && totalScore !== undefined && (
-            <div className="text-right">
-              <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Pins</span>
-              <div className="bg-ktpba-black text-white px-4 py-2 font-display text-2xl font-bold rounded-sm">
-                {totalScore.toLocaleString()}
-              </div>
+          {isDone && (
+            <div className="flex items-center gap-4">
+              {matchPoints !== undefined && matchPoints !== null && (
+                <div className="text-right border-r border-gray-100 pr-5 mr-1">
+                  <span className="block text-[10px] font-bold text-ktpba-red uppercase tracking-widest mb-1">Match Pts</span>
+                  <div className="font-display text-2xl font-black text-ktpba-red">
+                    {matchPoints} <span className="text-xs text-gray-400">/ 11</span>
+                  </div>
+                </div>
+              )}
+              {totalScore !== undefined && (
+                <div className="text-right">
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pinfall</span>
+                  <div className="bg-ktpba-black text-white px-4 py-2 font-display text-2xl font-bold rounded-sm">
+                    {totalScore.toLocaleString()}
+                  </div>
+                </div>
+              )}
             </div>
           )}
           

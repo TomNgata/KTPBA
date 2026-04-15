@@ -38,7 +38,7 @@ export default function Home() {
 
       setStats({
         teams: teamCount || 20,
-        weeks: 10, // Round Robin stage
+        weeks: 13, // Total tournament duration
         points: totalPinfall
       });
 
@@ -123,8 +123,8 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 w-full grid grid-cols-1 md:grid-cols-3 gap-0 -mt-40 relative z-20 shadow-2xl">
         {[
           { label: 'Competing Teams', value: stats.teams || '--', icon: Users, color: 'bg-ktpba-black' },
-          { label: 'Match Weeks', value: stats.weeks, icon: Calendar, color: 'bg-ktpba-red' },
-          { label: 'Total Pinfall', value: stats.points > 0 ? stats.points.toLocaleString() : '--', icon: Trophy, color: 'bg-ktpba-green' },
+          { label: 'Tournament Weeks', value: stats.weeks, icon: Calendar, color: 'bg-ktpba-red' },
+          { label: 'Total Pins Rolled', value: stats.points > 0 ? stats.points.toLocaleString() : '--', icon: Trophy, color: 'bg-ktpba-green' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
