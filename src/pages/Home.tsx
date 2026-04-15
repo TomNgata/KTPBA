@@ -15,6 +15,7 @@ export default function Home() {
   });
   const [nextMatchday, setNextMatchday] = useState<any>(null);
   const [matchups, setMatchups] = useState<any[]>([]);
+  const [topTeams, setTopTeams] = useState<any[]>([]);
   const [sponsors, setSponsors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -65,6 +66,14 @@ export default function Home() {
           .eq('week_id', week.id)
           .limit(3);
         if (matches) setMatchups(matches);
+      } else {
+        // Fetch Top 5 for Seeding Results if no next matchday
+        const { data: top } = await supabase
+          .from('team_standings')
+          .select('name, seeding_pinfall')
+          .order('seeding_pinfall', { ascending: false })
+          .limit(5);
+        if (top) setTopTeams(top);
       }
       setLoading(false);
     }
@@ -194,6 +203,46 @@ export default function Home() {
                 </div>
               </motion.div>
             ))
+          ) : topTeams.length > 0 ? (
+            <div className="col-span-full">
+              <div className="bg-ktpba-black text-white p-8 md:p-12 shadow-2xl relative overflow-hidden">
+                <div className="relative z-10 flex flex-col md:flex-row gap-12 items-center">
+                  <div className="flex-grow">
+                    <h3 className="text-3xl font-bold uppercase tracking-tighter mb-8 flex items-center gap-4">
+                      <Trophy className="text-ktpba-red w-8 h-8" />
+                      Seeding Round <span className="text-ktpba-red">Top 5</span>
+                    </h3>
+                    <div className="grid grid-cols-1 gap-1">
+                      {topTeams.map((team, idx) => (
+                        <div key={idx} className="flex items-center justify-between py-3 border-b border-white/10 group">
+                          <div className="flex items-center gap-4">
+                            <span className="text-xs font-black text-ktpba-red w-4">{idx + 1}</span>
+                            <span className="font-display font-black uppercase tracking-tight group-hover:text-ktpba-red transition-colors text-lg">
+                              {team.name}
+                            </span>
+                          </div>
+                          <span className="font-display font-bold text-ktpba-red tabular-nums">{team.seeding_pinfall.toLocaleString()}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Link to="/standings?tab=overall" className="inline-flex items-center gap-2 mt-10 text-[10px] font-black uppercase tracking-[0.3em] text-gray-400 hover:text-white transition-colors">
+                      View Full Seeding Leaderboard <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                  <div className="hidden lg:block w-px h-64 bg-white/10" />
+                  <div className="text-center md:text-left">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.4em] text-ktpba-red mb-4">Phase Transition</span>
+                    <p className="text-gray-400 text-sm max-w-[200px] mb-8 leading-relaxed">
+                      Seeding is complete. All 20 teams are now allocated into Monday and Tuesday divisions.
+                    </p>
+                    <Link to="/schedule" className="px-6 py-3 bg-ktpba-red text-white text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-ktpba-black transition-all">
+                      Check Schedule
+                    </Link>
+                  </div>
+                </div>
+                <Trophy className="absolute bottom-0 right-0 w-64 h-64 text-white/5 -mb-20 -mr-20" />
+              </div>
+            </div>
           ) : (
             <div className="col-span-full py-24 text-center bg-white border border-dashed border-gray-200">
                <Calendar className="w-12 h-12 text-gray-200 mx-auto mb-6" />

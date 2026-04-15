@@ -1,5 +1,7 @@
-
+import { useState, useEffect } from 'react';
+import { getSupabase } from '../lib/supabase';
 import TeamSessionCard from '../components/TeamSessionCard';
+import { Trophy, Star, Info, Loader2 } from 'lucide-react';
 
 export default function Results() {
   const [sessions, setSessions] = useState<any[]>([]);
