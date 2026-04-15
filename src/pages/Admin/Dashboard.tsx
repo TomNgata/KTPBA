@@ -1,6 +1,5 @@
-
-import { Link } from 'react-router-dom';
 import { LayoutDashboard, Trophy, Users, Calendar, ArrowRight, AlertCircle, CheckCircle2, Settings, Info } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 export default function AdminDashboard() {
   const stats = [
@@ -61,8 +60,8 @@ export default function AdminDashboard() {
             <div className="flex items-start gap-4 p-4 bg-amber-50 border-l-4 border-amber-500">
               <AlertCircle className="w-5 h-5 text-amber-500 mt-0.5" />
               <div>
-                <h4 className="font-bold text-sm uppercase">10 Matchups TBD</h4>
-                <p className="text-gray-600 text-xs mt-1">Week 1 Tuesday and Wednesday pairings need to be set before tomorrow.</p>
+                <h4 className="font-bold text-sm uppercase">Manage Next Matchday</h4>
+                <p className="text-gray-600 text-xs mt-1">Ensure pairings and lane assignments for the upcoming Round Robin week are published before Friday.</p>
               </div>
             </div>
             <div className="flex items-start gap-4 p-4 bg-blue-50 border-l-4 border-blue-500">
@@ -86,4 +85,3 @@ export default function AdminDashboard() {
   );
 }
 
-import { cn } from '../../lib/utils';

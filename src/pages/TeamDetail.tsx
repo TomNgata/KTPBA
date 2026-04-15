@@ -1,14 +1,17 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Trophy, Users, Calendar, ArrowLeft, Info, Loader2 } from 'lucide-react';
+import { Trophy, Users, Calendar, ArrowLeft, Info, Loader2, Gauge } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import EmptyState from '../components/EmptyState';
+import { cn } from '../lib/utils';
+import TeamSessionCard from '../components/TeamSessionCard';
 
 export default function TeamDetail() {
   const { slug } = useParams();
   const [team, setTeam] = useState<any>(null);
   const [standings, setStandings] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,6 +42,50 @@ export default function TeamDetail() {
           .single();
         
         if (standingData) setStandings(standingData);
+
+        // Fetch match history
+        const { data: matches } = await supabase
+          .from('matchups')
+          .select(`
+            id, 
+            status, 
+            lane_pair,
+            weeks(play_date, week_number),
+            home_team:teams!home_team_id(name), 
+            away_team:teams!away_team_id(name),
+            format_matches(
+              id,
+              format,
+              games(home_score, away_score)
+            )
+          `)
+          .or(`home_team_id.eq.${teamData.id},away_team_id.eq.${teamData.id}`)
+          .eq('status', 'done')
+          .order('id', { ascending: false });
+
+        if (matches) {
+          const sessions = matches.map((m: any) => {
+            const isHome = m.home_team.name === teamData.name;
+            const lanes = m.lane_pair ? m.lane_pair.split('-') : ['?', '?'];
+            
+            let totalPins = 0;
+            m.format_matches?.forEach((fm: any) => {
+              fm.games?.forEach((g: any) => {
+                totalPins += isHome ? (g.home_score || 0) : (g.away_score || 0);
+              });
+            });
+
+            return {
+              id: m.id,
+              weekNumber: m.weeks.week_number,
+              date: new Date(m.weeks.play_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+              lane: isHome ? lanes[0] : lanes[1],
+              totalScore: totalPins,
+              status: m.status
+            };
+          });
+          setHistory(sessions);
+        }
       }
       
       setLoading(false);
@@ -87,13 +134,22 @@ export default function TeamDetail() {
           </div>
           
           <div className="flex gap-8">
-            <div className="text-center">
+            <div className="text-center group">
               <span className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Rank</span>
-              <span className="font-display text-3xl font-bold">--</span>
+              <span className="font-display text-3xl font-bold flex items-center justify-center gap-2">
+                <span className="text-ktpba-red">#</span>
+                {standings?.rank || '--'}
+              </span>
             </div>
-            <div className="text-center">
+            <div className="text-center group">
+              <span className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Match Points</span>
+              <span className="font-display text-3xl font-bold text-ktpba-red">
+                {standings?.match_points || '0'}
+              </span>
+            </div>
+            <div className="text-center group font-display hidden md:block">
               <span className="block text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Total Pinfall</span>
-              <span className="font-display text-3xl font-bold">{standings?.total_pinfall?.toLocaleString() || '0'}</span>
+              <span className="text-3xl font-bold">{standings?.total_pinfall?.toLocaleString() || '0'}</span>
             </div>
           </div>
         </div>
@@ -104,11 +160,29 @@ export default function TeamDetail() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 space-y-12">
           <section>
-            <h2 className="text-3xl font-bold mb-8 border-b-2 border-ktpba-black pb-2">Match History</h2>
-            <div className="bg-gray-50 border border-dashed border-gray-300 p-12 text-center">
-              <Calendar className="w-10 h-10 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">No matches recorded yet</p>
-            </div>
+            <h2 className="text-3xl font-bold mb-8 border-b-2 border-ktpba-black pb-2 flex items-center gap-3">
+              <Calendar className="w-8 h-8 text-ktpba-red" />
+              Session History
+            </h2>
+            {history.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {history.map(session => (
+                  <TeamSessionCard 
+                    key={session.id}
+                    teamName={team.name}
+                    lane={session.lane}
+                    date={`Week ${session.weekNumber} · ${session.date}`}
+                    status={session.status}
+                    totalScore={session.totalScore}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-gray-50 border border-dashed border-gray-300 p-12 text-center">
+                <Calendar className="w-10 h-10 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">No match records found</p>
+              </div>
+            )}
           </section>
 
           <section>
@@ -145,18 +219,27 @@ export default function TeamDetail() {
             </p>
           </div>
 
-          <div className="bg-gray-100 p-8">
+          <div className="bg-gray-100 p-8 border-l-8 border-ktpba-red">
              <div className="flex items-center justify-between mb-6">
-                <h3 className="font-display font-bold uppercase tracking-wider">Upcoming Match</h3>
-                <span className="px-2 py-1 bg-ktpba-red text-white text-[10px] font-bold animate-pulse">LIVE SOON</span>
+                <h3 className="font-display font-bold uppercase tracking-wider">Group Assignment</h3>
+                <span className={cn(
+                  "px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full",
+                  team.group_name === 'A' ? "bg-blue-100 text-blue-600" : 
+                  team.group_name === 'B' ? "bg-purple-100 text-purple-600" : 
+                  "bg-white text-gray-400 shadow-sm"
+                )}>
+                  {team.group_name ? `Group ${team.group_name}` : 'TBD'}
+                </span>
              </div>
             <div className="space-y-4">
               <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                <span>Phase I</span>
-                <span>Apr 2026</span>
+                <span>Play Day</span>
+                <span>{team.group_name === 'A' ? 'MONDAY' : team.group_name === 'B' ? 'TUESDAY' : 'TBD'}</span>
               </div>
-              <div className="font-display font-bold text-lg uppercase">Schedule TBD</div>
-              <div className="text-xs text-gray-500 italic">Review current standings for the latest performance rankings.</div>
+              <div className="font-display font-bold text-lg uppercase">
+                {team.group_name === 'A' ? 'Monday Night Marathon' : team.group_name === 'B' ? 'Tuesday Night Marathon' : 'Pending Allocation'}
+              </div>
+              <div className="text-xs text-gray-500 italic">Division determined by Week 1 Seeding Phase performance results.</div>
             </div>
           </div>
         </div>

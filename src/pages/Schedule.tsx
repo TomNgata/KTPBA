@@ -125,7 +125,7 @@ export default function Schedule() {
                     activeTab === tab ? "bg-ktpba-black text-white shadow-lg" : "text-gray-500 hover:text-ktpba-black"
                   )}
                 >
-                  {tab.replace('-', ' ')}
+                  {tab === 'group-a' ? 'Monday Division' : 'Tuesday Division'}
                 </button>
               ))
             )}

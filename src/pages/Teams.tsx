@@ -72,10 +72,21 @@ export default function Teams() {
                   {team.name}
                 </h3>
 
+                <div className="flex flex-col items-center gap-2 mb-6">
+                  <span className={cn(
+                    "px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full",
+                    team.group_name === 'A' ? "bg-blue-50 text-blue-600" : 
+                    team.group_name === 'B' ? "bg-purple-50 text-purple-600" : 
+                    "bg-gray-50 text-gray-400"
+                  )}>
+                    {team.group_name ? `Group ${team.group_name}` : 'UNASSIGNED'}
+                  </span>
+                </div>
+
                 <div className="flex items-center gap-4 mt-auto pt-6 border-t border-gray-50 w-full justify-center">
-                   <div className="flex flex-col">
+                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Status</span>
-                    <span className="font-display font-bold text-xs uppercase text-ktpba-green">Registered</span>
+                    <span className="font-display font-bold text-xs uppercase text-ktpba-green">Competing</span>
                   </div>
                 </div>
 
