@@ -11,6 +11,7 @@ export default function Schedule() {
   const [activeWeek, setActiveWeek] = useState(1);
   const [activeTab, setActiveTab] = useState<ScheduleTab>('seeding');
   const [matchups, setMatchups] = useState<any[]>([]);
+  const [teamsInGroup, setTeamsInGroup] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function Schedule() {
 
         const { data: matches } = await query;
         
-        if (matches) {
+        if (matches && matches.length > 0) {
           if (activeWeek === 1) {
             // Flatten matchups into individual team sessions for seeding round
             const flattened = matches.reduce((acc: any[], m: any) => {
@@ -87,9 +88,29 @@ export default function Schedule() {
           }
         } else {
           setMatchups([]);
+          // Fetch the group roster if no matchups for Week 2+
+          if (activeWeek > 1) {
+            const group = activeTab === 'group-a' ? 'A' : 'B';
+            const { data: roster } = await supabase
+              .from('teams')
+              .select('name')
+              .eq('group_name', group)
+              .order('name', { ascending: true });
+            if (roster) setTeamsInGroup(roster);
+          }
         }
       } else {
         setMatchups([]);
+        // Fetch group roster even if week isn't in DB yet
+        if (activeWeek > 1) {
+           const group = activeTab === 'group-a' ? 'A' : 'B';
+           const { data: roster } = await supabase
+             .from('teams')
+             .select('name')
+             .eq('group_name', group)
+             .order('name', { ascending: true });
+           if (roster) setTeamsInGroup(roster);
+        }
       }
       setLoading(false);
     }
@@ -183,10 +204,28 @@ export default function Schedule() {
             )
           ))
         ) : (
-          <div className="col-span-full py-20 text-center bg-gray-50 border border-dashed border-gray-300">
-            <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="font-display text-xl font-bold text-gray-400 uppercase tracking-widest">Schedule Pending</h3>
-            <p className="text-gray-400 text-sm mt-2 font-display uppercase">Week {activeWeek} matchups for {activeTab.replace('-', ' ')} are awaiting league office selection.</p>
+          <div className="col-span-full">
+            <div className="bg-gray-50 border border-dashed border-gray-300 p-12 text-center mb-12">
+              <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="font-display text-xl font-bold text-gray-400 uppercase tracking-widest">Schedule Pending</h3>
+              <p className="text-gray-400 text-sm mt-2 font-display uppercase">Week {activeWeek} matchups for {activeTab === 'group-a' ? 'Monday Division' : 'Tuesday Division'} are awaiting selection.</p>
+            </div>
+
+            {teamsInGroup.length > 0 && (
+              <div className="bg-ktpba-black p-10 text-white">
+                <h4 className="text-xs font-bold uppercase tracking-[0.4em] text-ktpba-red mb-8">Division Roster</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                  {teamsInGroup.map((team, idx) => (
+                    <div key={idx} className="flex flex-col gap-2">
+                      <span className="text-[10px] font-black text-white/20">#{idx + 1}</span>
+                      <span className="font-display font-bold uppercase tracking-tight text-sm border-l-2 border-ktpba-red pl-3">
+                        {team.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
