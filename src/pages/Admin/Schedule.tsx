@@ -42,13 +42,36 @@ export default function ScheduleAdmin() {
             <Loader2 className="w-12 h-12 text-ktpba-red animate-spin" />
           </div>
         ) : weeks.length > 0 ? weeks.map((week) => (
-          <section key={week.id}>
+          <section key={week.id} className={cn(week.week_number === 1 && "opacity-80")}>
+            {week.week_number === 1 && (
+              <div className="mb-6">
+                <span className="px-3 py-1 bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  Phase 01: Seeding Round
+                </span>
+              </div>
+            )}
+            {week.week_number === 2 && (
+              <div className="mb-12 pt-12 border-t-4 border-ktpba-black">
+                <span className="px-3 py-1 bg-ktpba-red text-white text-[10px] font-bold uppercase tracking-widest rounded-full">
+                  Phase 02: Round Robin
+                </span>
+                <h2 className="text-3xl font-bold mt-4 tracking-tighter uppercase">Season Matchups</h2>
+              </div>
+            )}
+
             <div className="flex items-center gap-4 mb-6">
               <h2 className="text-2xl font-bold uppercase tracking-tight">Week {week.week_number.toString().padStart(2, '0')}</h2>
               <div className="h-[2px] flex-grow bg-gray-100" />
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                {new Date(week.play_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-              </span>
+              <div className="flex items-center gap-3">
+                {week.status === 'completed' && (
+                   <span className="flex items-center gap-1 text-[10px] font-bold text-ktpba-green uppercase tracking-widest">
+                     <CheckCircle2 className="w-3 h-3" /> Played
+                   </span>
+                )}
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  {new Date(week.play_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </span>
+              </div>
             </div>
 
             <div className="bg-white border border-gray-200 overflow-hidden">
@@ -76,10 +99,14 @@ export default function ScheduleAdmin() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button className="p-2 text-gray-400 hover:text-ktpba-black transition-colors"><Edit2 className="w-4 h-4" /></button>
-                          <button className="p-2 text-gray-400 hover:text-ktpba-red transition-colors"><Trash2 className="w-4 h-4" /></button>
-                        </div>
+                        {week.week_number > 1 ? (
+                          <div className="flex justify-end gap-2">
+                            <button className="p-2 text-gray-400 hover:text-ktpba-black transition-colors"><Edit2 className="w-4 h-4" /></button>
+                            <button className="p-2 text-gray-400 hover:text-ktpba-red transition-colors"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] font-bold text-gray-300 uppercase italic">Locked</span>
+                        )}
                       </td>
                     </tr>
                   )) : (
