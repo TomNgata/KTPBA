@@ -1,12 +1,50 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { LayoutDashboard, Trophy, Users, Calendar, ArrowRight, AlertCircle, CheckCircle2, Settings, Info } from 'lucide-react';
+import { LayoutDashboard, Trophy, Users, Calendar, ArrowRight, AlertCircle, CheckCircle2, Settings, Info, Loader2 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { getSupabase } from '../../lib/supabase';
 
 export default function AdminDashboard() {
-  const stats = [
-    { label: 'Active Matchups', value: '5', icon: Calendar, color: 'text-blue-500' },
-    { label: 'Scores Pending', value: '15', icon: Trophy, color: 'text-ktpba-red' },
-    { label: 'Players Registered', value: '100+', icon: Users, color: 'text-ktpba-green' },
+  const [activeCount, setActiveCount] = useState<number | string>('...');
+  const [pendingCount, setPendingCount] = useState<number | string>('...');
+  const [playerCount, setPlayerCount] = useState<number | string>('...');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchStats() {
+      const supabase = getSupabase();
+      if (!supabase) return;
+
+      try {
+        // 1. Players count
+        const { count: players } = await supabase.from('players').select('*', { count: 'exact', head: true });
+        setPlayerCount(players || 0);
+
+        // 2. Active Matchups (Scheduled or Live)
+        const { count: active } = await supabase
+          .from('matchups')
+          .select('*', { count: 'exact', head: true })
+          .neq('status', 'done');
+        setActiveCount(active || 0);
+
+        // 3. Scores Pending (Matchups not done but either live or scheduled)
+        // For now, mirroring active matchups since any active matchup needs a score eventually
+        setPendingCount(active || 0);
+
+      } catch (err) {
+        console.error('Error fetching admin stats:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchStats();
+  }, []);
+
+  const statsList = [
+    { label: 'Active Matchups', value: activeCount, icon: Calendar, color: 'text-blue-500' },
+    { label: 'Scores Pending', value: pendingCount, icon: Trophy, color: 'text-ktpba-red' },
+    { label: 'Players Registered', value: playerCount, icon: Users, color: 'text-ktpba-green' },
   ];
 
   return (
@@ -17,11 +55,13 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        {stats.map((stat) => (
+        {statsList.map((stat) => (
           <div key={stat.label} className="bg-white border border-gray-200 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <stat.icon className={cn("w-8 h-8", stat.color)} />
-              <span className="text-3xl font-display font-bold">{stat.value}</span>
+              <span className="text-3xl font-display font-bold">
+                {loading ? <Loader2 className="w-6 h-6 animate-spin text-gray-300" /> : stat.value}
+              </span>
             </div>
             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{stat.label}</span>
           </div>
