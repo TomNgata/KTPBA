@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Users, Loader2, ArrowRight } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import EmptyState from '../components/EmptyState';
+import { cn } from '../lib/utils';
 
 export default function Teams() {
   const [teams, setTeams] = useState<any[]>([]);
