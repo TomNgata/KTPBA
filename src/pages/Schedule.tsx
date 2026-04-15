@@ -32,17 +32,17 @@ export default function Schedule() {
       }
 
       setLoading(true);
-      const { data: week } = await supabase
+      const { data: weeks } = await supabase
         .from('weeks')
         .select('id, play_date')
-        .eq('week_number', activeWeek)
-        .single();
+        .eq('week_number', activeWeek);
 
-      if (week) {
+      if (weeks && weeks.length > 0) {
+        const weekIds = weeks.map(w => w.id);
         const query = supabase
           .from('matchups')
-          .select('*, home_team:teams!home_team_id(name, group_name), away_team:teams!away_team_id(name, group_name)')
-          .eq('week_id', week.id);
+          .select('*, weeks(play_date), home_team:teams!home_team_id(name, group_name), away_team:teams!away_team_id(name, group_name)')
+          .in('week_id', weekIds);
         
         // Filter by group if in regular weeks
         if (activeWeek > 1) {
@@ -57,11 +57,13 @@ export default function Schedule() {
             // Flatten matchups into individual team sessions for seeding round
             const flattened = matches.reduce((acc: any[], m: any) => {
               const lanes = m.lane_pair ? m.lane_pair.split('-') : [m.lane_pair, '?'];
+              const date = m.weeks?.play_date ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD';
+              
               if (m.home_team) {
                 acc.push({
                   teamName: m.home_team.name,
                   lane: lanes[0],
-                  date: new Date(week.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }),
+                  date: date,
                   status: m.status,
                   id: `${m.id}-home`
                 });
@@ -70,7 +72,7 @@ export default function Schedule() {
                 acc.push({
                   teamName: m.away_team.name,
                   lane: lanes[1] || '?',
-                  date: new Date(week.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }),
+                  date: date,
                   status: m.status,
                   id: `${m.id}-away`
                 });
@@ -82,7 +84,7 @@ export default function Schedule() {
             // Display as head-to-head match cards
             const formatted = matches.map(m => ({
               ...m,
-              formattedDate: new Date(week.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+              formattedDate: m.weeks?.play_date ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD'
             }));
             setMatchups(formatted);
           }
