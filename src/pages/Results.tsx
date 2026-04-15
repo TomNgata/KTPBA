@@ -136,22 +136,22 @@ export default function Results() {
               <div className="flex gap-4">
                 <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs flex-shrink-0">S</div>
                 <div>
-                  <h4 className="font-bold text-sm uppercase">Singles</h4>
-                  <p className="text-gray-500 text-xs mt-1">3 Games per player. All pins added to team total.</p>
+                  <h4 className="font-bold text-sm uppercase">Singles (Bo3)</h4>
+                  <p className="text-gray-500 text-xs mt-1">3 Match Points available. Every game won counts as 1 point toward the leaderboard.</p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs flex-shrink-0">D</div>
                 <div>
-                  <h4 className="font-bold text-sm uppercase">Doubles (Baker)</h4>
-                  <p className="text-gray-500 text-xs mt-1">3 Games combined. All pins added to team total.</p>
+                  <h4 className="font-bold text-sm uppercase">Doubles (Bo3)</h4>
+                  <p className="text-gray-500 text-xs mt-1">3 Match Points available (Baker style). Every game won counts as 1 point.</p>
                 </div>
               </div>
               <div className="flex gap-4">
                 <div className="w-8 h-8 bg-gray-100 flex items-center justify-center font-bold text-xs flex-shrink-0">T</div>
                 <div>
-                  <h4 className="font-bold text-sm uppercase">Teams (Baker)</h4>
-                  <p className="text-gray-500 text-xs mt-1">5 Games combined. Final contribution to total daily pinfall.</p>
+                  <h4 className="font-bold text-sm uppercase">Teams (Bo5)</h4>
+                  <p className="text-gray-500 text-xs mt-1">5 Match Points available (Baker style). Every game won counts as 1 point.</p>
                 </div>
               </div>
             </div>

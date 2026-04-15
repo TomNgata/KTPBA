@@ -167,15 +167,15 @@ export default function Standings() {
           <ul className="space-y-4 text-sm text-gray-400">
             <li className="flex items-start gap-3">
               <div className="w-5 h-5 bg-ktpba-red rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">1</div>
-              <span><strong>1 Match Point</strong> per game win. Singles (Bo3), Doubles (Bo3), and Teams (Bo5) results in <strong>11 total points</strong> available per session.</span>
+              <span><strong>11 Match Points</strong> available per session. Every game won in Singles, Doubles, and Teams counts as <strong>1 point</strong> on the leaderboard.</span>
             </li>
             <li className="flex items-start gap-3">
               <div className="w-5 h-5 bg-ktpba-red rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">2</div>
-              <span>Ranking in the Group Stage (Weeks 2-10) is determined by Match Points. Total Pinfall is the secondary tie-breaker.</span>
+              <span>Ranking is determined strictly by <strong>Match Points</strong>. Total Pinfall is used only as a secondary tie-breaker.</span>
             </li>
             <li className="flex items-start gap-3">
               <div className="w-5 h-5 bg-ktpba-red rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold text-white">3</div>
-              <span>Seeding Phase (Week 1) used Pinfall only to determine the Zig-Zag split between Group A and Group B.</span>
+              <span>The top 8 teams from each division will qualify for the <strong>Gold Bracket</strong>, middle 8 for <strong>Silver</strong>, and final 4 for **Bronze** following specific rank criteria.</span>
             </li>
           </ul>
         </div>
