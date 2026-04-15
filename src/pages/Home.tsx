@@ -31,13 +31,13 @@ export default function Home() {
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);
       
-      // Fetch total pinfall
+      // Fetch total stats
       const { data: standings } = await supabase.from('team_standings').select('total_pinfall');
       const totalPinfall = standings?.reduce((acc, curr) => acc + (curr.total_pinfall || 0), 0) || 0;
 
       setStats({
-        teams: teamCount || 0,
-        weeks: 13,
+        teams: teamCount || 20,
+        weeks: 10, // Round Robin stage
         points: totalPinfall
       });
 
@@ -98,10 +98,10 @@ export default function Home() {
             </p>
             <div className="flex flex-wrap justify-center gap-6">
               <Link to="/standings" className="min-h-[48px] px-10 py-4 bg-ktpba-red text-white font-display font-bold uppercase tracking-widest hover:bg-white hover:text-ktpba-black transition-all duration-300 flex items-center gap-3">
-                Live Standings <ArrowRight className="w-5 h-5" />
+                Current Rankings <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link to="/schedule" className="min-h-[48px] px-10 py-4 border-2 border-white/20 text-white font-display font-bold uppercase tracking-widest hover:bg-white/10 transition-all duration-300">
-                View Schedule
+              <Link to="/standings?tab=overall" className="min-h-[48px] px-10 py-4 border-2 border-white/20 text-white font-display font-bold uppercase tracking-widest hover:bg-white/10 transition-all duration-300">
+                Seeding Phase results
               </Link>
             </div>
           </div>

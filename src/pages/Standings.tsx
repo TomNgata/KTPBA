@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getSupabase } from '../lib/supabase';
 import { Trophy, ArrowUp, Minus, ShieldAlert } from 'lucide-react';
 import { cn } from '../lib/utils';
@@ -6,10 +7,24 @@ import { cn } from '../lib/utils';
 type StandingsTab = 'overall' | 'group-a' | 'group-b';
 
 export default function Standings() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [standings, setStandings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<StandingsTab>('overall');
+  const initialTab = (searchParams.get('tab') as StandingsTab) || 'overall';
+  const [activeTab, setActiveTab] = useState<StandingsTab>(initialTab);
 
+  useEffect(() => {
+    // Sync tab with URL if it changes externally
+    const tabParam = searchParams.get('tab') as StandingsTab;
+    if (tabParam && tabParam !== activeTab) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab: StandingsTab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
   useEffect(() => {
     async function fetchStandings() {
       const supabase = getSupabase();
@@ -67,13 +82,13 @@ export default function Standings() {
           {(['overall', 'group-a', 'group-b'] as const).map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabChange(tab)}
               className={cn(
                 "px-6 py-2 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all",
                 activeTab === tab ? "bg-ktpba-black text-white shadow-lg" : "text-gray-500 hover:text-ktpba-black"
               )}
             >
-              {tab === 'overall' ? 'Seeding Phase' : tab.replace('-', ' ')}
+              {tab === 'overall' ? 'Seeding Phase' : tab === 'group-a' ? 'Monday Division' : 'Tuesday Division'}
             </button>
           ))}
         </div>
@@ -182,10 +197,6 @@ export default function Standings() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
     </div>
   );
 }
