@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { LayoutDashboard, Trophy, Users, Calendar, ArrowRight, AlertCircle, CheckCircle2, Settings, Info } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
