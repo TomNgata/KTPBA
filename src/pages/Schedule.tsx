@@ -91,8 +91,8 @@ export default function Schedule() {
             }));
             setMatchups(formatted.sort((a, b) => {
               // Ensure consistent lane ordering by parsing
-              const laneA = parseInt(a.lane_pair.split('-')[0]) || 0;
-              const laneB = parseInt(b.lane_pair.split('-')[0]) || 0;
+              const laneA = parseInt((a.lane_pair || '').split('-')[0]) || 0;
+              const laneB = parseInt((b.lane_pair || '').split('-')[0]) || 0;
               return laneA - laneB;
             }));
           }
@@ -184,9 +184,9 @@ export default function Schedule() {
             ) : (
               <MatchupCard 
                 key={m.id}
-                homeTeam={m.home_team.name}
+                homeTeam={m.home_team?.name || 'TBD'}
                 awayTeam={m.away_team?.name || 'TBD'}
-                lane={m.lane_pair}
+                lane={m.lane_pair || '?'}
                 date={m.formattedDate}
                 status={m.status}
                 homePoints={m.home_points} // Note: This would come from session totals if we add that logic
