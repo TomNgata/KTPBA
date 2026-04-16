@@ -41,21 +41,24 @@ export default function Schedule() {
         const weekIds = weeks.map(w => w.id);
         const query = supabase
           .from('matchups')
-          .select('*, weeks(play_date), home_team:teams!home_team_id(name, group_name), away_team:teams!away_team_id(name, group_name)')
+          .select('*, weeks(play_date, day_of_week), home_team:teams!home_team_id(name, group_name), away_team:teams!away_team_id(name, group_name)')
           .in('week_id', weekIds);
         
-        // Filter by group if in regular weeks
-        if (activeWeek > 1) {
-          const group = activeTab === 'group-a' ? 'A' : 'B';
-          query.or(`home_team.group_name.eq.${group},away_team.group_name.eq.${group}`);
-        }
-
         const { data: matches } = await query;
         
         if (matches && matches.length > 0) {
+          let filteredMatches = matches;
+          
+          if (activeWeek > 1) {
+            const group = activeTab === 'group-a' ? 'A' : 'B';
+            filteredMatches = matches.filter((m: any) => 
+               m.home_team?.group_name === group || m.away_team?.group_name === group
+            );
+          }
+
           if (activeWeek === 1) {
             // Flatten matchups into individual team sessions for seeding round
-            const flattened = matches.reduce((acc: any[], m: any) => {
+            const flattened = filteredMatches.reduce((acc: any[], m: any) => {
               const lanes = m.lane_pair ? m.lane_pair.split('-') : [m.lane_pair, '?'];
               const date = m.weeks?.play_date ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD';
               
@@ -82,11 +85,16 @@ export default function Schedule() {
             setMatchups(flattened.sort((a, b) => parseInt(a.lane) - parseInt(b.lane)));
           } else {
             // Display as head-to-head match cards
-            const formatted = matches.map(m => ({
+            const formatted = filteredMatches.map(m => ({
               ...m,
               formattedDate: m.weeks?.play_date ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD'
             }));
-            setMatchups(formatted);
+            setMatchups(formatted.sort((a, b) => {
+              // Ensure consistent lane ordering by parsing
+              const laneA = parseInt(a.lane_pair.split('-')[0]) || 0;
+              const laneB = parseInt(b.lane_pair.split('-')[0]) || 0;
+              return laneA - laneB;
+            }));
           }
         } else {
           setMatchups([]);
@@ -133,7 +141,7 @@ export default function Schedule() {
         </div>
         
         <div className="flex flex-col gap-4">
-          <div className="flex bg-gray-100 p-1 rounded-sm w-fit self-end">
+          <div className="flex bg-gray-100 p-1 rounded-sm w-fit self-end shadow-sm">
             {activeWeek === 1 ? (
               <button className="px-6 py-2 bg-ktpba-black text-white text-[10px] font-bold uppercase tracking-widest shadow-lg">
                 Seeding (Overall)
@@ -153,31 +161,12 @@ export default function Schedule() {
               ))
             )}
           </div>
-
-          <div className="flex items-center gap-4 bg-ktpba-black p-2 text-white">
-            <button 
-              onClick={() => setActiveWeek(Math.max(1, activeWeek - 1))}
-              className="p-2 hover:bg-ktpba-red transition-colors disabled:opacity-30"
-              disabled={activeWeek === 1}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <div className="px-6 text-center min-w-[120px]">
-              <span className="block text-[10px] uppercase tracking-[0.3em] text-gray-400 font-bold mb-1">Active Week</span>
-              <span className="font-display text-2xl font-bold">WEEK {activeWeek.toString().padStart(2, '0')}</span>
-            </div>
-            <button 
-              onClick={() => setActiveWeek(Math.min(13, activeWeek + 1))}
-              className="p-2 hover:bg-ktpba-red transition-colors disabled:opacity-30"
-              disabled={activeWeek === 13}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex-1">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {loading ? (
           <div className="col-span-full py-20 flex justify-center">
             <Loader2 className="w-12 h-12 text-ktpba-red animate-spin" />
@@ -230,6 +219,66 @@ export default function Schedule() {
             )}
           </div>
         )}
+        </div>
+      </div>
+
+      {/* Vertical Sidebar Navigation */}
+      <div className="w-full lg:w-72 flex-shrink-0">
+          <div className="sticky top-24 border-t-4 border-ktpba-red bg-white border border-gray-200 p-6 shadow-sm">
+            <h3 className="font-display font-bold uppercase tracking-widest text-sm mb-6 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-ktpba-red" />
+              Tournament Weeks
+            </h3>
+            <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-3 custom-scrollbar">
+              {Array.from({ length: 13 }, (_, i) => i + 1).map(weekNum => {
+                const isActive = weekNum === activeWeek;
+                const phaseLabel = weekNum === 1 ? 'Seeding Round' : weekNum <= 10 ? 'Round Robin' : 'Knockout Stage';
+                
+                return (
+                  <button
+                    key={weekNum}
+                    onClick={() => setActiveWeek(weekNum)}
+                    className={cn(
+                      "w-full text-left p-4 transition-all border-b border-gray-100 last:border-0",
+                      isActive 
+                        ? "bg-ktpba-black text-white" 
+                        : "hover:bg-gray-50 text-gray-600 hover:text-ktpba-black"
+                    )}
+                  >
+                    <div className="font-display font-bold uppercase tracking-tight text-lg mb-1">
+                      Week {weekNum.toString().padStart(2, '0')}
+                    </div>
+                    <div className={cn(
+                      "text-[10px] font-bold uppercase tracking-widest",
+                      isActive ? "text-ktpba-red" : "text-gray-400"
+                    )}>
+                      {phaseLabel}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Quick slider backup at the bottom of the nav bar for power users */}
+            <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between">
+              <button 
+                onClick={() => setActiveWeek(Math.max(1, activeWeek - 1))}
+                className="p-2 bg-gray-100 hover:bg-ktpba-red hover:text-white transition-colors disabled:opacity-30 rounded-sm"
+                disabled={activeWeek === 1}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Navigation</span>
+              <button 
+                onClick={() => setActiveWeek(Math.min(13, activeWeek + 1))}
+                className="p-2 bg-gray-100 hover:bg-ktpba-red hover:text-white transition-colors disabled:opacity-30 rounded-sm"
+                disabled={activeWeek === 13}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="mt-20 bg-gray-100 p-10 border-l-8 border-ktpba-green">
