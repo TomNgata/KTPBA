@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Trophy, Calendar, Users, ArrowRight, Loader2 } from 'lucide-react';
+import { Trophy, Calendar, Users, ArrowRight, Loader2, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { getSupabase } from '../lib/supabase';
 import { cn } from '../lib/utils';

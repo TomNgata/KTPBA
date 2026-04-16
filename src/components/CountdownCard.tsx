@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Clock, Share2, Calendar } from 'lucide-react';
 import ShareModal from './ShareModal';
 import { shareText } from '../lib/share';

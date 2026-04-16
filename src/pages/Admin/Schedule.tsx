@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import { Calendar, Plus, Edit2, Trash2, Loader2 } from 'lucide-react';
+import { Calendar, Plus, Edit2, Trash2, Loader2, CheckCircle2 } from 'lucide-react';
 import { getSupabase } from '../../lib/supabase';
+import { cn } from '../../lib/utils';
 
 export default function ScheduleAdmin() {
   const [weeks, setWeeks] = useState<any[]>([]);

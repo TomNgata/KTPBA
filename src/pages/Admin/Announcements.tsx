@@ -1,13 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Megaphone, Plus, Eye, EyeOff, Loader2, CheckCircle2, Trash2 } from 'lucide-react';
-import { createClient } from '@supabase/supabase-js';
 import { cn } from '../../lib/utils';
+import { getSupabase } from '../../lib/supabase';
 
-const getAdminClient = () =>
-  createClient(
-    import.meta.env.VITE_SUPABASE_URL || '',
-    import.meta.env.VITE_SUPABASE_ANON_KEY || ''
-  );
+const getAdminClient = () => getSupabase();
 
 type AnnouncementType = 'general' | 'result' | 'urgent';
 
