@@ -201,16 +201,18 @@ export default function TeamDetail() {
             {history.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {history.map(session => (
-                  <TeamSessionCard 
-                    key={session.id}
-                    teamName={team.name}
-                    lane={session.lane}
-                    date={`Week ${session.weekNumber} · ${session.date}`}
-                    status={session.status}
-                    totalScore={session.totalScore}
-                    matchPoints={session.matchPoints}
-                    phase={session.phase}
-                  />
+                    <TeamSessionCard 
+                      key={session.id}
+                      teamName={team.name}
+                      opponentName={session.opponentName}
+                      lane={session.lane}
+                      date={`Week ${session.weekNumber} · ${session.date}`}
+                      status={session.status}
+                      totalScore={session.totalScore}
+                      matchPoints={session.matchPoints}
+                      phase={session.phase}
+                      matchId={session.id}
+                    />
                 ))}
               </div>
             ) : (

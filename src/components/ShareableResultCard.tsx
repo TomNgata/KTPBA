@@ -143,7 +143,13 @@ export default function ShareableResultCard({
         cardRef={cardRef as React.RefObject<HTMLElement>}
         filename={`ktpba-result-${weekLabel.toLowerCase().replace(/\s/g, '-')}`}
         shareTitle="KTPBA Match Result"
-        shareText={shareText.result(homeTeam === winner ? homeTeam : awayTeam, resultCaption, weekLabel)}
+        shareText={shareText.matchResult({
+          homeTeam,
+          awayTeam,
+          homePoints: homePoints || 0,
+          awayPoints: awayPoints || 0,
+          date
+        })}
         shareUrl="https://ktpba.vercel.app/results"
       />
     </>

@@ -66,11 +66,11 @@ export function shareToX(text: string, url?: string) {
  * Returns share text for different card types.
  */
 export const shareText = {
-  result: (teamName: string, result: string, week: string) =>
-    `🎳 ${teamName} — ${result} | KTPBA Teams Marathon 2026 ${week}\n\nFollow the action: ktpba.vercel.app`,
+  matchResult: (data: { homeTeam: string; awayTeam: string; homePoints: number; awayPoints: number; date: string }) =>
+    `🎳 ${data.homeTeam} (${data.homePoints}) vs ${data.awayTeam} (${data.awayPoints})\n📅 ${data.date} | KTPBA Teams Marathon 2026\n\nFull results at: ktpba.vercel.app`,
 
-  countdown: (matchDate: string, nextMatch: string) =>
-    `⏳ ${matchDate} until the next KTPBA match night!\n${nextMatch}\n\nktpba.vercel.app`,
+  countdown: (timeLeft: string, date: string) =>
+    `⏳ ${timeLeft} until the next KTPBA match night!\n📅 ${date}\n\nktpba.vercel.app`,
 
   form: (teamName: string, streak: string, points: number) =>
     `🔥 ${teamName} | Form: ${streak} | ${points} Match Points\n\nKTPBA Teams Marathon 2026 — ktpba.vercel.app`,

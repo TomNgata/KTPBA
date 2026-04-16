@@ -1,7 +1,9 @@
 import React from 'react';
 import { MatchStatus } from '../types';
 import { cn } from '../lib/utils';
-import { Calendar, MapPin, Activity } from 'lucide-react';
+import { Calendar, MapPin, Activity, Share2 } from 'lucide-react';
+import ShareModal from './ShareModal';
+import { shareText } from '../lib/share';
 
 interface TeamSessionCardProps {
   teamName: string;
@@ -11,6 +13,8 @@ interface TeamSessionCardProps {
   totalScore?: number;
   matchPoints?: number | null;
   phase?: 'seeding' | 'regular';
+  matchId?: string;
+  opponentName?: string;
   className?: string;
 }
 
@@ -22,10 +26,21 @@ const TeamSessionCard: React.FC<TeamSessionCardProps> = ({
   totalScore, 
   matchPoints,
   phase = 'regular',
+  matchId,
+  opponentName,
   className 
 }) => {
+  const [shareOpen, setShareOpen] = React.useState(false);
+  const cardRef = React.useRef<HTMLDivElement>(null);
+  
   const isLive = status === 'live';
   const isDone = status === 'done';
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShareOpen(true);
+  };
 
   return (
     <div className={cn(
@@ -100,7 +115,38 @@ const TeamSessionCard: React.FC<TeamSessionCardProps> = ({
           <div className="w-1 h-1 bg-gray-300 rounded-full" />
           <div>Village Bowl</div>
         </div>
+
+        {/* Share Action */}
+        {isDone && matchId && (
+          <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end">
+            <button
+              onClick={handleShare}
+              className="flex items-center gap-2 text-[10px] font-bold text-gray-400 hover:text-ktpba-red uppercase tracking-widest transition-colors"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              Share Result
+            </button>
+          </div>
+        )}
       </div>
+
+      {isDone && matchId && (
+        <ShareModal
+          isOpen={shareOpen}
+          onClose={() => setShareOpen(false)}
+          cardRef={cardRef}
+          filename={`match-result-${matchId}`}
+          shareTitle={`Match Result: ${teamName}`}
+          shareText={shareText.matchResult({
+            homeTeam: teamName,
+            awayTeam: opponentName || 'TBD',
+            homePoints: matchPoints || 0,
+            awayPoints: 0, // In this session view, we focus on the team's points
+            date
+          })}
+          shareUrl={`https://ktpba.vercel.app/results`}
+        />
+      )}
     </div>
   );
 };

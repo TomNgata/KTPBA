@@ -10,82 +10,92 @@ export default function Results() {
   useEffect(() => {
     async function fetchResults() {
       const supabase = getSupabase();
-      if (!supabase) return;
-
-      setLoading(true);
-      // Fetch matchups with games and team names
-      const { data } = await supabase
-        .from('matchups')
-        .select(`
-          id, 
-          status, 
-          type,
-          lane_pair,
-          weeks(play_date),
-          home_team:teams!home_team_id(name), 
-          away_team:teams!away_team_id(name),
-          format_matches(
-            format,
-            winner_team_id,
-            games(home_score, away_score)
-          )
-        `)
-        .eq('status', 'done')
-        .order('id', { ascending: false });
-      
-      if (data) {
-        const flattened = data.reduce((acc: any[], m: any) => {
-          const lanes = m.lane_pair ? m.lane_pair.split('-') : ['?', '?'];
-          const date = m.weeks ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD';
-          
-          // Calculate total scores and Match Points
-          let homePins = 0;
-          let awayPins = 0;
-          let homePoints = 0;
-          let awayPoints = 0;
-          
-          m.format_matches?.forEach((fm: any) => {
-            fm.games?.forEach((g: any) => {
-              homePins += g.home_score || 0;
-              awayPins += g.away_score || 0;
-              
-              if (m.type === 'regular') {
-                 if (g.home_score > g.away_score) homePoints++;
-                 else if (g.away_score > g.home_score) awayPoints++;
-                 // In case of a rare draw in a single game of a best-of match, 
-                 // the tournament usually has a roll-off, but logic-wise we count strictly by winner
-              }
-            });
-          });
-
-          const isSeeding = m.type === 'seeding';
-
-          acc.push({
-            teamName: m.home_team.name,
-            lane: lanes[0],
-            date,
-            status: m.status,
-            totalScore: homePins,
-            matchPoints: isSeeding ? null : homePoints,
-            phase: m.type,
-            id: `${m.id}-home`
-          });
-          acc.push({
-            teamName: m.away_team.name,
-            lane: lanes[1],
-            date,
-            status: m.status,
-            totalScore: awayPins,
-            matchPoints: isSeeding ? null : awayPoints,
-            phase: m.type,
-            id: `${m.id}-away`
-          });
-          return acc;
-        }, []);
-
-        setSessions(flattened.sort((a, b) => b.totalScore - a.totalScore));
+      if (!supabase) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        setLoading(true);
+        // Fetch matchups with games and team names
+        const { data } = await supabase
+          .from('matchups')
+          .select(`
+            id, 
+            status, 
+            type,
+            lane_pair,
+            weeks(play_date),
+            home_team:teams!home_team_id(name), 
+            away_team:teams!away_team_id(name),
+            format_matches(
+              format,
+              winner_team_id,
+              games(home_score, away_score)
+            )
+          `)
+          .eq('status', 'done')
+          .order('id', { ascending: false });
+        
+        if (data) {
+          const flattened = data.reduce((acc: any[], m: any) => {
+            const lanes = m.lane_pair ? m.lane_pair.split('-') : ['?', '?'];
+            const date = m.weeks ? new Date(m.weeks.play_date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : 'TBD';
+            
+            // Calculate total scores and Match Points
+            let homePins = 0;
+            let awayPins = 0;
+            let homePoints = 0;
+            let awayPoints = 0;
+            
+            m.format_matches?.forEach((fm: any) => {
+              fm.games?.forEach((g: any) => {
+                homePins += g.home_score || 0;
+                awayPins += g.away_score || 0;
+                
+                if (m.type === 'regular') {
+                   if (g.home_score > g.away_score) homePoints++;
+                   else if (g.away_score > g.home_score) awayPoints++;
+                }
+              });
+            });
+
+            const isSeeding = m.type === 'seeding';
+
+            acc.push({
+              teamName: m.home_team?.name || 'Unknown',
+              opponentName: m.away_team?.name || 'TBD',
+              lane: lanes[0],
+              date,
+              status: m.status,
+              totalScore: homePins,
+              matchPoints: isSeeding ? null : homePoints,
+              phase: m.type,
+              id: `${m.id}-home`,
+              matchId: m.id
+            });
+            acc.push({
+              teamName: m.away_team?.name || 'Unknown',
+              opponentName: m.home_team?.name || 'TBD',
+              lane: lanes[1],
+              date,
+              status: m.status,
+              totalScore: awayPins,
+              matchPoints: isSeeding ? null : awayPoints,
+              phase: m.type,
+              id: `${m.id}-away`,
+              matchId: m.id
+            });
+            return acc;
+          }, []);
+
+          setSessions(flattened.sort((a, b) => b.totalScore - a.totalScore));
+        }
+      } catch (err) {
+        console.error('Error fetching results:', err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchResults();
   }, []);
@@ -115,12 +125,14 @@ export default function Results() {
               <TeamSessionCard 
                 key={session.id}
                 teamName={session.teamName}
+                opponentName={session.opponentName}
                 lane={session.lane}
                 date={session.date}
                 status={session.status}
                 totalScore={session.totalScore}
                 matchPoints={session.matchPoints}
                 phase={session.phase}
+                matchId={session.matchId}
               />
             ))}
           </div>
