@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Standings from './pages/Standings';
 import Schedule from './pages/Schedule';
 import Results from './pages/Results';
+import ExcelResults from './pages/ExcelResults';
 import Teams from './pages/Teams';
 import TeamDetail from './pages/TeamDetail';
 import Sponsors from './pages/Sponsors';
@@ -30,6 +31,7 @@ function Navbar() {
     { name: 'Standings', path: '/standings', icon: LayoutDashboard },
     { name: 'Schedule', path: '/schedule', icon: Calendar },
     { name: 'Results', path: '/results', icon: Trophy },
+    { name: 'Live Results', path: '/live-results', icon: Trophy },
     { name: 'Teams', path: '/teams', icon: Users },
     { name: 'Sponsors', path: '/sponsors', icon: Info },
   ];
@@ -196,6 +198,7 @@ export default function App() {
             <Route path="/standings" element={<Standings />} />
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/live-results" element={<ExcelResults />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/teams/:slug" element={<TeamDetail />} />
             <Route path="/sponsors" element={<Sponsors />} />
