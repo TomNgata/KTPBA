@@ -21,6 +21,7 @@ import PlayerAdmin from './pages/Admin/Players';
 import ScheduleAdmin from './pages/Admin/Schedule';
 import AdminAnnouncements from './pages/Admin/Announcements';
 import AnnouncementBanner from './components/AnnouncementBanner';
+import MaintenanceMode from './components/MaintenanceMode';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -187,6 +188,12 @@ function Footer() {
 }
 
 export default function App() {
+  const isMaintenance = import.meta.env.VITE_MAINTENANCE_MODE === 'true';
+
+  if (isMaintenance) {
+    return <MaintenanceMode />;
+  }
+
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
