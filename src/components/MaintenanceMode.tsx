@@ -1,5 +1,4 @@
 import { motion } from 'motion/react';
-import Logo from './Logo';
 
 export default function MaintenanceMode() {
   return (
@@ -20,15 +19,20 @@ export default function MaintenanceMode() {
           <motion.div
             animate={{ 
               scale: [1, 1.05, 1],
-              rotate: [0, 2, -2, 0]
             }}
             transition={{ 
               duration: 5, 
               repeat: Infinity,
               ease: "easeInOut"
             }}
+            className="relative"
           >
-            <Logo size={120} />
+            <div className="absolute inset-0 bg-ktpba-red rounded-full blur-3xl opacity-20" />
+            <img 
+              src="/logos/SaveClip.App_640270708_18025157939632791_7396759129937577959_n.jpg" 
+              alt="KTPBA Logo" 
+              className="h-32 w-32 object-contain relative z-10 rounded-full border-4 border-ktpba-red shadow-2xl"
+            />
           </motion.div>
         </div>
 
