@@ -1,61 +1,69 @@
-# KTPBA Teams Marathon 2026
+# KTPBA Teams Marathon 2026 — Workspace Transfer Pack
 
-Official web application for the **Kenya Ten Pin Bowling Association (KTPBA) Teams Marathon 2026**.
+## Workspace Snapshot
+- **Project name:** KTPBA Teams Marathon 2026
+- **Repository / workspace name:** KTPBA
+- **Main objective:** Official tournament management, standings app, and data ingestion layer for a 13-week bowling marathon in Nairobi.
+- **Current status:** Frontend UI is robust. The app displays Matchups, Standings, and Schedules. Logic to parse complex Excel sheets and PDF fixtures into Supabase is actively being worked on.
+- **Biggest risk:** Maintaining data accuracy when translating multi-sheet Excel workbooks (the source of truth) into structured Supabase database records.
+- **Next immediate action:** Finalize the 60-second revalidation sync layer/script that continuously updates Supabase from the SharePoint Excel spreadsheet.
 
-## 🎳 Tournament Overview
-- **Venue**: Village Bowl, Village Market, Nairobi
-- **Schedule**: Mondays & Tuesdays, 6:45 PM – 11:00 PM
-- **Duration**: 13 Weeks (April 13, 2026 – July 8, 2026)
-- **Format**: 20 Teams competing in Singles, Doubles, and Teams formats.
+## 1. Project Overview
+The KTPBA app tracks the "Teams Marathon 2026" bowling tournament held at Village Bowl. It must display Singles, Doubles (Baker's Style), and Teams formats over a 13-week period. It serves players needing live standings and administrators needing to ingest complex Excel/PDF scoring data into a modern dashboard.
 
-## ⚙️ Match Format & Scoring
-- **Singles**: Best of 3 games. Team players can interchange between games (each must play a full 10 frames).
-- **Doubles**: Best of 3 games, played in **Baker's Style**.
-- **Teams**: Best of 5 games, played in **Baker's Style**.
-- **Points**: Winning a format series earns the team **1 standings point**. Max 3 points per matchday.
-- **Tie-Breaker**: Identical pinfall results in an immediate **roll-off game** to determine the game winner.
+## 2. Current State
+A React/Vite Single Page Application (SPA) utilizing Tailwind CSS and Framer Motion. The core pages (`Home`, `Schedule`, `Standings`, `Results`) are built. There is a strong focus currently on data processing utilities (`pdf-parse`, `xlsx`) meant to extract scores from offline documents and push them to Supabase.
 
-## 🚀 Tech Stack
-- **Frontend**: React 18 + Vite
-- **Styling**: Tailwind CSS (Custom KTPBA Brand Theme)
-- **Icons**: Lucide React
-- **Animations**: Motion (formerly Framer Motion)
-- **Database**: Supabase (Integration ready)
-- **AI**: Gemini 1.5 Flash (Match summary generation)
+## 3. Workspace Map
+- `src/App.tsx & main.tsx`: React router and application entry points.
+- `src/pages/`: Core views including `Home`, `Admin/`, `Standings`, `ExcelResults`, `Schedule`, and `TeamDetail`.
+- `src/components/`: Reusable UI elements (`MatchupCard`, `ShareableResultCard`, `TeamFormWidget`).
+- `scripts/`: Data ingestion logic (e.g., `analyze-excel.cjs`).
+- `metadata.json`: Workspace configuration file.
 
-## 🛠️ Setup & Installation
+## 4. Technical Stack
+- **Framework:** React 19 / Vite 6
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4, `clsx`, `tailwind-merge`
+- **Data Parsing:** `xlsx`, `pdf-parse`
+- **Database:** Supabase (`@supabase/supabase-js`, `@supabase/mcp-server-supabase`)
+- **AI Integration:** Google GenAI (`@google/genai`) for match summaries.
+- **Charts:** Recharts
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/[your-username]/KTPBA.git
-   cd KTPBA
-   ```
+## 5. Setup and Run Instructions
+1. Install dependencies: `npm install`
+2. Environment Setup: Copy `.env.example` to `.env` and fill in `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, and `GEMINI_API_KEY`.
+3. Start Development Server: `npm run dev`
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+## 6. What Is Already Working
+- Responsive layout with custom KTPBA branding.
+- Complex UI components for Matchups and Leaderboards.
+- Shareable Result Cards (leveraging `html-to-image`).
+- AI Match summary architecture.
 
-3. **Configure Environment Variables**:
-   Create a `.env` file based on `.env.example`:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GEMINI_API_KEY=your_gemini_api_key
-   ```
+## 7. What Is In Progress
+- The `Admin/` data ingestion pipeline.
+- Excel extraction utilities (`analyze-excel.cjs`) tailored to read specific spreadsheet formatting and map it to `schema.sql`.
 
-4. **Run Development Server**:
-   ```bash
-   npm run dev
-   ```
+## 8. Open Issues and Risks
+- Ensuring the 60-second revalidation sync layer operates without hitting rate limits or corrupting local React state.
+- Accurately parsing edge cases in the Excel spreadsheet (e.g., identical pinfall roll-off games).
 
-5. **Build for Production**:
-   ```bash
-   npm run build
-   ```
+## 9. Key Decisions and Conventions
+- **Source of Truth:** A view-only SharePoint Excel spreadsheet acts as the master record. The app acts as an ingestion and presentation layer over it.
+- **AI Tooling:** Gemini Flash is explicitly utilized to generate flavor text/summaries for matchups automatically to save manual PR effort.
 
-## 🔐 Admin Access
-The admin dashboard is located at `/admin/login`. Access requires the tournament-specific authorization code.
+## 10. External Dependencies and Integrations
+- **Supabase:** PostgreSQL database and Auth.
+- **Google GenAI:** For generative summaries.
 
-## 📜 License
-© 2026 Kenya Ten Pin Bowling Association. All Rights Reserved.
+## 11. Safe Handling Notes
+- `.env` contains Supabase keys and a Gemini API Key. Do not expose `GEMINI_API_KEY` to the client bundle if it allows unrestricted access. Ensure admin routes are properly protected.
+
+## 12. Resume Plan
+1. **Audit Data Sync:** Review `scripts/analyze-excel.cjs` against `schema.sql` to ensure the parsed JSON perfectly matches Supabase DDL expectations.
+2. **Test Sync Layer:** Run the data ingestion script locally to test the Upsert behavior into Supabase.
+3. **Frontend Hydration:** Verify that `src/pages/Standings.tsx` properly fetches the newly ingested data from Supabase instead of relying on mock fixtures.
+
+## 13. Minimal Handoff Summary
+KTPBA is a React/Vite dashboard tracking a 13-week bowling tournament. The UI is built. The current focus is finalizing an ETL sync layer that reads complex Excel spreadsheets and pushes them to Supabase to serve live standings. Next step: execute and validate the Excel ingestion scripts.
